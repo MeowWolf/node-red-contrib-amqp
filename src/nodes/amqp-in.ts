@@ -6,21 +6,25 @@ module.exports = function(RED: Red): void {
   function AmqpIn(config): void {
     RED.nodes.createNode(this, config)
 
+    this.status({ fill: 'red', shape: 'ring', text: 'disconnected' })
     // So we can use async/await here
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const iife = (async function(): Promise<void> {
+    const iife = (async function(self): Promise<void> {
       try {
         const broker: Node = RED.nodes.getNode(config.broker)
 
         if (broker) {
           const brokerUrl = getBrokerUrl(broker)
+
+          /* istanbul ignore next */
           const connection = await amqplib.connect(brokerUrl)
-        } else {
+          self.status({ fill: 'green', shape: 'dot', text: 'connected' })
         }
       } catch (e) {
-        console.log('AmqpIn() Error', e)
+        self.status({ fill: 'red', shape: 'dot', text: 'error' })
+        self.error(`AmqpIn() ${e}`)
       }
-    })()
+    })(this)
   }
   RED.nodes.registerType('amqp-in', AmqpIn)
 }

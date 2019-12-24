@@ -28,15 +28,12 @@ const credentialsFixture = { username: 'username', password: 'password' }
 
 helper.init(require.resolve('node-red'))
 // let connectStub
-const connectSpy = sinon.spy()
+const connectStub = sinon.stub().returns(Promise.resolve(true))
 
 describe('amqp-in Node', () => {
   beforeEach(function(done) {
     helper.startServer(done)
-    /* connectStub = */ sinon.stub(amqplib, 'connect').callsFake(connectSpy)
-
-    // suppress console logging
-    console.log = (): null => null
+    /* connectStub = */ sinon.stub(amqplib, 'connect').callsFake(connectStub)
   })
 
   afterEach(function(done) {
@@ -63,7 +60,7 @@ describe('amqp-in Node', () => {
         const n1 = helper.getNode('n1')
         const n2 = helper.getNode('n2')
 
-        expect(connectSpy.calledOnce).to.be.true
+        expect(connectStub.calledOnce).to.be.true
         done()
       },
     )
