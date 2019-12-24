@@ -26,11 +26,14 @@
   "devDependencies": {
     "@istanbuljs/nyc-config-typescript": "^1.0.0",
     "@types/amqplib": "^0.5.13",
+    "@types/chai": "^4.2.7",
     "@types/mocha": "^5.2.7",
     "@types/node": "^12.12.21",
     "@types/node-red": "^0.20.0",
+    "@types/sinon": "^7.5.1",
     "@typescript-eslint/eslint-plugin": "^2.12.0",
     "@typescript-eslint/parser": "^2.12.0",
+    "chai": "^4.2.0",
     "copyfiles": "^2.1.1",
     "eslint": "^6.8.0",
     "eslint-config-prettier": "^6.7.0",
@@ -41,6 +44,7 @@
     "nodemon": "^2.0.2",
     "nyc": "^15.0.0",
     "prettier": "^1.19.1",
+    "sinon": "^8.0.1",
     "source-map-support": "^0.5.16",
     "ts-node": "^8.5.4",
     "typescript": "^3.7.4"
