@@ -1,0 +1,31 @@
+<script type="text/javascript">
+  RED.nodes.registerType('amqp-in', {
+    category: 'Meow Wolf',
+    color: '#a6bbcf',
+    defaults: {
+      name: { value: '' },
+      broker: { value: '', type: 'amqp-broker' },
+    },
+    inputs: 0,
+    outputs: 1,
+    icon: 'file.png',
+    label: function() {
+      return this.name || 'amqp-in'
+    },
+  })
+</script>
+
+<script type="text/x-red" data-template-name="amqp-in">
+  <div class="form-row">
+    <label for="node-input-broker"><i class="icon-tag"></i> Broker</label>
+    <input type="text" id="node-input-broker" placeholder="AMQP Broker">
+  </div>
+  <div class="form-row">
+    <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+    <input type="text" id="node-input-name" placeholder="Name">
+  </div>
+</script>
+
+<script type="text/x-red" data-help-name="amqp-in">
+  <p>A simple node that converts the message payloads into all lower-case characters</p>
+</script>

@@ -1,0 +1,47 @@
+{
+  "name": "node-red-contrib-mw-amqp",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon --exec 'npm run build'",
+    "build": "rm -rf dist && tsc -p . && copyfiles -f src/nodes/**/*.html dist/nodes",
+    "test": "mocha -w \"dist/test/**/*.spec.js\""
+  },
+  "keywords": [
+    "node-red",
+    "amqp",
+    "rabbitmq",
+    "meow wolf"
+  ],
+  "node-red": {
+    "nodes": {
+      "amqp-in": "dist/nodes/amqp-in.js",
+      "amqp-broker": "dist/nodes/amqp-broker.js"
+    }
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/amqplib": "^0.5.13",
+    "@types/mocha": "^5.2.7",
+    "@types/node": "^12.12.21",
+    "@types/node-red": "^0.20.0",
+    "@typescript-eslint/eslint-plugin": "^2.12.0",
+    "@typescript-eslint/parser": "^2.12.0",
+    "copyfiles": "^2.1.1",
+    "eslint": "^6.8.0",
+    "eslint-config-prettier": "^6.7.0",
+    "eslint-plugin-prettier": "^3.1.2",
+    "mocha": "^6.2.2",
+    "node-red": "^1.0.3",
+    "node-red-node-test-helper": "^0.2.3",
+    "nodemon": "^2.0.2",
+    "prettier": "^1.19.1",
+    "ts-node": "^8.5.4",
+    "typescript": "^3.7.4"
+  },
+  "dependencies": {
+    "amqplib": "^0.5.5"
+  }
+}
