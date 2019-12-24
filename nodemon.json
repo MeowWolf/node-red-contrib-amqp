@@ -1,5 +1,5 @@
 {
   "watch": ["src/"],
   "ext": "ts, html",
-  "ignore": ["dist/"]
+  "ignore": ["build/"]
 }

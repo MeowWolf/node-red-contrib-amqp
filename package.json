@@ -5,8 +5,9 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon --exec 'npm run build'",
-    "build": "rm -rf dist && tsc -p . && copyfiles -f src/nodes/**/*.html dist/nodes",
-    "test": "mocha -w \"dist/test/**/*.spec.js\""
+    "build": "rm -rf build && tsc -p . && copyfiles -f src/nodes/**/*.html build/src/nodes",
+    "test": "mocha -w",
+    "test:coverage": "nyc mocha"
   },
   "keywords": [
     "node-red",
@@ -16,13 +17,14 @@
   ],
   "node-red": {
     "nodes": {
-      "amqp-in": "dist/nodes/amqp-in.js",
-      "amqp-broker": "dist/nodes/amqp-broker.js"
+      "amqp-in": "build/src/nodes/amqp-in.js",
+      "amqp-broker": "build/src/nodes/amqp-broker.js"
     }
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@istanbuljs/nyc-config-typescript": "^1.0.0",
     "@types/amqplib": "^0.5.13",
     "@types/mocha": "^5.2.7",
     "@types/node": "^12.12.21",
@@ -37,7 +39,9 @@
     "node-red": "^1.0.3",
     "node-red-node-test-helper": "^0.2.3",
     "nodemon": "^2.0.2",
+    "nyc": "^15.0.0",
     "prettier": "^1.19.1",
+    "source-map-support": "^0.5.16",
     "ts-node": "^8.5.4",
     "typescript": "^3.7.4"
   },

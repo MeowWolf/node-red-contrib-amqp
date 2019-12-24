@@ -1,0 +1,7 @@
+{
+  "extends": "@istanbuljs/nyc-config-typescript",
+  "all": true,
+  "extension": [".ts", ".tsx", ".html"],
+  "reporter": ["lcov", "text"],
+  "cache": true
+}

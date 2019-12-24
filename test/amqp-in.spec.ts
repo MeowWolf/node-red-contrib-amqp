@@ -1,6 +1,6 @@
 // const helper = require('node-red-node-test-helper')
 import * as helper from 'node-red-node-test-helper'
-import * as amqpIn from '../nodes/amqp-in'
+import * as amqpIn from '../src/nodes/amqp-in'
 
 describe('amqp-in Node', function() {
   afterEach(function() {
