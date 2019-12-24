@@ -1,5 +1,6 @@
 {
   "extends": "@istanbuljs/nyc-config-typescript",
+  "temp-directory": "./coverage/.nyc_output",
   "all": true,
   "extension": [".ts", ".tsx", ".html"],
   "reporter": ["lcov", "text"],
