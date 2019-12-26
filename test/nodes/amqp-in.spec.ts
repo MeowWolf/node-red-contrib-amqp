@@ -6,24 +6,9 @@ import * as helper from 'node-red-node-test-helper'
 import * as amqpIn from '../../src/nodes/amqp-in'
 import * as amqpBroker from '../../src/nodes/amqp-broker'
 import * as util from '../../src/util'
+import { ErrorTypes } from '../../src/types'
+import { CustomError, amqpInFlowFixture } from '../doubles'
 
-const flowFixture = [
-  {
-    id: 'n1',
-    type: 'amqp-in',
-    wires: [['n2']],
-    name: '',
-    broker: 'n3',
-  },
-  { id: 'n2', type: 'helper' },
-  {
-    id: 'n3',
-    type: 'amqp-broker',
-    z: '',
-    host: 'localhost',
-    port: '5672',
-  },
-]
 const credentialsFixture = { username: 'username', password: 'password' }
 
 helper.init(require.resolve('node-red'))
@@ -54,7 +39,7 @@ describe('amqp-in Node', () => {
   it('should connect to server', function(done) {
     helper.load(
       [amqpIn, amqpBroker],
-      flowFixture,
+      amqpInFlowFixture,
       credentialsFixture,
       function() {
         const n1 = helper.getNode('n1')
@@ -66,16 +51,28 @@ describe('amqp-in Node', () => {
     )
   })
 
-  it('catch an exception', function(done) {
+  it('catches an invalid login exception', function(done) {
+    const brokerUrlStub = sinon
+      .stub(util, 'getBrokerUrl')
+      .throws(new CustomError(ErrorTypes.INALID_LOGIN))
+    helper.load(
+      [amqpIn, amqpBroker],
+      amqpInFlowFixture,
+      credentialsFixture,
+      function() {
+        expect(brokerUrlStub).to.throw()
+        done()
+      },
+    )
+  })
+
+  it('catches a generic exception', function(done) {
     const brokerUrlStub = sinon.stub(util, 'getBrokerUrl').throws()
     helper.load(
       [amqpIn, amqpBroker],
-      flowFixture,
+      amqpInFlowFixture,
       credentialsFixture,
       function() {
-        const n1 = helper.getNode('n1')
-        const n2 = helper.getNode('n2')
-
         expect(brokerUrlStub).to.throw()
         done()
       },

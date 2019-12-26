@@ -6,3 +6,7 @@ export interface BrokerConfig extends Node {
     password: string
   }
 }
+
+export enum ErrorTypes {
+  INALID_LOGIN = 'ENOTFOUND',
+}
