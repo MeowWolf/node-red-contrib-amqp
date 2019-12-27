@@ -6,7 +6,7 @@ import * as helper from 'node-red-node-test-helper'
 import * as amqpIn from '../../src/nodes/amqp-in'
 import * as amqpBroker from '../../src/nodes/amqp-broker'
 import * as util from '../../src/util'
-import { ErrorTypes } from '../../src/types'
+import { ErrorType } from '../../src/types'
 import { CustomError, amqpInFlowFixture } from '../doubles'
 
 const credentialsFixture = { username: 'username', password: 'password' }
@@ -54,7 +54,7 @@ describe('amqp-in Node', () => {
   it('catches an invalid login exception', function(done) {
     const brokerUrlStub = sinon
       .stub(util, 'getBrokerUrl')
-      .throws(new CustomError(ErrorTypes.INALID_LOGIN))
+      .throws(new CustomError(ErrorType.INALID_LOGIN))
     helper.load(
       [amqpIn, amqpBroker],
       amqpInFlowFixture,

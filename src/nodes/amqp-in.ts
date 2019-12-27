@@ -2,7 +2,7 @@ import { Red, Node } from 'node-red'
 import * as amqplib from 'amqplib'
 import { NODE_STATUS } from '../constants'
 import { getBrokerUrl } from '../util'
-import { ErrorTypes } from '../types'
+import { ErrorType } from '../types'
 
 module.exports = function(RED: Red): void {
   function AmqpIn(config): void {
@@ -25,7 +25,7 @@ module.exports = function(RED: Red): void {
           }
         }
       } catch (e) {
-        if (e.code === ErrorTypes.INALID_LOGIN) {
+        if (e.code === ErrorType.INALID_LOGIN) {
           self.status(NODE_STATUS.Invalid)
           self.error(`AmqpIn() Could not connect to broker ${e}`)
         } else {

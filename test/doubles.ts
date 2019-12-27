@@ -1,4 +1,4 @@
-import { ErrorTypes } from '../src/types'
+import { ErrorType } from '../src/types'
 
 export const amqpInFlowFixture = [
   {
@@ -19,7 +19,7 @@ export const amqpInFlowFixture = [
 ]
 
 export class CustomError extends Error {
-  constructor(private readonly code: ErrorTypes, ...params: undefined[]) {
+  constructor(private readonly code: ErrorType, ...params: undefined[]) {
     super(...params)
 
     // Maintains proper stack trace for where our error was thrown (only available on V8)

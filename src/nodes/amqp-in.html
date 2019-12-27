@@ -5,6 +5,8 @@
     defaults: {
       name: { value: '' },
       broker: { value: '', type: 'amqp-broker' },
+      exchangeType: { value: '' },
+      routingKey: { value: '' },
     },
     inputs: 0,
     outputs: 1,
@@ -17,12 +19,25 @@
 
 <script type="text/html" data-template-name="amqp-in">
   <div class="form-row">
+    <label for="node-input-name"><i class="fa fa-tag"></i>&nbsp;&nbsp;Node Name</label>
+    <input type="text" id="node-input-name" placeholder="Name">
+  </div>
+  <div class="form-row">
     <label for="node-input-broker"><i class="fa fa-globe"></i>&nbsp;&nbsp;Broker</label>
     <input type="text" id="node-input-broker" placeholder="AMQP Broker">
   </div>
   <div class="form-row">
-    <label for="node-input-name"><i class="fa fa-tag"></i>&nbsp;&nbsp;Name</label>
-    <input type="text" id="node-input-name" placeholder="Name">
+    <label for="node-input-exchangeType"><i class="fa fa-globe"></i>&nbsp;&nbsp;Exchange</label>
+    <select id="node-input-exchangeType">
+      <option value="direct">Direct</option>
+      <option value="fanout">Fanout</option>
+      <option value="topic">Topic</option>
+      <option value="header">Header</option>
+    </select>
+  </div>
+  <div class="form-row">
+    <label for="node-input-routingKey"><i class="fa fa-globe"></i>&nbsp;&nbsp;Routing Key</label>
+    <input type="text" id="node-input-routingKey" placeholder="routing.key">
   </div>
 </script>
 
