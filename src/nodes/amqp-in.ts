@@ -23,7 +23,7 @@ module.exports = function(RED: Red): void {
           amqp.assertExchange()
           await amqp.assertQueue()
           amqp.bindQueue()
-          await amqp.consume()
+          await amqp.consume(self)
 
           self.on(
             'close',

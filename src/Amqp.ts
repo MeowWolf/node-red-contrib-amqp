@@ -1,6 +1,6 @@
 import { Red, Node } from 'node-red'
 // import * as amqplib from 'amqplib'
-import { Connection, Channel, Replies, connect } from 'amqplib'
+import { Connection, Channel, Replies, connect, ConsumeMessage } from 'amqplib'
 import { AmqpConfig, BrokerConfig } from './types'
 
 export default class Amqp {
@@ -66,17 +66,12 @@ export default class Amqp {
     }
   }
 
-  public async consume(): Promise<void> {
+  public async consume(node: any): Promise<void> {
     await this.channel.consume(
       this.q.queue,
-      /* istanbul ignore next */
-      msg => {
-        console.log('this is the queue... class style!', this.q.queue)
-        console.log(
-          " [x] %s:'%s'",
-          msg.fields.routingKey,
-          msg.content.toString(),
-        )
+      amqpMessage => {
+        const msg = this.assembleMessage(amqpMessage)
+        node.send(msg)
       },
       { noAck: this.noAck },
     )
@@ -109,5 +104,20 @@ export default class Amqp {
     }
 
     return url
+  }
+
+  private assembleMessage(
+    amqpMessage: ConsumeMessage,
+  ): ConsumeMessage & { payload: Record<string, any> | string } {
+    let payload
+    try {
+      payload = JSON.parse(amqpMessage.content.toString())
+    } catch {
+      payload = amqpMessage.content.toString()
+    }
+    return {
+      ...amqpMessage,
+      payload,
+    }
   }
 }

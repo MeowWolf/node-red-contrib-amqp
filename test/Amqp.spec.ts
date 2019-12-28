@@ -5,8 +5,8 @@ import * as amqplib from 'amqplib'
 import Amqp from '../src/Amqp'
 import { amqpConfigFixture, brokerConfigFixture } from './doubles'
 
-let RED
-let amqp
+let RED: any
+let amqp: any
 
 describe('Amqp Class', () => {
   beforeEach(function(done) {
@@ -81,13 +81,31 @@ describe('Amqp Class', () => {
   })
 
   it('consume()', async () => {
-    const queue = 'queueName'
-    const consumeStub = sinon.stub()
-    amqp.channel = { consume: consumeStub }
-    amqp.q = { queue }
+    const messageContent = 'messageContent'
+    const send = sinon.stub()
+    const node = { send }
+    const channel = {
+      consume: function(
+        queue: string,
+        cb: Function,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        config: Record<string, any>,
+      ): void {
+        const amqpMessage = { content: messageContent }
+        cb(amqpMessage)
+      },
+    }
+    amqp.channel = channel
+    amqp.q = { queue: 'queueName' }
 
-    await amqp.consume()
-    expect(consumeStub.calledOnce).to.equal(true)
+    await amqp.consume(node)
+    expect(send.calledOnce).to.equal(true)
+    expect(
+      send.calledWith({
+        content: messageContent,
+        payload: messageContent,
+      }),
+    ).to.equal(true)
   })
 
   it('close()', async () => {
