@@ -1,13 +1,3 @@
-export interface AmqpInDefaults {
-  name: {
-    value: string
-  }
-  broker: {
-    value: string
-    type: string
-  }
-}
-
 export interface BrokerConfig extends Node {
   host: string
   port: number
@@ -15,6 +5,18 @@ export interface BrokerConfig extends Node {
     username: string
     password: string
   }
+}
+
+export interface AmqpConfig {
+  name?: string
+  noAck: boolean
+  broker: string
+  exchangeType: ExchangeType
+  exchangeName: string
+  routingKey: string
+  durable: boolean
+  queueName: string
+  exclusive: boolean
 }
 
 export enum ErrorType {

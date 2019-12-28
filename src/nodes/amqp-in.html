@@ -5,14 +5,21 @@
     defaults: {
       name: { value: '' },
       broker: { value: '', type: 'amqp-broker' },
+      noAck: { value: true },
+      exchangeName: { value: '' },
       exchangeType: { value: '' },
       routingKey: { value: '' },
+      durable: { value: false },
+      queueName: { value: '' },
+      exclusive: { value: true },
     },
     inputs: 0,
     outputs: 1,
     icon: 'font-awesome/fa-phone',
     label: function() {
-      return this.name || 'amqp-in'
+      const colon = this.name && this.routingKey ? ': ' : ''
+      const label = this.name + colon + this.routingKey
+      return label || 'amqp-in'
     },
   })
 </script>
@@ -27,7 +34,12 @@
     <input type="text" id="node-input-broker" placeholder="AMQP Broker">
   </div>
   <div class="form-row">
-    <label for="node-input-exchangeType"><i class="fa fa-globe"></i>&nbsp;&nbsp;Exchange</label>
+    <label for="node-input-noAck"><i class="fa fa-globe"></i>&nbsp;&nbsp;noAck</label>
+    <input type="checkbox" id="node-input-noAck" style="margin: 0px 0px 4px;">
+  </div>
+  <h4>Exchange Info</h4>
+  <div class="form-row">
+    <label for="node-input-exchangeType"><i class="fa fa-globe"></i>&nbsp;&nbsp;Type</label>
     <select id="node-input-exchangeType">
       <option value="direct">Direct</option>
       <option value="fanout">Fanout</option>
@@ -36,8 +48,25 @@
     </select>
   </div>
   <div class="form-row">
+    <label for="node-input-exchangeName"><i class="fa fa-globe"></i>&nbsp;&nbsp;Name</label>
+    <input type="text" id="node-input-exchangeName" placeholder="Exchange Name">
+  </div>
+  <div class="form-row">
     <label for="node-input-routingKey"><i class="fa fa-globe"></i>&nbsp;&nbsp;Routing Key</label>
     <input type="text" id="node-input-routingKey" placeholder="routing.key">
+  </div>
+  <div class="form-row">
+    <label for="node-input-durable"><i class="fa fa-globe"></i>&nbsp;&nbsp;Durable</label>
+    <input type="checkbox" id="node-input-durable" style="margin: 0px 0px 4px;">
+  </div>
+  <h4>Queue Info<h4>
+  <div class="form-row">
+    <label for="node-input-queueName"><i class="fa fa-globe"></i>&nbsp;&nbsp;Name</label>
+    <input type="text" id="node-input-queueName" placeholder="Leave blank to auto-generate">
+  </div>
+  <div class="form-row">
+    <label for="node-input-exclusive"><i class="fa fa-globe"></i>&nbsp;&nbsp;Exclusive</label>
+    <input type="checkbox" id="node-input-exclusive" style="margin: 0px 0px 4px;">
   </div>
 </script>
 

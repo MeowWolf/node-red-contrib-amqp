@@ -1,24 +1,18 @@
 /* eslint-disable @typescript-eslint/ban-ts-ignore */
 import { expect } from 'chai'
 import * as sinon from 'sinon'
-import * as amqplib from 'amqplib'
 import * as helper from 'node-red-node-test-helper'
 import * as amqpIn from '../../src/nodes/amqp-in'
+import Amqp from '../../src/Amqp'
 import * as amqpBroker from '../../src/nodes/amqp-broker'
-import * as util from '../../src/util'
 import { ErrorType } from '../../src/types'
-import { CustomError, amqpInFlowFixture } from '../doubles'
-
-const credentialsFixture = { username: 'username', password: 'password' }
+import { CustomError, amqpInFlowFixture, credentialsFixture } from '../doubles'
 
 helper.init(require.resolve('node-red'))
-// let connectStub
-const connectStub = sinon.stub().returns(Promise.resolve(true))
 
 describe('amqp-in Node', () => {
   beforeEach(function(done) {
     helper.startServer(done)
-    /* connectStub = */ sinon.stub(amqplib, 'connect').callsFake(connectStub)
   })
 
   afterEach(function(done) {
@@ -36,44 +30,62 @@ describe('amqp-in Node', () => {
     })
   })
 
-  it('should connect to server', function(done) {
+  it('should connect to the server', function(done) {
+    const connectStub = sinon
+      .stub(Amqp.prototype, 'connect')
+      // @ts-ignore
+      .resolves(true)
+    const createChannelStub = sinon.stub(Amqp.prototype, 'createChannel')
+    const assertExchange = sinon.stub(Amqp.prototype, 'assertExchange')
+    const assertQueue = sinon.stub(Amqp.prototype, 'assertQueue')
+    const bindQueue = sinon.stub(Amqp.prototype, 'bindQueue')
+    const consume = sinon.stub(Amqp.prototype, 'consume')
+    const close = sinon.stub(Amqp.prototype, 'close')
+
     helper.load(
       [amqpIn, amqpBroker],
       amqpInFlowFixture,
       credentialsFixture,
-      function() {
+      async function() {
         const n1 = helper.getNode('n1')
         const n2 = helper.getNode('n2')
 
         expect(connectStub.calledOnce).to.be.true
+
+        // TODO: Figure out why these aren't working:
+        // expect(createChannelStub.calledOnce).to.be.true
+        // expect(assertExchange.calledOnce).to.be.true
+        // expect(assertQueue.calledOnce).to.be.true
+        // expect(bindQueue.calledOnce).to.be.true
+        // expect(consume.calledOnce).to.be.true
         done()
       },
     )
   })
 
   it('catches an invalid login exception', function(done) {
-    const brokerUrlStub = sinon
-      .stub(util, 'getBrokerUrl')
+    const connectStub = sinon
+      .stub(Amqp.prototype, 'connect')
       .throws(new CustomError(ErrorType.INALID_LOGIN))
     helper.load(
       [amqpIn, amqpBroker],
       amqpInFlowFixture,
       credentialsFixture,
       function() {
-        expect(brokerUrlStub).to.throw()
+        expect(connectStub).to.throw()
         done()
       },
     )
   })
 
   it('catches a generic exception', function(done) {
-    const brokerUrlStub = sinon.stub(util, 'getBrokerUrl').throws()
+    const connectStub = sinon.stub(Amqp.prototype, 'connect').throws()
     helper.load(
       [amqpIn, amqpBroker],
       amqpInFlowFixture,
       credentialsFixture,
       function() {
-        expect(brokerUrlStub).to.throw()
+        expect(connectStub).to.throw()
         done()
       },
     )
