@@ -3,7 +3,7 @@ import { expect } from 'chai'
 import * as sinon from 'sinon'
 import * as amqplib from 'amqplib'
 import Amqp from '../src/Amqp'
-import { amqpConfigFixture, brokerConfigFixture } from './doubles'
+import { amqpConfigFixture, nodeFixture, brokerConfigFixture } from './doubles'
 
 let RED: any
 let amqp: any
@@ -15,7 +15,9 @@ describe('Amqp Class', () => {
         getNode: sinon.stub().returns(brokerConfigFixture),
       },
     }
-    amqp = new Amqp(RED, amqpConfigFixture)
+
+    // @ts-ignore
+    amqp = new Amqp(RED, nodeFixture, amqpConfigFixture)
     done()
   })
 
@@ -35,8 +37,48 @@ describe('Amqp Class', () => {
     expect(connection).to.eq(result)
   })
 
+  it('start()', async () => {
+    const createChannelStub = sinon.stub()
+    const assertExchangeStub = sinon.stub()
+    const assertQueueStub = sinon.stub()
+    const bindQueueStub = sinon.stub()
+    const consumeStub = sinon.stub()
+
+    amqp.createChannel = createChannelStub
+    amqp.assertExchange = assertExchangeStub
+    amqp.assertQueue = assertQueueStub
+    amqp.bindQueue = bindQueueStub
+    amqp.consume = consumeStub
+
+    await amqp.start()
+    expect(createChannelStub.calledOnce).to.equal(true)
+    expect(assertExchangeStub.calledOnce).to.equal(true)
+    expect(assertQueueStub.calledOnce).to.equal(true)
+    expect(bindQueueStub.calledOnce).to.equal(true)
+    expect(consumeStub.calledOnce).to.equal(true)
+  })
+
+  it('close()', async () => {
+    const unbindQueueStub = sinon.stub()
+    const channelCloseStub = sinon.stub()
+    const connectionCloseStub = sinon.stub()
+
+    amqp.channel = { unbindQueue: unbindQueueStub, close: channelCloseStub }
+    amqp.connection = { close: connectionCloseStub }
+    const { queueName, exchangeName, routingKey } = amqpConfigFixture
+
+    await amqp.close()
+    expect(unbindQueueStub.calledOnce).to.equal(true)
+    expect(
+      unbindQueueStub.calledWith(queueName, exchangeName, routingKey),
+    ).to.equal(true)
+    expect(channelCloseStub.calledOnce).to.equal(true)
+    expect(connectionCloseStub.calledOnce).to.equal(true)
+  })
+
   it('createChannel()', async () => {
-    const result = 'channel!'
+    const error = 'error!'
+    const result = { on: (): string => error }
     const createChannelStub = sinon.stub().returns(result)
     amqp.connection = { createChannel: createChannelStub }
 
@@ -100,8 +142,9 @@ describe('Amqp Class', () => {
     }
     amqp.channel = channel
     amqp.q = { queue: 'queueName' }
+    amqp.node = node
 
-    await amqp.consume(node)
+    await amqp.consume()
     expect(send.calledOnce).to.equal(true)
     expect(
       send.calledWith({
@@ -109,23 +152,5 @@ describe('Amqp Class', () => {
         payload: messageContent,
       }),
     ).to.equal(true)
-  })
-
-  it('close()', async () => {
-    const unbindQueueStub = sinon.stub()
-    const channelCloseStub = sinon.stub()
-    const connectionCloseStub = sinon.stub()
-
-    amqp.channel = { unbindQueue: unbindQueueStub, close: channelCloseStub }
-    amqp.connection = { close: connectionCloseStub }
-    const { queueName, exchangeName, routingKey } = amqpConfigFixture
-
-    await amqp.close()
-    expect(unbindQueueStub.calledOnce).to.equal(true)
-    expect(
-      unbindQueueStub.calledWith(queueName, exchangeName, routingKey),
-    ).to.equal(true)
-    expect(channelCloseStub.calledOnce).to.equal(true)
-    expect(connectionCloseStub.calledOnce).to.equal(true)
   })
 })

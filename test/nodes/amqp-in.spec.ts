@@ -31,16 +31,20 @@ describe('amqp-in Node', () => {
   })
 
   it('should connect to the server', function(done) {
+    // @ts-ignore
+    Amqp.prototype.channel = {
+      unbindQueue: (): null => null,
+      close: (): null => null,
+    }
+    // @ts-ignore
+    Amqp.prototype.connection = {
+      close: (): null => null,
+    }
     const connectStub = sinon
       .stub(Amqp.prototype, 'connect')
       // @ts-ignore
       .resolves(true)
-    const createChannelStub = sinon.stub(Amqp.prototype, 'createChannel')
-    const assertExchange = sinon.stub(Amqp.prototype, 'assertExchange')
-    const assertQueue = sinon.stub(Amqp.prototype, 'assertQueue')
-    const bindQueue = sinon.stub(Amqp.prototype, 'bindQueue')
-    const consume = sinon.stub(Amqp.prototype, 'consume')
-    const close = sinon.stub(Amqp.prototype, 'close')
+    const startStub = sinon.stub(Amqp.prototype, 'start')
 
     helper.load(
       [amqpIn, amqpBroker],
@@ -52,12 +56,9 @@ describe('amqp-in Node', () => {
 
         expect(connectStub.calledOnce).to.be.true
 
-        // TODO: Figure out why these aren't working:
-        // expect(createChannelStub.calledOnce).to.be.true
-        // expect(assertExchange.calledOnce).to.be.true
-        // expect(assertQueue.calledOnce).to.be.true
-        // expect(bindQueue.calledOnce).to.be.true
-        // expect(consume.calledOnce).to.be.true
+        // TODO: Figure out why this isn't working:
+        // expect(startStub.calledOnce).to.be.true
+
         done()
       },
     )

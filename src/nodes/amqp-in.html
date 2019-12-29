@@ -7,9 +7,9 @@
       broker: { value: '', type: 'amqp-broker' },
       noAck: { value: true },
       exchangeName: { value: '' },
-      exchangeType: { value: '' },
+      exchangeType: { value: 'topic' },
       routingKey: { value: '' },
-      durable: { value: false },
+      durable: { value: true },
       queueName: { value: '' },
       exclusive: { value: true },
     },
@@ -42,9 +42,9 @@
   <div class="form-row">
     <label for="node-input-exchangeType"><i class="fa fa-globe"></i>&nbsp;&nbsp;Type</label>
     <select id="node-input-exchangeType">
+      <option value="topic">Topic</option>
       <option value="direct">Direct</option>
       <option value="fanout">Fanout</option>
-      <option value="topic">Topic</option>
       <option value="header">Header</option>
     </select>
   </div>

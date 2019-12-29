@@ -39,6 +39,10 @@ export const amqpConfigFixture: AmqpConfig = {
   exclusive: true,
 }
 
+export const nodeFixture = {
+  status: (): null => null,
+}
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const brokerConfigFixture: any & BrokerConfig = {
   host: 'host',

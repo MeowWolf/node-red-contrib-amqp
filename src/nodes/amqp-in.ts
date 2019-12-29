@@ -7,23 +7,19 @@ module.exports = function(RED: Red): void {
   function AmqpIn(config): void {
     RED.nodes.createNode(this, config)
     this.status(NODE_STATUS.Disconnected)
-    const amqp = new Amqp(RED, config)
+    const amqp = new Amqp(RED, this, config)
 
     // So we can use async/await here
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const iife = (async function(self): Promise<void> {
       try {
-        const connection = await amqp.connect(self)
+        const connection = await amqp.connect()
 
         // istanbul ignore else
         if (connection) {
           self.status(NODE_STATUS.Connected)
 
-          await amqp.createChannel()
-          await amqp.assertExchange()
-          await amqp.assertQueue()
-          amqp.bindQueue()
-          await amqp.consume(self)
+          await amqp.start()
 
           self.on(
             'close',

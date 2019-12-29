@@ -1,10 +1,11 @@
 import { Red, Node } from 'node-red'
-// import * as amqplib from 'amqplib'
 import { Connection, Channel, Replies, connect, ConsumeMessage } from 'amqplib'
 import { AmqpConfig, BrokerConfig } from './types'
+import { NODE_STATUS } from './constants'
 
 export default class Amqp {
   private RED: Red
+  private node: Node
   private noAck: boolean
   private brokerId: string
   private exchangeType: string
@@ -19,8 +20,9 @@ export default class Amqp {
   private channel: Channel
   private q: Replies.AssertQueue
 
-  constructor(RED: Red, config: AmqpConfig) {
+  constructor(RED: Red, node: Node, config: AmqpConfig) {
     this.RED = RED
+    this.node = node
     this.noAck = config.noAck
     this.brokerId = config.broker
     this.exchangeType = config.exchangeType
@@ -31,24 +33,60 @@ export default class Amqp {
     this.exclusive = config.exclusive
   }
 
-  public async connect(amqpNode: any): Promise<Connection> {
+  public async connect(): Promise<Connection> {
     this.broker = this.RED.nodes.getNode(this.brokerId)
     const brokerUrl = Amqp.getBrokerUrl(this.broker)
-    this.connection = await connect(brokerUrl)
+    this.connection = await connect(brokerUrl, { heartbeat: 2 })
 
     /* istanbul ignore next */
-    this.connection.on('error', e => {
-      amqpNode.error(`amqplib ${e}`)
+    this.connection.on('error', (): void => {
+      // If we don't set up this empty event handler
+      // node-red crashes with an Unhandled Exception
+      // This method allows the exception to be caught
+      // by the try/catch blocks in the amqp nodes
+    })
+
+    /* istanbul ignore next */
+    this.connection.on('close', () => {
+      this.node.status(NODE_STATUS.Disconnected)
     })
 
     return this.connection
   }
 
-  public async createChannel(): Promise<void> {
-    this.channel = await this.connection.createChannel()
+  public async start(): Promise<void> {
+    await this.createChannel()
+    await this.assertExchange()
+    await this.assertQueue()
+    this.bindQueue()
+    await this.consume()
   }
 
-  public async assertExchange(): Promise<void> {
+  public async close(): Promise<void> {
+    try {
+      /* istanbul ignore else */
+      if (this.exchangeName) {
+        await this.channel.unbindQueue(
+          this.queueName,
+          this.exchangeName,
+          this.routingKey,
+        )
+      }
+      this.channel.close()
+      this.connection.close()
+    } catch (e) {} // Need to catch here but nothing further is necessary
+  }
+
+  private async createChannel(): Promise<void> {
+    this.channel = await this.connection.createChannel()
+
+    /* istanbul ignore next */
+    this.channel.on('error', (e): void => {
+      this.node.error(`Channel Error: ${e}`)
+    })
+  }
+
+  private async assertExchange(): Promise<void> {
     /* istanbul ignore else */
     if (this.exchangeName) {
       await this.channel.assertExchange(this.exchangeName, this.exchangeType, {
@@ -57,7 +95,7 @@ export default class Amqp {
     }
   }
 
-  public async assertQueue(): Promise<void> {
+  private async assertQueue(): Promise<void> {
     this.q = await this.channel.assertQueue(this.queueName, {
       exclusive: this.exclusive,
     })
@@ -65,35 +103,22 @@ export default class Amqp {
     this.queueName = this.q.queue
   }
 
-  public bindQueue(): void {
+  private bindQueue(): void {
     /* istanbul ignore else */
     if (this.exchangeName) {
       this.channel.bindQueue(this.q.queue, this.exchangeName, this.routingKey)
     }
   }
 
-  public async consume(node: any): Promise<void> {
+  private async consume(): Promise<void> {
     await this.channel.consume(
       this.q.queue,
       amqpMessage => {
         const msg = this.assembleMessage(amqpMessage)
-        node.send(msg)
+        this.node.send(msg)
       },
       { noAck: this.noAck },
     )
-  }
-
-  public async close(): Promise<void> {
-    /* istanbul ignore else */
-    if (this.exchangeName) {
-      await this.channel.unbindQueue(
-        this.queueName,
-        this.exchangeName,
-        this.routingKey,
-      )
-    }
-    this.channel.close()
-    this.connection.close()
   }
 
   private static getBrokerUrl(broker: Node): string {
