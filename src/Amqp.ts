@@ -54,12 +54,30 @@ export default class Amqp {
     return this.connection
   }
 
-  public async initializeConsumer(): Promise<void> {
+  public async initialize(): Promise<void> {
     await this.createChannel()
     await this.assertExchange()
     await this.assertQueue()
     this.bindQueue()
-    await this.consume()
+  }
+
+  public async consume(): Promise<void> {
+    await this.channel.consume(
+      this.q.queue,
+      amqpMessage => {
+        const msg = this.assembleMessage(amqpMessage)
+        this.node.send(msg)
+      },
+      { noAck: this.noAck },
+    )
+  }
+
+  public publish(msg: any): void {
+    try {
+      this.channel.publish(this.exchangeName, this.routingKey, Buffer.from(msg))
+    } catch (e) {
+      this.node.error(`Could not publish message: ${e}`)
+    }
   }
 
   public async close(): Promise<void> {
@@ -108,17 +126,6 @@ export default class Amqp {
     if (this.exchangeName) {
       this.channel.bindQueue(this.q.queue, this.exchangeName, this.routingKey)
     }
-  }
-
-  private async consume(): Promise<void> {
-    await this.channel.consume(
-      this.q.queue,
-      amqpMessage => {
-        const msg = this.assembleMessage(amqpMessage)
-        this.node.send(msg)
-      },
-      { noAck: this.noAck },
-    )
   }
 
   private static getBrokerUrl(broker: Node): string {

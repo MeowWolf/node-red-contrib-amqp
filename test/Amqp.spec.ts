@@ -37,7 +37,7 @@ describe('Amqp Class', () => {
     expect(connection).to.eq(result)
   })
 
-  it('initializeConsumer()', async () => {
+  it('initialize()', async () => {
     const createChannelStub = sinon.stub()
     const assertExchangeStub = sinon.stub()
     const assertQueueStub = sinon.stub()
@@ -48,14 +48,66 @@ describe('Amqp Class', () => {
     amqp.assertExchange = assertExchangeStub
     amqp.assertQueue = assertQueueStub
     amqp.bindQueue = bindQueueStub
-    amqp.consume = consumeStub
 
-    await amqp.initializeConsumer()
+    await amqp.initialize()
     expect(createChannelStub.calledOnce).to.equal(true)
     expect(assertExchangeStub.calledOnce).to.equal(true)
     expect(assertQueueStub.calledOnce).to.equal(true)
     expect(bindQueueStub.calledOnce).to.equal(true)
-    expect(consumeStub.calledOnce).to.equal(true)
+  })
+
+  it('consume()', async () => {
+    const messageContent = 'messageContent'
+    const send = sinon.stub()
+    const node = { send }
+    const channel = {
+      consume: function(
+        queue: string,
+        cb: Function,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        config: Record<string, any>,
+      ): void {
+        const amqpMessage = { content: messageContent }
+        cb(amqpMessage)
+      },
+    }
+    amqp.channel = channel
+    amqp.q = { queue: 'queueName' }
+    amqp.node = node
+
+    await amqp.consume()
+    expect(send.calledOnce).to.equal(true)
+    expect(
+      send.calledWith({
+        content: messageContent,
+        payload: messageContent,
+      }),
+    ).to.equal(true)
+  })
+
+  describe('publish()', () => {
+    it('publishes a message', () => {
+      const publishStub = sinon.stub()
+      amqp.channel = {
+        publish: publishStub,
+      }
+      amqp.publish('a message')
+      expect(publishStub.calledOnce).to.equal(true)
+    })
+
+    it('tries to publish an invalid message', () => {
+      const publishStub = sinon.stub().throws()
+      const errorStub = sinon.stub()
+      amqp.channel = {
+        publish: publishStub,
+      }
+      amqp.node = {
+        error: errorStub,
+      }
+      amqp.publish('a message')
+      expect(publishStub.calledOnce).to.equal(true)
+      expect(errorStub.calledOnce).to.equal(true)
+    })
   })
 
   it('close()', async () => {
@@ -123,34 +175,5 @@ describe('Amqp Class', () => {
     expect(bindQueueStub.calledWith(queue, exchangeName, routingKey)).to.equal(
       true,
     )
-  })
-
-  it('consume()', async () => {
-    const messageContent = 'messageContent'
-    const send = sinon.stub()
-    const node = { send }
-    const channel = {
-      consume: function(
-        queue: string,
-        cb: Function,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        config: Record<string, any>,
-      ): void {
-        const amqpMessage = { content: messageContent }
-        cb(amqpMessage)
-      },
-    }
-    amqp.channel = channel
-    amqp.q = { queue: 'queueName' }
-    amqp.node = node
-
-    await amqp.consume()
-    expect(send.calledOnce).to.equal(true)
-    expect(
-      send.calledWith({
-        content: messageContent,
-        payload: messageContent,
-      }),
-    ).to.equal(true)
   })
 })

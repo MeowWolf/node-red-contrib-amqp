@@ -19,6 +19,17 @@ module.exports = function(RED: Red): void {
         if (connection) {
           self.status(NODE_STATUS.Connected)
 
+          await amqp.initialize()
+
+          self.on('input', async ({ payload }, send, done) => {
+            amqp.publish(JSON.stringify(payload))
+
+            /* istanbul ignore else */
+            if (done) {
+              done()
+            }
+          })
+
           self.on(
             'close',
             async (done: Function): Promise<void> => {
@@ -26,9 +37,6 @@ module.exports = function(RED: Red): void {
               done()
             },
           )
-
-          await amqp.initialize()
-          await amqp.consume()
         }
       } catch (e) {
         if (e.code === ErrorType.INALID_LOGIN) {
@@ -41,5 +49,5 @@ module.exports = function(RED: Red): void {
       }
     })(this)
   }
-  RED.nodes.registerType('amqp-in', AmqpIn)
+  RED.nodes.registerType('amqp-out', AmqpIn)
 }

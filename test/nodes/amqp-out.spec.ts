@@ -2,15 +2,15 @@
 import { expect } from 'chai'
 import * as sinon from 'sinon'
 import * as helper from 'node-red-node-test-helper'
-import * as amqpIn from '../../src/nodes/amqp-in'
+import * as amqpOut from '../../src/nodes/amqp-out'
 import Amqp from '../../src/Amqp'
 import * as amqpBroker from '../../src/nodes/amqp-broker'
 import { ErrorType } from '../../src/types'
-import { CustomError, amqpInFlowFixture, credentialsFixture } from '../doubles'
+import { CustomError, amqpOutFlowFixture, credentialsFixture } from '../doubles'
 
 helper.init(require.resolve('node-red'))
 
-describe('amqp-in Node', () => {
+describe('amqp-out Node', () => {
   beforeEach(function(done) {
     helper.startServer(done)
   })
@@ -22,8 +22,8 @@ describe('amqp-in Node', () => {
   })
 
   it('should be loaded', done => {
-    const flow = [{ id: 'n1', type: 'amqp-in', name: 'test name' }]
-    helper.load(amqpIn, flow, () => {
+    const flow = [{ id: 'n1', type: 'amqp-out', name: 'test name' }]
+    helper.load(amqpOut, flow, () => {
       const n1 = helper.getNode('n1')
       n1.should.have.property('name', 'test name')
       done()
@@ -47,17 +47,18 @@ describe('amqp-in Node', () => {
     const initializeStub = sinon.stub(Amqp.prototype, 'initialize')
 
     helper.load(
-      [amqpIn, amqpBroker],
-      amqpInFlowFixture,
+      [amqpOut, amqpBroker],
+      amqpOutFlowFixture,
       credentialsFixture,
       async function() {
         expect(connectStub.calledOnce).to.be.true
-
         // TODO: Figure out why this isn't working:
         // expect(initializeStub.calledOnce).to.be.true
 
         const amqpInNode = helper.getNode('n1')
+        amqpInNode.receive({ payload: 'foo', topic: 'bar' })
         amqpInNode.close()
+
         done()
       },
     )
@@ -68,8 +69,8 @@ describe('amqp-in Node', () => {
       .stub(Amqp.prototype, 'connect')
       .throws(new CustomError(ErrorType.INALID_LOGIN))
     helper.load(
-      [amqpIn, amqpBroker],
-      amqpInFlowFixture,
+      [amqpOut, amqpBroker],
+      amqpOutFlowFixture,
       credentialsFixture,
       function() {
         expect(connectStub).to.throw()
@@ -81,8 +82,8 @@ describe('amqp-in Node', () => {
   it('catches a generic exception', function(done) {
     const connectStub = sinon.stub(Amqp.prototype, 'connect').throws()
     helper.load(
-      [amqpIn, amqpBroker],
-      amqpInFlowFixture,
+      [amqpOut, amqpBroker],
+      amqpOutFlowFixture,
       credentialsFixture,
       function() {
         expect(connectStub).to.throw()

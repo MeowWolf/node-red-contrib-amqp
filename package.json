@@ -18,6 +18,7 @@
   "node-red": {
     "nodes": {
       "amqp-in": "build/src/nodes/amqp-in.js",
+      "amqp-out": "build/src/nodes/amqp-out.js",
       "amqp-broker": "build/src/nodes/amqp-broker.js"
     }
   },

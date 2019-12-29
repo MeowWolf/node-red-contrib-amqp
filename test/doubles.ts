@@ -25,6 +25,31 @@ export const amqpInFlowFixture = [
   },
 ]
 
+export const amqpOutFlowFixture = [
+  {
+    id: 'n1',
+    type: 'amqp-out',
+    wires: [['n2']],
+    name: '',
+    broker: 'n3',
+    noAck: true,
+    exchangeName: 'testtopic',
+    exchangeType: 'topic',
+    routingKey: 'test.message.topic',
+    durable: true,
+    queueName: '',
+    exclusive: true,
+  },
+  { id: 'n2', type: 'helper' },
+  {
+    id: 'n3',
+    type: 'amqp-broker',
+    z: '',
+    host: 'localhost',
+    port: '5672',
+  },
+]
+
 export const credentialsFixture = { username: 'username', password: 'password' }
 
 export const amqpConfigFixture: AmqpConfig = {
