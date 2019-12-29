@@ -37,7 +37,7 @@ describe('Amqp Class', () => {
     expect(connection).to.eq(result)
   })
 
-  it('start()', async () => {
+  it('initializeConsumer()', async () => {
     const createChannelStub = sinon.stub()
     const assertExchangeStub = sinon.stub()
     const assertQueueStub = sinon.stub()
@@ -50,7 +50,7 @@ describe('Amqp Class', () => {
     amqp.bindQueue = bindQueueStub
     amqp.consume = consumeStub
 
-    await amqp.start()
+    await amqp.initializeConsumer()
     expect(createChannelStub.calledOnce).to.equal(true)
     expect(assertExchangeStub.calledOnce).to.equal(true)
     expect(assertQueueStub.calledOnce).to.equal(true)

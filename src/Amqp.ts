@@ -54,7 +54,7 @@ export default class Amqp {
     return this.connection
   }
 
-  public async start(): Promise<void> {
+  public async initializeConsumer(): Promise<void> {
     await this.createChannel()
     await this.assertExchange()
     await this.assertQueue()

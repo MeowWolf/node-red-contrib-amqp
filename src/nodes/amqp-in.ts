@@ -19,7 +19,7 @@ module.exports = function(RED: Red): void {
         if (connection) {
           self.status(NODE_STATUS.Connected)
 
-          await amqp.start()
+          await amqp.initializeConsumer()
 
           self.on(
             'close',

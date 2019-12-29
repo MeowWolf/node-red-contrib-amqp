@@ -44,7 +44,10 @@ describe('amqp-in Node', () => {
       .stub(Amqp.prototype, 'connect')
       // @ts-ignore
       .resolves(true)
-    const startStub = sinon.stub(Amqp.prototype, 'start')
+    const initializeConsumerStub = sinon.stub(
+      Amqp.prototype,
+      'initializeConsumer',
+    )
 
     helper.load(
       [amqpIn, amqpBroker],
