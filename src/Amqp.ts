@@ -31,10 +31,16 @@ export default class Amqp {
     this.exclusive = config.exclusive
   }
 
-  public async connect(): Promise<Connection> {
+  public async connect(amqpNode: any): Promise<Connection> {
     this.broker = this.RED.nodes.getNode(this.brokerId)
     const brokerUrl = Amqp.getBrokerUrl(this.broker)
     this.connection = await connect(brokerUrl)
+
+    /* istanbul ignore next */
+    this.connection.on('error', e => {
+      amqpNode.error(`amqplib ${e}`)
+    })
+
     return this.connection
   }
 
@@ -42,10 +48,10 @@ export default class Amqp {
     this.channel = await this.connection.createChannel()
   }
 
-  public assertExchange(): void {
+  public async assertExchange(): Promise<void> {
     /* istanbul ignore else */
     if (this.exchangeName) {
-      this.channel.assertExchange(this.exchangeName, this.exchangeType, {
+      await this.channel.assertExchange(this.exchangeName, this.exchangeType, {
         durable: this.durable,
       })
     }

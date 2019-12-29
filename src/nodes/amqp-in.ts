@@ -13,14 +13,14 @@ module.exports = function(RED: Red): void {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const iife = (async function(self): Promise<void> {
       try {
-        const connection = await amqp.connect()
+        const connection = await amqp.connect(self)
 
         // istanbul ignore else
         if (connection) {
           self.status(NODE_STATUS.Connected)
 
           await amqp.createChannel()
-          amqp.assertExchange()
+          await amqp.assertExchange()
           await amqp.assertQueue()
           amqp.bindQueue()
           await amqp.consume(self)

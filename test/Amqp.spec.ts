@@ -25,9 +25,12 @@ describe('Amqp Class', () => {
   })
 
   it('connect()', async () => {
-    const result = 'connected!'
+    const error = 'error!'
+    const result = { on: (): string => error }
+
     // @ts-ignore
     sinon.stub(amqplib, 'connect').resolves(result)
+
     const connection = await amqp.connect()
     expect(connection).to.eq(result)
   })
