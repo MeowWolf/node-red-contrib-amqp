@@ -173,7 +173,6 @@ describe('Amqp Class', () => {
         autoDelete: queueAutoDelete,
       }),
     ).to.equal(true)
-    expect(amqp.config.queue.name).to.equal(amqp.q.queue)
   })
 
   it('bindQueue()', () => {

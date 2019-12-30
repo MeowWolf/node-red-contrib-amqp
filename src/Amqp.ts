@@ -130,9 +130,6 @@ export default class Amqp {
       durable,
       autoDelete,
     })
-    // Update queue name for unnamed queues
-    // TODO: test what happens when we don't do this
-    this.config.queue.name = this.q.queue
   }
 
   private bindQueue(): void {
@@ -140,7 +137,6 @@ export default class Amqp {
 
     /* istanbul ignore else */
     if (name) {
-      // TODO: test with this.config.queue.name
       this.channel.bindQueue(this.q.queue, name, routingKey)
     }
   }
