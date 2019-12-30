@@ -3,7 +3,7 @@ import { expect } from 'chai'
 import * as sinon from 'sinon'
 import * as amqplib from 'amqplib'
 import Amqp from '../src/Amqp'
-import { amqpConfigFixture, nodeFixture, brokerConfigFixture } from './doubles'
+import { nodeConfigFixture, nodeFixture, brokerConfigFixture } from './doubles'
 
 let RED: any
 let amqp: any
@@ -17,7 +17,7 @@ describe('Amqp Class', () => {
     }
 
     // @ts-ignore
-    amqp = new Amqp(RED, nodeFixture, amqpConfigFixture)
+    amqp = new Amqp(RED, nodeFixture, nodeConfigFixture)
     done()
   })
 
@@ -117,12 +117,12 @@ describe('Amqp Class', () => {
 
     amqp.channel = { unbindQueue: unbindQueueStub, close: channelCloseStub }
     amqp.connection = { close: connectionCloseStub }
-    const { queueName, exchangeName, routingKey } = amqpConfigFixture
+    const { exchangeName, exchangeRoutingKey, queueName } = nodeConfigFixture
 
     await amqp.close()
     expect(unbindQueueStub.calledOnce).to.equal(true)
     expect(
-      unbindQueueStub.calledWith(queueName, exchangeName, routingKey),
+      unbindQueueStub.calledWith(queueName, exchangeName, exchangeRoutingKey),
     ).to.equal(true)
     expect(channelCloseStub.calledOnce).to.equal(true)
     expect(connectionCloseStub.calledOnce).to.equal(true)
@@ -142,25 +142,38 @@ describe('Amqp Class', () => {
   it('assertExchange()', async () => {
     const assertExchangeStub = sinon.stub()
     amqp.channel = { assertExchange: assertExchangeStub }
-    const { exchangeName, exchangeType, durable } = amqpConfigFixture
+    const { exchangeName, exchangeType, exchangeDurable } = nodeConfigFixture
 
     await amqp.assertExchange()
     expect(assertExchangeStub.calledOnce).to.equal(true)
     expect(
-      assertExchangeStub.calledWith(exchangeName, exchangeType, { durable }),
+      assertExchangeStub.calledWith(exchangeName, exchangeType, {
+        durable: exchangeDurable,
+      }),
     ).to.equal(true)
   })
 
   it('assertQueue()', async () => {
     const queue = 'queueName'
+    const {
+      queueName,
+      queueExclusive,
+      queueDurable,
+      queueAutoDelete,
+    } = nodeConfigFixture
     const assertQueueStub = sinon.stub().resolves({ queue })
     amqp.channel = { assertQueue: assertQueueStub }
-    const { queueName, exclusive } = amqpConfigFixture
 
     await amqp.assertQueue()
     expect(assertQueueStub.calledOnce).to.equal(true)
-    expect(assertQueueStub.calledWith(queueName, { exclusive })).to.equal(true)
-    expect(amqp.queueName).to.equal(amqp.q.queue)
+    expect(
+      assertQueueStub.calledWith(queueName, {
+        exclusive: queueExclusive,
+        durable: queueDurable,
+        autoDelete: queueAutoDelete,
+      }),
+    ).to.equal(true)
+    expect(amqp.config.queue.name).to.equal(amqp.q.queue)
   })
 
   it('bindQueue()', () => {
@@ -168,12 +181,12 @@ describe('Amqp Class', () => {
     const bindQueueStub = sinon.stub()
     amqp.channel = { bindQueue: bindQueueStub }
     amqp.q = { queue }
-    const { exchangeName, routingKey } = amqpConfigFixture
+    const { exchangeName, exchangeRoutingKey } = nodeConfigFixture
 
     amqp.bindQueue()
     expect(bindQueueStub.calledOnce).to.equal(true)
-    expect(bindQueueStub.calledWith(queue, exchangeName, routingKey)).to.equal(
-      true,
-    )
+    expect(
+      bindQueueStub.calledWith(queue, exchangeName, exchangeRoutingKey),
+    ).to.equal(true)
   })
 })

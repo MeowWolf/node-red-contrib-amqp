@@ -10,14 +10,20 @@ export interface BrokerConfig extends Node {
 
 export interface AmqpConfig {
   name?: string
-  noAck: boolean
   broker: string
-  exchangeType: ExchangeType
-  exchangeName: string
-  routingKey: string
-  durable: boolean
-  queueName: string
-  exclusive: boolean
+  exchange: {
+    name: string
+    type: ExchangeType
+    routingKey: string
+    durable: boolean
+    noAck: boolean
+  }
+  queue: {
+    name: string
+    exclusive: boolean
+    durable: boolean
+    autoDelete: boolean
+  }
 }
 
 export enum ErrorType {

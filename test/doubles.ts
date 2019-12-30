@@ -52,16 +52,18 @@ export const amqpOutFlowFixture = [
 
 export const credentialsFixture = { username: 'username', password: 'password' }
 
-export const amqpConfigFixture: AmqpConfig = {
+export const nodeConfigFixture: Record<string, any> = {
   name: 'name',
-  noAck: false,
   broker: 'b1',
-  exchangeType: ExchangeType.TOPIC,
   exchangeName: 'exchangeName',
-  routingKey: 'routing.key',
-  durable: true,
-  queueName: 'queueName',
-  exclusive: true,
+  exchangeType: ExchangeType.TOPIC,
+  exchangeNoAck: false,
+  exchangeRoutingKey: 'routing.key',
+  exchangeDurable: true,
+  queueName: '',
+  queueExclusive: true,
+  queueDurable: false,
+  queueAutoDelete: true,
 }
 
 export const nodeFixture = {

@@ -5,20 +5,22 @@
     defaults: {
       name: { value: '' },
       broker: { value: '', type: 'amqp-broker' },
-      noAck: { value: true },
       exchangeName: { value: '' },
       exchangeType: { value: 'topic' },
-      routingKey: { value: '' },
-      durable: { value: true },
+      exchangeNoAck: { value: true },
+      exchangeRoutingKey: { value: '' },
+      exchangeDurable: { value: true },
       queueName: { value: '' },
-      exclusive: { value: true },
+      queueExclusive: { value: true },
+      queueDurable: { value: false },
+      queueAutoDelete: { value: true },
     },
     inputs: 0,
     outputs: 1,
     icon: 'font-awesome/fa-phone',
     label: function() {
-      const colon = this.name && this.routingKey ? ': ' : ''
-      const label = this.name + colon + this.routingKey
+      const colon = this.name && this.exchangeRoutingKey ? ': ' : ''
+      const label = this.name + colon + this.exchangeRoutingKey
       return label || 'amqp-in'
     },
   })
@@ -34,8 +36,8 @@
     <input type="text" id="node-input-broker" placeholder="AMQP Broker">
   </div>
   <div class="form-row">
-    <label for="node-input-noAck"><i class="fa fa-check-circle-o"></i>&nbsp;&nbsp;noAck</label>
-    <input type="checkbox" id="node-input-noAck" style="margin: 0px 0px 4px;">
+    <label for="node-input-exchangeNoAck"><i class="fa fa-check-circle-o"></i>&nbsp;&nbsp;noAck</label>
+    <input type="checkbox" id="node-input-exchangeNoAck" style="margin: 0px 0px 4px;">
   </div>
   <hr>
   <h4>Exchange Info</h4>
@@ -53,12 +55,12 @@
     <input type="text" id="node-input-exchangeName" placeholder="Leave blank for the default exchange">
   </div>
   <div class="form-row">
-    <label for="node-input-routingKey"><i class="fa fa-filter"></i>&nbsp;&nbsp;Routing Key</label>
-    <input type="text" id="node-input-routingKey" placeholder="routing.key">
+    <label for="node-input-exchangeRoutingKey"><i class="fa fa-filter"></i>&nbsp;&nbsp;Routing Key</label>
+    <input type="text" id="node-input-exchangeRoutingKey" placeholder="routing.key">
   </div>
   <div class="form-row">
-    <label for="node-input-durable"><i class="fa fa-check-circle-o"></i>&nbsp;&nbsp;Durable</label>
-    <input type="checkbox" id="node-input-durable" style="margin: 0px 0px 4px;">
+    <label for="node-input-exchangeDurable"><i class="fa fa-check-circle-o"></i>&nbsp;&nbsp;Durable</label>
+    <input type="checkbox" id="node-input-exchangeDurable" style="margin: 0px 0px 4px;">
   </div>
   <hr>
   <h4>Queue Info<h4>
@@ -67,8 +69,16 @@
     <input type="text" id="node-input-queueName" placeholder="Leave blank to auto-generate">
   </div>
   <div class="form-row">
-    <label for="node-input-exclusive"><i class="fa fa-check-circle-o"></i>&nbsp;&nbsp;Exclusive</label>
-    <input type="checkbox" id="node-input-exclusive" style="margin: 0px 0px 4px;">
+    <label for="node-input-queueExclusive"><i class="fa fa-check-circle-o"></i>&nbsp;&nbsp;Exclusive</label>
+    <input type="checkbox" id="node-input-queueExclusive" style="margin: 0px 0px 4px;">
+  </div>
+  <div class="form-row">
+    <label for="node-input-queueDurable"><i class="fa fa-check-circle-o"></i>&nbsp;&nbsp;Durable</label>
+    <input type="checkbox" id="node-input-queueDurable" style="margin: 0px 0px 4px;">
+  </div>
+  <div class="form-row">
+    <label for="node-input-queueAutoDelete"><i class="fa fa-check-circle-o"></i>&nbsp;&nbsp;Auto Delete</label>
+    <input type="checkbox" id="node-input-queueAutoDelete" style="margin: 0px 0px 4px;">
   </div>
 </script>
 

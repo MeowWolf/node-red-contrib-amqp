@@ -4,37 +4,39 @@ import { AmqpConfig, BrokerConfig } from './types'
 import { NODE_STATUS } from './constants'
 
 export default class Amqp {
-  private RED: Red
-  private node: Node
-  private noAck: boolean
-  private brokerId: string
-  private exchangeType: string
-  private exchangeName: string
-  private routingKey: string
-  private queueName: string
-  private durable: boolean
-  private exclusive: boolean
-
+  private config: AmqpConfig
   private broker: Node
   private connection: Connection
   private channel: Channel
   private q: Replies.AssertQueue
 
-  constructor(RED: Red, node: Node, config: AmqpConfig) {
-    this.RED = RED
-    this.node = node
-    this.noAck = config.noAck
-    this.brokerId = config.broker
-    this.exchangeType = config.exchangeType
-    this.exchangeName = config.exchangeName
-    this.routingKey = config.routingKey
-    this.durable = config.durable
-    this.queueName = config.queueName
-    this.exclusive = config.exclusive
+  constructor(
+    private readonly RED: Red,
+    private readonly node: Node,
+    config: Record<string, any>,
+  ) {
+    this.config = {
+      name: config.name,
+      broker: config.broker,
+      exchange: {
+        name: config.exchangeName,
+        type: config.exchangeType,
+        routingKey: config.exchangeRoutingKey,
+        durable: config.exchangeDurable,
+        noAck: config.exchangeNoAck,
+      },
+      queue: {
+        name: config.queueName,
+        exclusive: config.queueExclusive,
+        durable: config.queueDurable,
+        autoDelete: config.queueAutoDelete,
+      },
+    }
   }
 
   public async connect(): Promise<Connection> {
-    this.broker = this.RED.nodes.getNode(this.brokerId)
+    const { broker } = this.config
+    this.broker = this.RED.nodes.getNode(broker)
     const brokerUrl = Amqp.getBrokerUrl(this.broker)
     this.connection = await connect(brokerUrl, { heartbeat: 2 })
 
@@ -62,33 +64,35 @@ export default class Amqp {
   }
 
   public async consume(): Promise<void> {
+    const { noAck } = this.config.exchange
     await this.channel.consume(
       this.q.queue,
       amqpMessage => {
         const msg = this.assembleMessage(amqpMessage)
         this.node.send(msg)
       },
-      { noAck: this.noAck },
+      { noAck },
     )
   }
 
   public publish(msg: any): void {
+    const { name, routingKey } = this.config.exchange
+
     try {
-      this.channel.publish(this.exchangeName, this.routingKey, Buffer.from(msg))
+      this.channel.publish(name, routingKey, Buffer.from(msg))
     } catch (e) {
       this.node.error(`Could not publish message: ${e}`)
     }
   }
 
   public async close(): Promise<void> {
+    const { name: exchangeName, routingKey } = this.config.exchange
+    const { name: queueName } = this.config.queue
+
     try {
       /* istanbul ignore else */
-      if (this.exchangeName) {
-        await this.channel.unbindQueue(
-          this.queueName,
-          this.exchangeName,
-          this.routingKey,
-        )
+      if (exchangeName) {
+        await this.channel.unbindQueue(queueName, exchangeName, routingKey)
       }
       this.channel.close()
       this.connection.close()
@@ -100,31 +104,44 @@ export default class Amqp {
 
     /* istanbul ignore next */
     this.channel.on('error', (e): void => {
-      this.node.error(`Channel Error: ${e}`)
+      // If we don't set up this empty event handler
+      // node-red crashes with an Unhandled Exception
+      // This method allows the exception to be caught
+      // by the try/catch blocks in the amqp nodes
     })
   }
 
   private async assertExchange(): Promise<void> {
+    const { name, type, durable } = this.config.exchange
+
     /* istanbul ignore else */
-    if (this.exchangeName) {
-      await this.channel.assertExchange(this.exchangeName, this.exchangeType, {
-        durable: this.durable,
+    if (name) {
+      await this.channel.assertExchange(name, type, {
+        durable: durable,
       })
     }
   }
 
   private async assertQueue(): Promise<void> {
-    this.q = await this.channel.assertQueue(this.queueName, {
-      exclusive: this.exclusive,
+    const { name, exclusive, durable, autoDelete } = this.config.queue
+
+    this.q = await this.channel.assertQueue(name, {
+      exclusive,
+      durable,
+      autoDelete,
     })
     // Update queue name for unnamed queues
-    this.queueName = this.q.queue
+    // TODO: test what happens when we don't do this
+    this.config.queue.name = this.q.queue
   }
 
   private bindQueue(): void {
+    const { name, routingKey } = this.config.exchange
+
     /* istanbul ignore else */
-    if (this.exchangeName) {
-      this.channel.bindQueue(this.q.queue, this.exchangeName, this.routingKey)
+    if (name) {
+      // TODO: test with this.config.queue.name
+      this.channel.bindQueue(this.q.queue, name, routingKey)
     }
   }
 
@@ -139,7 +156,7 @@ export default class Amqp {
         credentials: { username, password },
       } = (broker as unknown) as BrokerConfig
 
-      const protocol = tls ? 'amqps' : 'amqp'
+      const protocol = tls ? /* istanbul ignore next */ 'amqps' : 'amqp'
       url = `${protocol}://${username}:${password}@${host}:${port}`
     }
 
