@@ -74,5 +74,19 @@
 </script>
 
 <script type="text/html" data-help-name="amqp-out">
-  <p>A simple node that converts the message payloads into all lower-case characters</p>
+  <p>Connects and sends messages to an AMQP broker.</p>
+
+  <h3>Inputs</h3>
+  <dl class="message-properties">
+    <dt>payload
+      <span class="property-type">json | object | primitive</span>
+    </dt>
+    <dd>the payload of the message to send to the AMQP broker. </dd>
+  </dl>
+
+  <h3>References</h3>
+  <ul>
+    <li>This node relies heavily on the <a href="http://www.squaremobius.net/amqp.node/" target="_blank">amqplib</a> library.
+    <li><a>GitHub</a> - the nodes github repository</li>
+  </ul>
 </script>

@@ -73,5 +73,53 @@
 </script>
 
 <script type="text/html" data-help-name="amqp-in">
-  <p>A simple node that converts the message payloads into all lower-case characters</p>
+  <p>Connects to an AMQP broker and receives messages.</p>
+
+  <h3>Outputs</h3>
+  <dl class="message-properties">
+    <dt>fields
+      <span class="property-type">object</span>
+    </dt>
+    <dd>
+      An <a href="http://www.squaremobius.net/amqp.node/" target="_blank">amqplib</a>
+      fields object. Contains:
+      <ul>
+        <li><code>consumerTag</code>: string</code></li>
+        <li><code>deliveryTag</code>: number</code></li>
+        <li><code>redelivered</code>: boolean</code></li>
+        <li><code>exchange</code>: string</code></li>
+        <li><code>routingKey</code>: string</code></li>
+      </ul>
+    </dd>
+    <dt>properties
+      <span class="property-type">object</span>
+    </dt>
+    <dd>
+      <ul>
+        <li><code>headers</code>: object</code></li>
+        <li><code>deliveryMode</code>: number</code></li>
+      </ul>
+    </dd>
+    <dt>content
+      <span class="property-type">buffer</span>
+    </dt>
+    <dt>payload
+      <span class="property-type">json | object | primitive</span>
+    </dt>
+    <dd>the payload of the message received. </dd>
+  </dl>
+
+  <h3>Details</h3>
+  <p>
+    <code>fields</code>, <code>properties</code>, and <code>content</code> all come from the <a href="http://www.squaremobius.net/amqp.node" target="_blank">amqplib</a> object attached to the incoming message.
+  </p>
+  <p>
+    <code>msg.payload</code> is used as the payload of the received message.
+    If it contains a string that can be parsed in to json it will be run through JSON.parse(). Otherwise it will be sent as is.
+  </p>
+  <h3>References</h3>
+  <ul>
+    <li>This node relies heavily on the <a href="http://www.squaremobius.net/amqp.node/" target="_blank">amqplib</a> library.
+    <li><a>GitHub</a> - the nodes github repository</li>
+  </ul>
 </script>
