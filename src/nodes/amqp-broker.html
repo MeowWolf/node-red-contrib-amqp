@@ -4,13 +4,15 @@
     defaults: {
       host: { value: 'localhost', required: true },
       port: { value: 5672, required: true, validate: RED.validators.number() },
+      tls: { value: false },
     },
     credentials: {
       username: { type: 'text' },
       password: { type: 'password' },
     },
     label: function() {
-      return this.host + ':' + this.port
+      const protocol = this.tls ? 'amqps' : 'amqp'
+      return `${protocol}://${this.host}:${this.port}`
     },
   })
 </script>
@@ -23,13 +25,16 @@
     <label for="node-config-input-port" style="margin-left: 10px; width: 35px;">&nbsp;&nbsp;Port</label>
     <input type="text" id="node-config-input-port" placeholder="AMQP port, defaults to 5672" style="width:45px">
   </div>
-
+  <div class="form-row">
+    <label for="node-config-input-tls"><i class="fa fa-expeditedssl"></i>&nbsp;&nbsp;Use TLS</label>
+    <input type="checkbox" id="node-config-input-tls" style="margin: 0px 0px 4px;">
+  </div>
   <div class="form-row">
     <label for="node-config-input-username"><i class="fa fa-user"></i>&nbsp;&nbsp;User</label>
-    <input type="text" id="node-config-input-username" >
+    <input type="text" id="node-config-input-username">
   </div>
   <div class="form-row">
     <label for="node-config-input-password"><i class="fa fa-lock"></i>&nbsp;&nbsp;Password</label>
-    <input type="password" id="node-config-input-password" >
+    <input type="password" id="node-config-input-password">
   </div>
 </script>

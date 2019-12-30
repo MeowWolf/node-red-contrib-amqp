@@ -135,10 +135,12 @@ export default class Amqp {
       const {
         host,
         port,
+        tls,
         credentials: { username, password },
       } = (broker as unknown) as BrokerConfig
 
-      url = `amqp://${username}:${password}@${host}:${port}`
+      const protocol = tls ? 'amqps' : 'amqp'
+      url = `${protocol}://${username}:${password}@${host}:${port}`
     }
 
     return url
