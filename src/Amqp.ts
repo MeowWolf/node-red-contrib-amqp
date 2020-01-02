@@ -71,18 +71,18 @@ export default class Amqp {
       amqpMessage => {
         const msg = this.assembleMessage(amqpMessage)
         this.node.send(msg)
-
-        console.log('this is the prefetch', this.config.prefetch)
       },
       { noAck },
     )
   }
 
   public publish(msg: any): void {
-    const { name, routingKey } = this.config.exchange
+    const { name } = this.config.exchange
 
     try {
-      this.channel.publish(name, routingKey, Buffer.from(msg))
+      this.parseRoutingKeys().forEach(routingKey => {
+        this.channel.publish(name, routingKey, Buffer.from(msg))
+      })
     } catch (e) {
       this.node.error(`Could not publish message: ${e}`)
     }
@@ -139,11 +139,13 @@ export default class Amqp {
   }
 
   private bindQueue(): void {
-    const { name, routingKey } = this.config.exchange
+    const { name } = this.config.exchange
 
     /* istanbul ignore else */
     if (name) {
-      this.channel.bindQueue(this.q.queue, name, routingKey)
+      this.parseRoutingKeys().forEach(routingKey => {
+        this.channel.bindQueue(this.q.queue, name, routingKey)
+      })
     }
   }
 
@@ -163,6 +165,13 @@ export default class Amqp {
     }
 
     return url
+  }
+
+  private parseRoutingKeys(): string[] {
+    const keys = this.config.exchange.routingKey
+      .split(',')
+      .map(key => key.trim())
+    return keys
   }
 
   private assembleMessage(
