@@ -1,7 +1,7 @@
 {
   "name": "node-red-contrib-mw-amqp",
-  "version": "1.0.0",
-  "description": "",
+  "version": "0.1.0",
+  "description": "Amqp nodes for node-red",
   "main": "index.js",
   "scripts": {
     "start": "nodemon --exec 'npm run build'",
@@ -23,6 +23,14 @@
     }
   },
   "author": "",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:MeowWolf/node-red-contrib-mw-amqp.git"
+  },
+  "contributors": [
+    "Amo DelBello <adelbello@meowwolf.com>"
+  ],
+  "bugs": "https://github.com/MeowWolf/node-red-contrib-mw-amqp/issues",
   "license": "ISC",
   "devDependencies": {
     "@istanbuljs/nyc-config-typescript": "^1.0.0",
