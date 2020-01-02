@@ -63,17 +63,25 @@ export default class Amqp {
   }
 
   public async consume(): Promise<void> {
-    await this.assertQueue()
-    this.bindQueue()
-    const { noAck } = this.config
-    await this.channel.consume(
-      this.q.queue,
-      amqpMessage => {
-        const msg = this.assembleMessage(amqpMessage)
-        this.node.send(msg)
-      },
-      { noAck },
-    )
+    try {
+      await this.assertQueue()
+      this.bindQueue()
+      const { noAck } = this.config
+      await this.channel.consume(
+        this.q.queue,
+        amqpMessage => {
+          const msg = this.assembleMessage(amqpMessage)
+          this.node.send(msg)
+          /* istanbul ignore else */
+          if (!noAck) {
+            this.channel.ack(msg)
+          }
+        },
+        { noAck },
+      )
+    } catch (e) {
+      this.node.error(`Could not consume message: ${e}`)
+    }
   }
 
   public publish(msg: any): void {

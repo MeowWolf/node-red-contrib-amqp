@@ -55,7 +55,8 @@ describe('Amqp Class', () => {
     const bindQueueStub = sinon.stub()
     const messageContent = 'messageContent'
     const send = sinon.stub()
-    const node = { send }
+    const error = sinon.stub()
+    const node = { send, error }
     const channel = {
       consume: function(
         queue: string,
