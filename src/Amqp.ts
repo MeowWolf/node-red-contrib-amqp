@@ -18,12 +18,13 @@ export default class Amqp {
     this.config = {
       name: config.name,
       broker: config.broker,
+      prefetch: config.prefetch,
+      noAck: config.noAck,
       exchange: {
         name: config.exchangeName,
         type: config.exchangeType,
         routingKey: config.exchangeRoutingKey,
         durable: config.exchangeDurable,
-        noAck: config.exchangeNoAck,
       },
       queue: {
         name: config.queueName,
@@ -59,17 +60,19 @@ export default class Amqp {
   public async initialize(): Promise<void> {
     await this.createChannel()
     await this.assertExchange()
-    await this.assertQueue()
-    this.bindQueue()
   }
 
   public async consume(): Promise<void> {
-    const { noAck } = this.config.exchange
+    await this.assertQueue()
+    this.bindQueue()
+    const { noAck } = this.config
     await this.channel.consume(
       this.q.queue,
       amqpMessage => {
         const msg = this.assembleMessage(amqpMessage)
         this.node.send(msg)
+
+        console.log('this is the prefetch', this.config.prefetch)
       },
       { noAck },
     )
@@ -100,7 +103,10 @@ export default class Amqp {
   }
 
   private async createChannel(): Promise<void> {
+    const { prefetch } = this.config
+
     this.channel = await this.connection.createChannel()
+    this.channel.prefetch(Number(prefetch))
 
     /* istanbul ignore next */
     this.channel.on('error', (e): void => {

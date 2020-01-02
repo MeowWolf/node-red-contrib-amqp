@@ -5,9 +5,10 @@
     defaults: {
       name: { value: '' },
       broker: { value: '', type: 'amqp-broker' },
+      prefetch: { value: 0 },
+      noAck: { value: true },
       exchangeName: { value: '' },
       exchangeType: { value: 'topic' },
-      exchangeNoAck: { value: true },
       exchangeRoutingKey: { value: '' },
       exchangeDurable: { value: true },
       queueName: { value: '' },
@@ -37,8 +38,12 @@
     <input type="text" id="node-input-broker" placeholder="AMQP Broker">
   </div>
   <div class="form-row">
-    <label for="node-input-exchangeNoAck"><i class="fa fa-check-circle-o"></i>&nbsp;&nbsp;noAck</label>
-    <input type="checkbox" id="node-input-exchangeNoAck" style="margin: 0px 0px 4px;">
+    <label for="node-input-noAck"><i class="fa fa-check-circle-o"></i>&nbsp;&nbsp;noAck</label>
+    <input type="checkbox" id="node-input-noAck" style="margin: 0px 0px 4px;">
+  </div>
+  <div class="form-row">
+    <label for="node-input-prefetch"><i class="fa fa-filter"></i>&nbsp;&nbsp;Prefetch</label>
+    <input type="text" id="node-input-prefetch" placeholder="0 for no prefetch restriction">
   </div>
   <hr>
   <h4>Exchange Info</h4>

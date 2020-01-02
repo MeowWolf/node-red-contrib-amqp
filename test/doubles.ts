@@ -57,7 +57,7 @@ export const nodeConfigFixture: Record<string, any> = {
   broker: 'b1',
   exchangeName: 'exchangeName',
   exchangeType: ExchangeType.TOPIC,
-  exchangeNoAck: false,
+  noAck: false,
   exchangeRoutingKey: 'routing.key',
   exchangeDurable: true,
   queueName: '',

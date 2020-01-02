@@ -40,23 +40,19 @@ describe('Amqp Class', () => {
   it('initialize()', async () => {
     const createChannelStub = sinon.stub()
     const assertExchangeStub = sinon.stub()
-    const assertQueueStub = sinon.stub()
-    const bindQueueStub = sinon.stub()
     const consumeStub = sinon.stub()
 
     amqp.createChannel = createChannelStub
     amqp.assertExchange = assertExchangeStub
-    amqp.assertQueue = assertQueueStub
-    amqp.bindQueue = bindQueueStub
 
     await amqp.initialize()
     expect(createChannelStub.calledOnce).to.equal(true)
     expect(assertExchangeStub.calledOnce).to.equal(true)
-    expect(assertQueueStub.calledOnce).to.equal(true)
-    expect(bindQueueStub.calledOnce).to.equal(true)
   })
 
   it('consume()', async () => {
+    const assertQueueStub = sinon.stub()
+    const bindQueueStub = sinon.stub()
     const messageContent = 'messageContent'
     const send = sinon.stub()
     const node = { send }
@@ -72,10 +68,14 @@ describe('Amqp Class', () => {
       },
     }
     amqp.channel = channel
+    amqp.assertQueue = assertQueueStub
+    amqp.bindQueue = bindQueueStub
     amqp.q = { queue: 'queueName' }
     amqp.node = node
 
     await amqp.consume()
+    expect(assertQueueStub.calledOnce).to.equal(true)
+    expect(bindQueueStub.calledOnce).to.equal(true)
     expect(send.calledOnce).to.equal(true)
     expect(
       send.calledWith({
@@ -130,7 +130,10 @@ describe('Amqp Class', () => {
 
   it('createChannel()', async () => {
     const error = 'error!'
-    const result = { on: (): string => error }
+    const result = {
+      on: (): string => error,
+      prefetch: (): null => null,
+    }
     const createChannelStub = sinon.stub().returns(result)
     amqp.connection = { createChannel: createChannelStub }
 

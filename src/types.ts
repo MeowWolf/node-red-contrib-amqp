@@ -11,12 +11,13 @@ export interface BrokerConfig extends Node {
 export interface AmqpConfig {
   name?: string
   broker: string
+  prefetch: number
+  noAck: boolean
   exchange: {
     name: string
     type: ExchangeType
     routingKey: string
     durable: boolean
-    noAck: boolean
   }
   queue: {
     name: string

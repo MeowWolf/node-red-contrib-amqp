@@ -7,7 +7,7 @@
       broker: { value: '', type: 'amqp-broker' },
       exchangeName: { value: '' },
       exchangeType: { value: 'topic' },
-      exchangeNoAck: { value: true },
+      noAck: { value: true },
       exchangeRoutingKey: { value: '' },
       exchangeDurable: { value: true },
       queueName: { value: '' },
@@ -38,8 +38,8 @@
     <input type="text" id="node-input-broker" placeholder="AMQP Broker">
   </div>
   <div class="form-row">
-    <label for="node-input-exchangeNoAck"><i class="fa fa-check-circle-o"></i>&nbsp;&nbsp;noAck</label>
-    <input type="checkbox" id="node-input-exchangeNoAck" style="margin: 0px 0px 4px;">
+    <label for="node-input-noAck"><i class="fa fa-check-circle-o"></i>&nbsp;&nbsp;noAck</label>
+    <input type="checkbox" id="node-input-noAck" style="margin: 0px 0px 4px;">
   </div>
   <hr>
   <h4>Exchange Info</h4>
@@ -63,24 +63,6 @@
   <div class="form-row">
     <label for="node-input-exchangeDurable"><i class="fa fa-check-circle-o"></i>&nbsp;&nbsp;Durable</label>
     <input type="checkbox" id="node-input-exchangeDurable" style="margin: 0px 0px 4px;">
-  </div>
-  <hr>
-  <h4>Queue Info<h4>
-  <div class="form-row">
-    <label for="node-input-queueName"><i class="fa fa-tag"></i>&nbsp;&nbsp;Name</label>
-    <input type="text" id="node-input-queueName" placeholder="Leave blank to auto-generate">
-  </div>
-  <div class="form-row">
-    <label for="node-input-queueExclusive"><i class="fa fa-check-circle-o"></i>&nbsp;&nbsp;Exclusive</label>
-    <input type="checkbox" id="node-input-queueExclusive" style="margin: 0px 0px 4px;">
-  </div>
-  <div class="form-row">
-    <label for="node-input-queueDurable"><i class="fa fa-check-circle-o"></i>&nbsp;&nbsp;Durable</label>
-    <input type="checkbox" id="node-input-queueDurable" style="margin: 0px 0px 4px;">
-  </div>
-  <div class="form-row">
-    <label for="node-input-queueAutoDelete"><i class="fa fa-check-circle-o"></i>&nbsp;&nbsp;Auto Delete</label>
-    <input type="checkbox" id="node-input-queueAutoDelete" style="margin: 0px 0px 4px;">
   </div>
 </script>
 
