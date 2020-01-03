@@ -6,6 +6,7 @@
   "scripts": {
     "start": "nodemon --exec 'npm run build'",
     "build": "rm -rf build/* && tsc -p . && copyfiles -f src/nodes/**/*.html build/src/nodes && copyfiles -f src/nodes/icons/* build/src/nodes/icons",
+    "lint": "eslint 'src/**'",
     "test": "mocha -w",
     "test:coverage": "nyc mocha"
   },
