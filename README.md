@@ -1,4 +1,4 @@
-![](https://github.com/MeowWolf/node-red-contrib-mw-amqp/workflows/nodejs.yml/badge.svg)
+![](https://github.com/MeowWolf/node-red-contrib-mw-amqp/workflows/Lint,%20Build,%20Test/badge.svg)
 
 # node-red-contrib-mw-amqp
 
