@@ -1,4 +1,4 @@
-![](https://github.com/MeowWolf/node-red-contrib-mw-amqp/workflows/Lint,%20Build,%20Test/badge.svg)
+![](https://github.com/MeowWolf/node-red-contrib-mw-amqp/workflows/Lint,%20Build,%20Test/badge.svg?branch=master)
 
 # node-red-contrib-mw-amqp
 
@@ -14,10 +14,7 @@ npm i @meowwolf/node-red-contrib-mw-amqp
 
 ## Usage
 
-Provides two standard nodes and an amqp broker config node:
-
-![mw amqp nodes](./nodes.png)
-
+Provides two standard nodes and an amqp broker config node.  
 Please see the `Node Help` section from wihin node-red for more info
 
 ## Development

@@ -1,6 +1,6 @@
 {
   "name": "@meowwolf/node-red-contrib-mw-amqp",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Amqp nodes for node-red",
   "main": "index.js",
   "scripts": {
@@ -28,7 +28,6 @@
   "files": [
     "build/src"
   ],
-  "author": "",
   "repository": {
     "type": "git",
     "url": "git@github.com:MeowWolf/node-red-contrib-mw-amqp.git"
