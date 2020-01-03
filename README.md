@@ -1,3 +1,5 @@
+![](https://github.com/MeowWolf/node-red-contrib-mw-amqp/workflows/nodejs.yml/badge.svg)
+
 # node-red-contrib-mw-amqp
 
 AMQP nodes for node-red
