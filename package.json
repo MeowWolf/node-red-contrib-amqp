@@ -1,5 +1,5 @@
 {
-  "name": "node-red-contrib-mw-amqp",
+  "name": "@meowwolf/node-red-contrib-mw-amqp",
   "version": "0.1.0",
   "description": "Amqp nodes for node-red",
   "main": "index.js",
