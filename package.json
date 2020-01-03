@@ -23,6 +23,9 @@
       "amqp-broker": "build/src/nodes/amqp-broker.js"
     }
   },
+  "files": [
+    "build/src"
+  ],
   "author": "",
   "repository": {
     "type": "git",
