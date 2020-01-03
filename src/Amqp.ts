@@ -14,7 +14,6 @@ export default class Amqp {
     private readonly RED: Red,
     private readonly node: Node,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-
     config: Record<string, any>,
   ) {
     this.config = {
