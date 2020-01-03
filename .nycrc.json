@@ -4,5 +4,10 @@
   "all": true,
   "extension": [".ts", ".tsx", ".html"],
   "reporter": ["lcov", "text"],
-  "cache": true
+  "cache": true,
+  "check-coverage": true,
+  "branches": 100,
+  "lines": 100,
+  "functions": 100,
+  "statements": 100
 }
