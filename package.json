@@ -28,7 +28,6 @@
   "files": [
     "build/src"
   ],
-  "author": "",
   "repository": {
     "type": "git",
     "url": "git@github.com:MeowWolf/node-red-contrib-mw-amqp.git"
