@@ -22,10 +22,17 @@
     label: function() {
       const name = this.name ? this.name : this.exchangeName
       const colon = name && this.exchangeRoutingKey ? ': ' : ''
-      const label = name + colon + this.exchangeRoutingKey
+      const label = truncate(name + colon + this.exchangeRoutingKey)
       return label || 'amqp-out'
     },
   })
+
+  function truncate(str, length = 40, ending = '...') {
+    if (str.length > length) {
+      return str.substring(0, length - ending.length) + ending
+    }
+    return str
+  }
 </script>
 
 <script type="text/html" data-template-name="amqp-out">
