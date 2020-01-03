@@ -1,4 +1,4 @@
-![](https://github.com/MeowWolf/node-red-contrib-mw-amqp/workflows/Lint,%20Build,%20Test/badge.svg?event=pull_request)
+![](https://github.com/MeowWolf/node-red-contrib-mw-amqp/workflows/Lint,%20Build,%20Test/badge.svg?branch=master)
 
 # node-red-contrib-mw-amqp
 
