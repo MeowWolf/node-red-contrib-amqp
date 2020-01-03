@@ -51,7 +51,7 @@ export default class Amqp {
     })
 
     /* istanbul ignore next */
-    this.connection.on('close', () => {
+    this.connection.on("close", () => {
       this.node.status(NODE_STATUS.Disconnected)
     })
 
