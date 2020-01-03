@@ -13,6 +13,7 @@ export default class Amqp {
   constructor(
     private readonly RED: Red,
     private readonly node: Node,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     config: Record<string, any>,
   ) {
     this.config = {
@@ -84,6 +85,7 @@ export default class Amqp {
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   public publish(msg: any): void {
     const { name } = this.config.exchange
 
@@ -117,7 +119,7 @@ export default class Amqp {
     this.channel.prefetch(Number(prefetch))
 
     /* istanbul ignore next */
-    this.channel.on('error', (e): void => {
+    this.channel.on('error', (): void => {
       // If we don't set up this empty event handler
       // node-red crashes with an Unhandled Exception
       // This method allows the exception to be caught
@@ -184,6 +186,7 @@ export default class Amqp {
 
   private assembleMessage(
     amqpMessage: ConsumeMessage,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ): ConsumeMessage & { payload: Record<string, any> | string } {
     let payload
     try {
