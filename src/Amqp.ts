@@ -14,6 +14,7 @@ export default class Amqp {
     private readonly RED: Red,
     private readonly node: Node,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     config: Record<string, any>,
   ) {
     this.config = {
@@ -51,7 +52,7 @@ export default class Amqp {
     })
 
     /* istanbul ignore next */
-    this.connection.on("close", () => {
+    this.connection.on('close', () => {
       this.node.status(NODE_STATUS.Disconnected)
     })
 
