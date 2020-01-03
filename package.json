@@ -1,6 +1,6 @@
 {
-  "name": "node-red-contrib-mw-amqp",
-  "version": "0.1.0",
+  "name": "@meowwolf/node-red-contrib-mw-amqp",
+  "version": "0.1.1",
   "description": "Amqp nodes for node-red",
   "main": "index.js",
   "scripts": {
@@ -23,6 +23,9 @@
       "amqp-broker": "build/src/nodes/amqp-broker.js"
     }
   },
+  "files": [
+    "build/src"
+  ],
   "author": "",
   "repository": {
     "type": "git",
