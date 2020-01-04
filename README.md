@@ -1,6 +1,6 @@
 ![](https://github.com/MeowWolf/node-red-contrib-amqp/workflows/Lint,%20Build,%20Test/badge.svg?branch=master)
 
-# node-red-contrib-amqp
+# @meowwolf/node-red-contrib-amqp
 
 AMQP nodes for node-red
 
