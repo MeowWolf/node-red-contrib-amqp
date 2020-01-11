@@ -4,6 +4,7 @@
     defaults: {
       host: { value: 'localhost', required: true },
       port: { value: 5672, required: true, validate: RED.validators.number() },
+      vhost: { value: '' },
       tls: { value: false },
     },
     credentials: {
@@ -11,8 +12,9 @@
       password: { type: 'password' },
     },
     label: function() {
+      const { host, port, vhost } = this
       const protocol = this.tls ? 'amqps' : 'amqp'
-      return `${protocol}://${this.host}:${this.port}`
+      return `${protocol}://${host}:${port}/${vhost}`
     },
   })
 </script>
@@ -24,6 +26,10 @@
     <input class="input-append-left" type="text" id="node-config-input-host" placeholder="localhost" style="width: 40%">
     <label for="node-config-input-port" style="margin-left: 10px; width: 35px;">&nbsp;&nbsp;Port</label>
     <input type="text" id="node-config-input-port" placeholder="AMQP port, defaults to 5672" style="width:45px">
+  </div>
+  <div class="form-row">
+    <label for="node-config-input-vhost"><i class="fa fa-user"></i>&nbsp;&nbsp;vhost</label>
+    <input type="text" id="node-config-input-vhost" placeholder="Leave blank for default">
   </div>
   <div class="form-row">
     <label for="node-config-input-tls"><i class="fa fa-expeditedssl"></i>&nbsp;&nbsp;Use TLS</label>

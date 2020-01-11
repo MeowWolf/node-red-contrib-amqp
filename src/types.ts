@@ -1,6 +1,7 @@
 export interface BrokerConfig extends Node {
   host: string
   port: number
+  vhost: string
   tls: boolean
   credentials: {
     username: string
