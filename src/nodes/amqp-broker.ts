@@ -6,6 +6,7 @@ module.exports = function(RED: Red): void {
     this.host = n.host
     this.port = n.port
     this.tls = n.tls
+    this.vhost = n.vhost
   }
   RED.nodes.registerType('amqp-broker', AmqpBroker, {
     credentials: {
