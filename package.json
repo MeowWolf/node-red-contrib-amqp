@@ -1,14 +1,14 @@
 {
   "name": "@meowwolf/node-red-contrib-amqp",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Amqp nodes for node-red",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon --exec 'npm run build'",
-    "build": "rm -rf build/* && tsc -p . && npm run copyassets",
-    "build:production": "rm -rf build/* && tsc --sourceMap false -p . && npm run copyassets",
+    "start": "nodemon --exec npm run build",
+    "build": "rimraf build/* && tsc -p . && npm run copyassets",
+    "build:production": "rimraf build/* && tsc --sourceMap false -p . && npm run copyassets",
     "copyassets": "copyfiles -f src/nodes/**/*.html build/src/nodes && copyfiles -f src/nodes/icons/* build/src/nodes/icons",
-    "lint": "eslint 'src/**'",
+    "lint": "eslint \"src/**\"",
     "test": "mocha -w",
     "test:coverage": "nyc mocha"
   },
@@ -64,6 +64,7 @@
     "typescript": "^3.7.4"
   },
   "dependencies": {
-    "amqplib": "^0.5.5"
+    "amqplib": "^0.5.5",
+    "rimraf": "^3.0.0"
   }
 }
