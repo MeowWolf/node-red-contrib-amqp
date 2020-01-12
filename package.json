@@ -8,8 +8,7 @@
     "build": "rimraf build/* && tsc -p . && npm run copyassets",
     "build:production": "rimraf build/* && tsc --sourceMap false -p . && npm run copyassets",
     "copyassets": "copyfiles -f src/nodes/**/*.html build/src/nodes && copyfiles -f src/nodes/icons/* build/src/nodes/icons",
-    "lint": "eslint 'src/**'",
-    "lint:win": "eslint src/**",
+    "lint": "eslint \"src/**\"",
     "test": "mocha -w",
     "test:coverage": "nyc mocha"
   },
