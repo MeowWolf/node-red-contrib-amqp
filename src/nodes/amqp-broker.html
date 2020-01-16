@@ -2,6 +2,7 @@
   RED.nodes.registerType('amqp-broker', {
     category: 'config',
     defaults: {
+      name: { value: '', required: false },
       host: { value: 'localhost', required: true },
       port: { value: 5672, required: true, validate: RED.validators.number() },
       vhost: { value: '' },
@@ -12,7 +13,12 @@
       password: { type: 'password' },
     },
     label: function() {
-      const { host, port, vhost } = this
+      const { name, host, port, vhost } = this
+
+      if (name) {
+        return name
+      }
+
       const protocol = this.tls ? 'amqps' : 'amqp'
       return `${protocol}://${host}:${port}/${vhost}`
     },
@@ -21,6 +27,10 @@
 
 <script type="text/html" data-template-name="amqp-broker">
   <h3>Connection</h3>
+  <div class="form-row">
+    <label for="node-config-input-name"><i class="fa fa-tag"></i>&nbsp;&nbsp;Name</label>
+    <input type="text" id="node-config-input-name" placeholder="">
+  </div>
   <div class="form-row">
     <label for="node-config-input-host"><i class="fa fa-globe"></i>&nbsp;&nbsp;Host</label>
     <input class="input-append-left" type="text" id="node-config-input-host" placeholder="localhost" style="width: 40%">
