@@ -2,15 +2,19 @@
 import { expect } from 'chai'
 import * as sinon from 'sinon'
 import * as helper from 'node-red-node-test-helper'
-import * as amqpOut from '../../src/nodes/amqp-out'
+import * as amqpInManualAck from '../../src/nodes/amqp-in-manual-ack'
 import Amqp from '../../src/Amqp'
 import * as amqpBroker from '../../src/nodes/amqp-broker'
 import { ErrorType, NodeType } from '../../src/types'
-import { CustomError, amqpOutFlowFixture, credentialsFixture } from '../doubles'
+import {
+  CustomError,
+  amqpInManualAckFlowFixture,
+  credentialsFixture,
+} from '../doubles'
 
 helper.init(require.resolve('node-red'))
 
-describe('amqp-out Node', () => {
+describe('amqp-in-manual-ack Node', () => {
   beforeEach(function(done) {
     helper.startServer(done)
   })
@@ -22,8 +26,10 @@ describe('amqp-out Node', () => {
   })
 
   it('should be loaded', done => {
-    const flow = [{ id: 'n1', type: NodeType.AMQP_OUT, name: 'test name' }]
-    helper.load(amqpOut, flow, () => {
+    const flow = [
+      { id: 'n1', type: NodeType.AMQP_IN_MANUAL_ACK, name: 'test name' },
+    ]
+    helper.load(amqpInManualAck, flow, () => {
       const n1 = helper.getNode('n1')
       n1.should.have.property('name', 'test name')
       done()
@@ -35,6 +41,7 @@ describe('amqp-out Node', () => {
     Amqp.prototype.channel = {
       unbindQueue: (): null => null,
       close: (): null => null,
+      ack: (): null => null,
     }
     // @ts-ignore
     Amqp.prototype.connection = {
@@ -44,21 +51,21 @@ describe('amqp-out Node', () => {
       .stub(Amqp.prototype, 'connect')
       // @ts-ignore
       .resolves(true)
-    sinon.stub(Amqp.prototype, 'initialize')
+    const initializeStub = sinon.stub(Amqp.prototype, 'initialize')
 
     helper.load(
-      [amqpOut, amqpBroker],
-      amqpOutFlowFixture,
+      [amqpInManualAck, amqpBroker],
+      amqpInManualAckFlowFixture,
       credentialsFixture,
       async function() {
         expect(connectStub.calledOnce).to.be.true
+
         // TODO: Figure out why this isn't working:
         // expect(initializeStub.calledOnce).to.be.true
 
-        const amqpInNode = helper.getNode('n1')
-        amqpInNode.receive({ payload: 'foo', topic: 'bar' })
-        amqpInNode.close()
-
+        const amqpInManualAckNode = helper.getNode('n1')
+        amqpInManualAckNode.receive({ payload: 'foo', topic: 'bar' })
+        amqpInManualAckNode.close()
         done()
       },
     )
@@ -69,8 +76,8 @@ describe('amqp-out Node', () => {
       .stub(Amqp.prototype, 'connect')
       .throws(new CustomError(ErrorType.INALID_LOGIN))
     helper.load(
-      [amqpOut, amqpBroker],
-      amqpOutFlowFixture,
+      [amqpInManualAck, amqpBroker],
+      amqpInManualAckFlowFixture,
       credentialsFixture,
       function() {
         expect(connectStub).to.throw()
@@ -82,8 +89,8 @@ describe('amqp-out Node', () => {
   it('catches a generic exception', function(done) {
     const connectStub = sinon.stub(Amqp.prototype, 'connect').throws()
     helper.load(
-      [amqpOut, amqpBroker],
-      amqpOutFlowFixture,
+      [amqpInManualAck, amqpBroker],
+      amqpInManualAckFlowFixture,
       credentialsFixture,
       function() {
         expect(connectStub).to.throw()

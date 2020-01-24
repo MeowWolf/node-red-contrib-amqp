@@ -1,3 +1,5 @@
+import { ConsumeMessage } from 'amqplib'
+
 export interface BrokerConfig extends Node {
   host: string
   port: number
@@ -28,8 +30,19 @@ export interface AmqpConfig {
   }
 }
 
+export type AssembledMessage = ConsumeMessage & {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  payload: Record<string, any> | string
+}
+
 export enum ErrorType {
   INALID_LOGIN = 'ENOTFOUND',
+}
+
+export enum NodeType {
+  AMQP_IN = 'amqp-in',
+  AMQP_OUT = 'amqp-out',
+  AMQP_IN_MANUAL_ACK = 'amqp-in-manual-ack',
 }
 
 export enum ExchangeType {

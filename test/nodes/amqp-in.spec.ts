@@ -5,7 +5,7 @@ import * as helper from 'node-red-node-test-helper'
 import * as amqpIn from '../../src/nodes/amqp-in'
 import Amqp from '../../src/Amqp'
 import * as amqpBroker from '../../src/nodes/amqp-broker'
-import { ErrorType } from '../../src/types'
+import { ErrorType, NodeType } from '../../src/types'
 import { CustomError, amqpInFlowFixture, credentialsFixture } from '../doubles'
 
 helper.init(require.resolve('node-red'))
@@ -22,7 +22,7 @@ describe('amqp-in Node', () => {
   })
 
   it('should be loaded', done => {
-    const flow = [{ id: 'n1', type: 'amqp-in', name: 'test name' }]
+    const flow = [{ id: 'n1', type: NodeType.AMQP_IN, name: 'test name' }]
     helper.load(amqpIn, flow, () => {
       const n1 = helper.getNode('n1')
       n1.should.have.property('name', 'test name')

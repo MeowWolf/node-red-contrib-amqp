@@ -1,6 +1,6 @@
 import { Red } from 'node-red'
 import { NODE_STATUS } from '../constants'
-import { ErrorType } from '../types'
+import { ErrorType, NodeType } from '../types'
 import Amqp from '../Amqp'
 
 module.exports = function(RED: Red): void {
@@ -15,6 +15,9 @@ module.exports = function(RED: Red): void {
       try {
         const connection = await amqp.connect()
 
+        await amqp.initialize()
+        await amqp.consume()
+
         // istanbul ignore else
         if (connection) {
           self.status(NODE_STATUS.Connected)
@@ -26,9 +29,6 @@ module.exports = function(RED: Red): void {
               done()
             },
           )
-
-          await amqp.initialize()
-          await amqp.consume()
         }
       } catch (e) {
         if (e.code === ErrorType.INALID_LOGIN) {
@@ -41,5 +41,5 @@ module.exports = function(RED: Red): void {
       }
     })(this)
   }
-  RED.nodes.registerType('amqp-in', AmqpIn)
+  RED.nodes.registerType(NodeType.AMQP_IN, AmqpIn)
 }
