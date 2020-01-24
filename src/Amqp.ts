@@ -74,7 +74,7 @@ export default class Amqp {
           const msg = this.assembleMessage(amqpMessage)
           this.node.send(msg)
           /* istanbul ignore else */
-          if (!noAck && this.isManualAck() === false) {
+          if (!noAck && !this.isManualAck()) {
             this.ack(msg)
           }
         },
@@ -203,7 +203,6 @@ export default class Amqp {
   }
 
   private isManualAck(): boolean {
-    const isManual = this.node.type === NodeType.AMQP_IN_MANUAL_ACK
-    return isManual
+    return this.node.type === NodeType.AMQP_IN_MANUAL_ACK
   }
 }
