@@ -46,6 +46,10 @@
     <input style="width:20px; vertical-align:baseline; margin-right:5px;" type="checkbox" id="node-input-noAck">
     <label style="width:auto; margin-top:7px;" for="node-input-noAck">noAck</label>
   </div>
+  <div class="form-tips">
+    <i class="fa fa-info-circle"></i>
+    If noAck is unchecked here the message will be acked upon successfull receipt <em>before</em> it is sent through the output. If you need more control over when the ack is sent use the <strong>amqp-in-manual-ack</strong> node instead.
+  </div>
   <hr>
   <h4>Exchange Info</h4>
   <div class="form-row">
@@ -100,6 +104,7 @@
 </script>
 
 <script type="text/html" data-help-name="amqp-in">
+  <h2>amqp-in</h2>
   <p>Connects to an AMQP broker and receives messages.</p>
 
   <h3>Outputs</h3>

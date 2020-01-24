@@ -95,7 +95,17 @@
 </script>
 
 <script type="text/html" data-help-name="amqp-in-manual-ack">
-  <p>Connects to an AMQP broker and receives messages.</p>
+  <h2>amqp-in-manual-ack</h2>
+  <p>Connects to an AMQP broker, receives messages, and <strong>manually acknowledges receipt</strong>.</p>
+  <p>This node sets <em>noAck</em> to false by default. <em style="color: firebrick;">You must manually ack receipt by sending the message back through the input of the node</em>. Any un-acked message will be requeued once the client goes down or restarts. If you don't need to manually ack messages like this just use the <strong>amqp-in</strong> node instead.</p>
+
+  <h3>Inputs</h3>
+  <dl class="message-properties">
+    <dt>msg
+      <span class="property-type">object</span>
+    </dt>
+    <dd>The entire message sent through the output of this node should be sent back through the input to successfully ack</dd>
+  </dl>
 
   <h3>Outputs</h3>
   <dl class="message-properties">
