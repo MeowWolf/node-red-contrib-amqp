@@ -1,6 +1,6 @@
 import { Red, Node } from 'node-red'
 import { Connection, Channel, Replies, connect, ConsumeMessage } from 'amqplib'
-import { AmqpConfig, BrokerConfig } from './types'
+import { AmqpConfig, BrokerConfig, NodeType, AssembledMessage } from './types'
 import { NODE_STATUS } from './constants'
 
 export default class Amqp {
@@ -74,8 +74,8 @@ export default class Amqp {
           const msg = this.assembleMessage(amqpMessage)
           this.node.send(msg)
           /* istanbul ignore else */
-          if (!noAck) {
-            this.channel.ack(msg)
+          if (!noAck && !this.isManualAck()) {
+            this.ack(msg)
           }
         },
         { noAck },
@@ -83,6 +83,10 @@ export default class Amqp {
     } catch (e) {
       this.node.error(`Could not consume message: ${e}`)
     }
+  }
+
+  public ack(msg: AssembledMessage): void {
+    this.channel.ack(msg)
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -185,10 +189,7 @@ export default class Amqp {
     return keys
   }
 
-  private assembleMessage(
-    amqpMessage: ConsumeMessage,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  ): ConsumeMessage & { payload: Record<string, any> | string } {
+  private assembleMessage(amqpMessage: ConsumeMessage): AssembledMessage {
     let payload
     try {
       payload = JSON.parse(amqpMessage.content.toString())
@@ -199,5 +200,9 @@ export default class Amqp {
       ...amqpMessage,
       payload,
     }
+  }
+
+  private isManualAck(): boolean {
+    return this.node.type === NodeType.AMQP_IN_MANUAL_ACK
   }
 }

@@ -1,34 +1,34 @@
 <script type="text/javascript">
-  RED.nodes.registerType('amqp-in', {
+  RED.nodes.registerType('amqp-in-manual-ack', {
     category: 'Meow Wolf',
     color: '#D1649C',
     defaults: {
       name: { value: '' },
       broker: { value: '', type: 'amqp-broker' },
       prefetch: { value: 0 },
-      noAck: { value: true },
+      noAck: { value: false },
       exchangeName: { value: '' },
       exchangeType: { value: 'topic' },
       exchangeRoutingKey: { value: '' },
       exchangeDurable: { value: true },
       queueName: { value: '' },
-      queueExclusive: { value: true },
+      queueExclusive: { value: false },
       queueDurable: { value: false },
-      queueAutoDelete: { value: true },
+      queueAutoDelete: { value: false },
     },
-    inputs: 0,
+    inputs: 1,
     outputs: 1,
     icon: 'snaggy.png',
     label: function() {
       const name = this.name ? this.name : this.exchangeName
       const colon = name && this.exchangeRoutingKey ? ': ' : ''
       const label = name + colon + this.exchangeRoutingKey
-      return label || 'amqp-in'
+      return label || 'amqp-in-manual-ack'
     },
   })
 </script>
 
-<script type="text/html" data-template-name="amqp-in">
+<script type="text/html" data-template-name="amqp-in-manual-ack">
   <div class="form-row">
     <label for="node-input-name"><i class="fa fa-tag"></i>&nbsp;&nbsp;Name</label>
     <input type="text" id="node-input-name" placeholder="Leave blank to use exchange name">
@@ -40,15 +40,6 @@
   <div class="form-row">
     <label for="node-input-prefetch"><i class="fa fa-filter"></i>&nbsp;&nbsp;Prefetch</label>
     <input type="text" id="node-input-prefetch" placeholder="0 for no prefetch restriction">
-  </div>
-  <div class="form-row">
-    <label>&nbsp;</label>
-    <input style="width:20px; vertical-align:baseline; margin-right:5px;" type="checkbox" id="node-input-noAck">
-    <label style="width:auto; margin-top:7px;" for="node-input-noAck">noAck</label>
-  </div>
-  <div class="form-tips">
-    <i class="fa fa-info-circle"></i>
-    If noAck is unchecked here the message will be acked upon successfull receipt <em>before</em> it is sent through the output. If you need more control over when the ack is sent use the <strong>amqp-in-manual-ack</strong> node instead.
   </div>
   <hr>
   <h4>Exchange Info</h4>
@@ -103,9 +94,18 @@
   </div>
 </script>
 
-<script type="text/html" data-help-name="amqp-in">
-  <h2>amqp-in</h2>
-  <p>Connects to an AMQP broker and receives messages.</p>
+<script type="text/html" data-help-name="amqp-in-manual-ack">
+  <h2>amqp-in-manual-ack</h2>
+  <p>Connects to an AMQP broker, receives messages, and <strong>manually acknowledges receipt</strong>.</p>
+  <p>This node sets <em>noAck</em> to false by default. <em style="color: firebrick;">You must manually ack receipt by sending the message back through the input of the node</em>. Any un-acked message will be requeued once the client goes down or restarts. If you don't need to manually ack messages like this just use the <strong>amqp-in</strong> node instead. Please see the example flows in the import library for a better idea on how to use this node.</p>
+
+  <h3>Inputs</h3>
+  <dl class="message-properties">
+    <dt>msg
+      <span class="property-type">object</span>
+    </dt>
+    <dd>The entire message sent through the output of this node should be sent back through the input to successfully ack</dd>
+  </dl>
 
   <h3>Outputs</h3>
   <dl class="message-properties">

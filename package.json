@@ -1,6 +1,6 @@
 {
   "name": "@meowwolf/node-red-contrib-amqp",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "description": "Amqp nodes for node-red",
   "main": "index.js",
   "scripts": {
@@ -22,7 +22,8 @@
     "nodes": {
       "amqp-in": "build/src/nodes/amqp-in.js",
       "amqp-out": "build/src/nodes/amqp-out.js",
-      "amqp-broker": "build/src/nodes/amqp-broker.js"
+      "amqp-broker": "build/src/nodes/amqp-broker.js",
+      "amqp-in-manual-ack": "build/src/nodes/amqp-in-manual-ack.js"
     }
   },
   "files": [

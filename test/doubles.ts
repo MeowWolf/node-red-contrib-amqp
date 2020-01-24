@@ -1,9 +1,34 @@
-import { ErrorType, AmqpConfig, ExchangeType, BrokerConfig } from '../src/types'
+import { ErrorType, ExchangeType, BrokerConfig, NodeType } from '../src/types'
 
 export const amqpInFlowFixture = [
   {
     id: 'n1',
-    type: 'amqp-in',
+    type: NodeType.AMQP_IN,
+    wires: [['n2']],
+    name: '',
+    broker: 'n3',
+    noAck: true,
+    exchangeName: 'testtopic',
+    exchangeType: 'topic',
+    routingKey: '#',
+    durable: true,
+    queueName: '',
+    exclusive: true,
+  },
+  { id: 'n2', type: 'helper' },
+  {
+    id: 'n3',
+    type: 'amqp-broker',
+    z: '',
+    host: 'localhost',
+    port: '5672',
+  },
+]
+
+export const amqpInManualAckFlowFixture = [
+  {
+    id: 'n1',
+    type: NodeType.AMQP_IN_MANUAL_ACK,
     wires: [['n2']],
     name: '',
     broker: 'n3',
@@ -28,7 +53,7 @@ export const amqpInFlowFixture = [
 export const amqpOutFlowFixture = [
   {
     id: 'n1',
-    type: 'amqp-out',
+    type: NodeType.AMQP_OUT,
     wires: [['n2']],
     name: '',
     broker: 'n3',

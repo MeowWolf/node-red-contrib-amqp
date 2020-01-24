@@ -4,7 +4,7 @@ import { ErrorType, NodeType } from '../types'
 import Amqp from '../Amqp'
 
 module.exports = function(RED: Red): void {
-  function AmqpOut(config): void {
+  function AmqpInManualAck(config): void {
     RED.nodes.createNode(this, config)
     this.status(NODE_STATUS.Disconnected)
     const amqp = new Amqp(RED, this, config)
@@ -20,9 +20,10 @@ module.exports = function(RED: Red): void {
           self.status(NODE_STATUS.Connected)
 
           await amqp.initialize()
+          await amqp.consume()
 
-          self.on('input', async ({ payload }, send, done) => {
-            amqp.publish(JSON.stringify(payload))
+          self.on('input', async (msg, send, done) => {
+            amqp.ack(msg)
 
             /* istanbul ignore else */
             if (done) {
@@ -41,13 +42,13 @@ module.exports = function(RED: Red): void {
       } catch (e) {
         if (e.code === ErrorType.INALID_LOGIN) {
           self.status(NODE_STATUS.Invalid)
-          self.error(`AmqpOut() Could not connect to broker ${e}`)
+          self.error(`AmqpInManualAck() Could not connect to broker ${e}`)
         } else {
           self.status(NODE_STATUS.Error)
-          self.error(`AmqpOut() ${e}`)
+          self.error(`AmqpInManualAck() ${e}`)
         }
       }
     })(this)
   }
-  RED.nodes.registerType(NodeType.AMQP_OUT, AmqpOut)
+  RED.nodes.registerType(NodeType.AMQP_IN_MANUAL_ACK, AmqpInManualAck)
 }
