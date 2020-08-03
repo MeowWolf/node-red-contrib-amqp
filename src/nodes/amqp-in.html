@@ -28,6 +28,15 @@
   })
 </script>
 
+<style>
+  div.wide-label label {
+    width: 30% !important;
+  }
+  div.wide-label input {
+    width: 65% !important;
+  }
+</style>
+
 <script type="text/html" data-template-name="amqp-in">
   <div class="form-row">
     <label for="node-input-name"><i class="fa fa-tag"></i>&nbsp;&nbsp;Name</label>
@@ -52,7 +61,7 @@
   </div>
   <hr>
   <h4>Exchange Info</h4>
-  <div class="form-row">
+  <div class="form-row wide-label">
     <label for="node-input-exchangeType"><i class="fa fa-filter"></i>&nbsp;&nbsp;Type</label>
     <select id="node-input-exchangeType">
       <option value="topic">Topic</option>
@@ -61,11 +70,11 @@
       <!-- <option value="header">Header</option> -->
     </select>
   </div>
-  <div class="form-row">
-    <label for="node-input-exchangeName"><i class="fa fa-tag"></i>&nbsp;&nbsp;Name</label>
+  <div class="form-row wide-label">
+    <label for="node-input-exchangeName" style="width: 30%"><i class="fa fa-tag"></i>&nbsp;&nbsp;Exchange Name</label>
     <input type="text" id="node-input-exchangeName" placeholder="Leave blank for the default exchange">
   </div>
-  <div class="form-row">
+  <div class="form-row wide-label">
     <label for="node-input-exchangeRoutingKey"><i class="fa fa-filter"></i>&nbsp;&nbsp;Routing Key</label>
     <input type="text" id="node-input-exchangeRoutingKey" placeholder="routing.key">
   </div>
@@ -81,8 +90,8 @@
   </div>
   <hr>
   <h4>Queue Info<h4>
-  <div class="form-row">
-    <label for="node-input-queueName"><i class="fa fa-tag"></i>&nbsp;&nbsp;Name</label>
+  <div class="form-row wide-label">
+    <label for="node-input-queueName"><i class="fa fa-tag"></i>&nbsp;&nbsp;Queue Name</label>
     <input type="text" id="node-input-queueName" placeholder="Leave blank to auto-generate">
   </div>
 
