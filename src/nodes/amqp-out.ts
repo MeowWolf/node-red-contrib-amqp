@@ -3,7 +3,7 @@ import { NODE_STATUS } from '../constants'
 import { ErrorType, NodeType } from '../types'
 import Amqp from '../Amqp'
 
-module.exports = function(RED: Red): void {
+module.exports = function (RED: Red): void {
   function AmqpOut(config): void {
     RED.nodes.createNode(this, config)
     this.status(NODE_STATUS.Disconnected)
@@ -11,7 +11,7 @@ module.exports = function(RED: Red): void {
 
     // So we can use async/await here
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const iife = (async function(self): Promise<void> {
+    const iife = (async function (self): Promise<void> {
       try {
         const connection = await amqp.connect()
 
@@ -21,18 +21,25 @@ module.exports = function(RED: Red): void {
 
           await amqp.initialize()
 
-          self.on('input', async ({ payload }, send, done) => {
-            amqp.publish(JSON.stringify(payload))
+          self.on(
+            'input',
+            async ({ payload, topic, properties }, send, done) => {
+              if (topic) {
+                amqp.setRoutingKey(topic)
+              }
 
-            /* istanbul ignore else */
-            if (done) {
-              done()
-            }
-          })
+              amqp.publish(JSON.stringify(payload), properties)
+
+              /* istanbul ignore else */
+              if (done) {
+                done()
+              }
+            },
+          )
 
           self.on(
             'close',
-            async (done: Function): Promise<void> => {
+            async (done: () => void): Promise<void> => {
               await amqp.close()
               done()
             },

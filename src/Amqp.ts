@@ -1,6 +1,19 @@
 import { Red, Node } from 'node-red'
-import { Connection, Channel, Replies, connect, ConsumeMessage } from 'amqplib'
-import { AmqpConfig, BrokerConfig, NodeType, AssembledMessage } from './types'
+import {
+  Connection,
+  Channel,
+  Replies,
+  connect,
+  ConsumeMessage,
+  MessageProperties,
+} from 'amqplib'
+import {
+  AmqpConfig,
+  BrokerConfig,
+  NodeType,
+  AssembledMessage,
+  GenericJsonObject,
+} from './types'
 import { NODE_STATUS } from './constants'
 
 export default class Amqp {
@@ -8,13 +21,14 @@ export default class Amqp {
   private broker: Node
   private connection: Connection
   private channel: Channel
+  private properties: MessageProperties
   private q: Replies.AssertQueue
 
   constructor(
     private readonly RED: Red,
     private readonly node: Node,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    config: Record<string, any>,
+    config: GenericJsonObject,
   ) {
     this.config = {
       name: config.name,
@@ -33,6 +47,9 @@ export default class Amqp {
         durable: config.queueDurable,
         autoDelete: config.queueAutoDelete,
       },
+      amqpProperties: this.parseJson(
+        config.amqpProperties,
+      ) as MessageProperties,
     }
   }
 
@@ -85,17 +102,24 @@ export default class Amqp {
     }
   }
 
+  public setRoutingKey(newRoutingKey: string): void {
+    this.config.exchange.routingKey = newRoutingKey
+  }
+
   public ack(msg: AssembledMessage): void {
     this.channel.ack(msg)
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  public publish(msg: any): void {
+  public publish(msg: unknown, properties?: MessageProperties): void {
     const { name } = this.config.exchange
 
     try {
       this.parseRoutingKeys().forEach(routingKey => {
-        this.channel.publish(name, routingKey, Buffer.from(msg))
+        this.channel.publish(name, routingKey, Buffer.from(msg), {
+          ...this.config.amqpProperties,
+          ...properties,
+        })
       })
     } catch (e) {
       this.node.error(`Could not publish message: ${e}`)
@@ -190,12 +214,8 @@ export default class Amqp {
   }
 
   private assembleMessage(amqpMessage: ConsumeMessage): AssembledMessage {
-    let payload
-    try {
-      payload = JSON.parse(amqpMessage.content.toString())
-    } catch {
-      payload = amqpMessage.content.toString()
-    }
+    const payload = this.parseJson(amqpMessage.content.toString())
+
     return {
       ...amqpMessage,
       payload,
@@ -204,5 +224,15 @@ export default class Amqp {
 
   private isManualAck(): boolean {
     return this.node.type === NodeType.AMQP_IN_MANUAL_ACK
+  }
+
+  private parseJson(jsonInput: unknown): GenericJsonObject {
+    let output: unknown
+    try {
+      output = JSON.parse(jsonInput as string)
+    } catch {
+      output = jsonInput
+    }
+    return output
   }
 }

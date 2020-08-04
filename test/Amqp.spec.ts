@@ -1,16 +1,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/ban-ts-ignore */
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import { expect } from 'chai'
 import * as sinon from 'sinon'
 import * as amqplib from 'amqplib'
 import Amqp from '../src/Amqp'
 import { nodeConfigFixture, nodeFixture, brokerConfigFixture } from './doubles'
+import { GenericJsonObject } from 'src/types'
 
 let RED: any
 let amqp: any
 
 describe('Amqp Class', () => {
-  beforeEach(function(done) {
+  beforeEach(function (done) {
     RED = {
       nodes: {
         getNode: sinon.stub().returns(brokerConfigFixture),
@@ -22,7 +23,7 @@ describe('Amqp Class', () => {
     done()
   })
 
-  afterEach(function(done) {
+  afterEach(function (done) {
     sinon.restore()
     done()
   })
@@ -59,11 +60,11 @@ describe('Amqp Class', () => {
     const error = sinon.stub()
     const node = { send, error }
     const channel = {
-      consume: function(
+      consume: function (
         queue: string,
         cb: Function,
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        config: Record<string, any>,
+        config: GenericJsonObject,
       ): void {
         const amqpMessage = { content: messageContent }
         cb(amqpMessage)

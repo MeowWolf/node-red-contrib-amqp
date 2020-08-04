@@ -1,4 +1,4 @@
-import { ConsumeMessage } from 'amqplib'
+import { ConsumeMessage, MessageProperties } from 'amqplib'
 
 export interface BrokerConfig extends Node {
   host: string
@@ -28,11 +28,14 @@ export interface AmqpConfig {
     durable: boolean
     autoDelete: boolean
   }
+  amqpProperties: MessageProperties
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type GenericJsonObject = Record<string, any>
+
 export type AssembledMessage = ConsumeMessage & {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  payload: Record<string, any> | string
+  payload: GenericJsonObject | string
 }
 
 export enum ErrorType {

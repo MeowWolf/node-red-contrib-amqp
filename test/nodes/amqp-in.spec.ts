@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/ban-ts-ignore */
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import { expect } from 'chai'
 import * as sinon from 'sinon'
 import * as helper from 'node-red-node-test-helper'
@@ -11,17 +11,17 @@ import { CustomError, amqpInFlowFixture, credentialsFixture } from '../doubles'
 helper.init(require.resolve('node-red'))
 
 describe('amqp-in Node', () => {
-  beforeEach(function(done) {
+  beforeEach(function (done) {
     helper.startServer(done)
   })
 
-  afterEach(function(done) {
+  afterEach(function (done) {
     helper.unload()
     helper.stopServer(done)
     sinon.restore()
   })
 
-  it('should be loaded', done => {
+  it('should be loaded', (done) => {
     const flow = [{ id: 'n1', type: NodeType.AMQP_IN, name: 'test name' }]
     helper.load(amqpIn, flow, () => {
       const n1 = helper.getNode('n1')
@@ -30,7 +30,7 @@ describe('amqp-in Node', () => {
     })
   })
 
-  it('should connect to the server', function(done) {
+  it('should connect to the server', function (done) {
     // @ts-ignore
     Amqp.prototype.channel = {
       unbindQueue: (): null => null,
@@ -50,7 +50,7 @@ describe('amqp-in Node', () => {
       [amqpIn, amqpBroker],
       amqpInFlowFixture,
       credentialsFixture,
-      async function() {
+      async function () {
         expect(connectStub.calledOnce).to.be.true
 
         // TODO: Figure out why this isn't working:
@@ -63,7 +63,7 @@ describe('amqp-in Node', () => {
     )
   })
 
-  it('catches an invalid login exception', function(done) {
+  it('catches an invalid login exception', function (done) {
     const connectStub = sinon
       .stub(Amqp.prototype, 'connect')
       .throws(new CustomError(ErrorType.INALID_LOGIN))
@@ -71,20 +71,20 @@ describe('amqp-in Node', () => {
       [amqpIn, amqpBroker],
       amqpInFlowFixture,
       credentialsFixture,
-      function() {
+      function () {
         expect(connectStub).to.throw()
         done()
       },
     )
   })
 
-  it('catches a generic exception', function(done) {
+  it('catches a generic exception', function (done) {
     const connectStub = sinon.stub(Amqp.prototype, 'connect').throws()
     helper.load(
       [amqpIn, amqpBroker],
       amqpInFlowFixture,
       credentialsFixture,
-      function() {
+      function () {
         expect(connectStub).to.throw()
         done()
       },

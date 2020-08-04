@@ -14,6 +14,9 @@
       queueExclusive: { value: true },
       queueDurable: { value: false },
       queueAutoDelete: { value: true },
+      amqpProperties: {
+        value: '{}',
+      },
     },
     inputs: 1,
     outputs: 0,
@@ -25,6 +28,12 @@
       const label = truncate(name + colon + this.exchangeRoutingKey)
       return label || 'amqp-out'
     },
+    oneditprepare: function() {
+      $('#node-input-amqpProperties').typedInput({
+        type: 'json',
+        types: ['json'],
+      })
+    },
   })
 
   function truncate(str, length = 40, ending = '...') {
@@ -34,6 +43,15 @@
     return str
   }
 </script>
+
+<style>
+  div.wide-label label {
+    width: 30% !important;
+  }
+  div.wide-label input {
+    width: 65% !important;
+  }
+</style>
 
 <script type="text/html" data-template-name="amqp-out">
   <div class="form-row">
@@ -60,11 +78,11 @@
       <!-- <option value="header">Header</option> -->
     </select>
   </div>
-  <div class="form-row">
-    <label for="node-input-exchangeName"><i class="fa fa-tag"></i>&nbsp;&nbsp;Name</label>
+  <div class="form-row wide-label">
+    <label for="node-input-exchangeName"><i class="fa fa-tag"></i>&nbsp;&nbsp;Exchange Name</label>
     <input type="text" id="node-input-exchangeName" placeholder="Leave blank for the default exchange">
   </div>
-  <div class="form-row">
+  <div class="form-row wide-label">
     <label for="node-input-exchangeRoutingKey"><i class="fa fa-filter"></i>&nbsp;&nbsp;Routing Key</label>
     <input type="text" id="node-input-exchangeRoutingKey" placeholder="routing.key">
   </div>
@@ -78,6 +96,32 @@
     <input style="width:20px; vertical-align:baseline; margin-right:5px;" type="checkbox" id="node-input-exchangeDurable">
     <label style="width:auto; margin-top:7px;" for="node-input-exchangeDurable">Durable</label>
   </div>
+  <div class="form-row wide-label">
+    <label for="node-input-amqpProperties"><i class="fa fa-filter"></i>&nbsp;&nbsp;AMQP Properties</label>
+    <input type="text" id="node-input-amqpProperties">
+  </div>
+  <div class="form-tips">
+    <i class="fa fa-info-circle"></i>
+    Standard AMQP message properties as specified in <a href="https://www.squaremobius.net/amqp.node/channel_api.html#channel_publish" target="_blank">the amqplib docs</a>.
+    <br />
+    <br />
+    <ul>
+      <li><code>contentType</code>: any | undefined</li>
+      <li><code>contentEncoding</code>: any | undefined</li>
+      <li><code>headers</code>: Object | undefined</li>
+      <li><code>deliveryMode</code>: any | undefined</li>
+      <li><code>priority</code>: any | undefined</li>
+      <li><code>correlationId</code>: any | undefined</li>
+      <li><code>replyTo</code>: any | undefined</li>
+      <li><code>expiration</code>: any | undefined</li>
+      <li><code>messageId</code>: any | undefined</li>
+      <li><code>timestamp</code>: any | undefined</li>
+      <li><code>type</code>: any | undefined</li>
+      <li><code>userId</code>: any | undefined</li>
+      <li><code>appId</code>: any | undefined</li>
+      <li><code>clusterId</code>: any | undefined</li>
+    </ul>
+  </div>
 </script>
 
 <script type="text/html" data-help-name="amqp-out">
@@ -90,6 +134,33 @@
       <span class="property-type">json | object | primitive</span>
     </dt>
     <dd>the payload of the message to send to the AMQP broker. </dd>
+    <dt>topic
+      <span class="property-type">string</span>
+    </dt>
+    <dd>The value of this field will override the node's configured routing key(s)</dd>
+    <dt>properties
+      <span class="property-type">object</span>
+    </dt>
+    <dd>
+      Standard AMQP message properties as specified in <a href="https://www.squaremobius.net/amqp.node/channel_api.html#channel_publish" target="_blank">the amqplib docs</a>. This will shallow merge with whatever is specified in the properties field in the node's configuration.
+      <br />
+      <ul>
+        <li><code>contentType</code>: any | undefined</li>
+        <li><code>contentEncoding</code>: any | undefined</li>
+        <li><code>headers</code>: Object | undefined</li>
+        <li><code>deliveryMode</code>: any | undefined</li>
+        <li><code>priority</code>: any | undefined</li>
+        <li><code>correlationId</code>: any | undefined</li>
+        <li><code>replyTo</code>: any | undefined</li>
+        <li><code>expiration</code>: any | undefined</li>
+        <li><code>messageId</code>: any | undefined</li>
+        <li><code>timestamp</code>: any | undefined</li>
+        <li><code>type</code>: any | undefined</li>
+        <li><code>userId</code>: any | undefined</li>
+        <li><code>appId</code>: any | undefined</li>
+        <li><code>clusterId</code>: any | undefined</li>
+      </ul>
+    </dd>
   </dl>
 
   <h3>References</h3>
