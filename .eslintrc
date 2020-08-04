@@ -16,6 +16,6 @@
     "no-lone-blocks": ["off"],
     // 'array-element-newline': ['warn', { minItems: 4 }],
     // '@typescript-eslint/indent': ['error', 2],
-    "@typescript-eslint/ban-ts-ignore": ["warn"]
+    "@typescript-eslint/ban-ts-comment": ["warn"]
   }
 }
