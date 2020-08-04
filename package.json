@@ -9,9 +9,9 @@
     "build:production": "rimraf build/* && tsc --sourceMap false -p . && npm run copyassets",
     "copyassets": "copyfiles -f src/nodes/**/*.html build/src/nodes && copyfiles -f src/nodes/icons/* build/src/nodes/icons",
     "lint": "eslint \"src/**\"",
-    "test": "mocha",
+    "test": "npm run build && mocha",
     "test:watch": "mocha -w",
-    "test:cov": "nyc mocha"
+    "test:cov": "npm run build && nyc mocha"
   },
   "keywords": [
     "node-red",

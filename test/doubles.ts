@@ -1,4 +1,10 @@
-import { ErrorType, ExchangeType, BrokerConfig, NodeType } from '../src/types'
+import {
+  ErrorType,
+  ExchangeType,
+  BrokerConfig,
+  NodeType,
+  GenericJsonObject,
+} from '../src/types'
 
 export const amqpInFlowFixture = [
   {
@@ -77,7 +83,7 @@ export const amqpOutFlowFixture = [
 
 export const credentialsFixture = { username: 'username', password: 'password' }
 
-export const nodeConfigFixture: Record<string, any> = {
+export const nodeConfigFixture: GenericJsonObject = {
   name: 'name',
   broker: 'b1',
   exchangeName: 'exchangeName',

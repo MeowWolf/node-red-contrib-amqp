@@ -55,9 +55,10 @@ describe('amqp-out Node', () => {
         // TODO: Figure out why this isn't working:
         // expect(initializeStub.calledOnce).to.be.true
 
-        const amqpInNode = helper.getNode('n1')
-        amqpInNode.receive({ payload: 'foo', topic: 'bar' })
-        amqpInNode.close()
+        const amqpOutNode = helper.getNode('n1')
+        amqpOutNode.receive({ payload: 'foo', topic: 'bar' })
+        amqpOutNode.receive({ payload: 'foo' })
+        amqpOutNode.close()
 
         done()
       },

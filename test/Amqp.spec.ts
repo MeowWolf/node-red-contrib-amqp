@@ -5,6 +5,7 @@ import * as sinon from 'sinon'
 import * as amqplib from 'amqplib'
 import Amqp from '../src/Amqp'
 import { nodeConfigFixture, nodeFixture, brokerConfigFixture } from './doubles'
+import { GenericJsonObject } from 'src/types'
 
 let RED: any
 let amqp: any
@@ -63,7 +64,7 @@ describe('Amqp Class', () => {
         queue: string,
         cb: Function,
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        config: Record<string, any>,
+        config: GenericJsonObject,
       ): void {
         const amqpMessage = { content: messageContent }
         cb(amqpMessage)

@@ -21,14 +21,21 @@ module.exports = function(RED: Red): void {
 
           await amqp.initialize()
 
-          self.on('input', async ({ payload }, send, done) => {
-            amqp.publish(JSON.stringify(payload))
+          self.on(
+            'input',
+            async ({ payload, topic, properties }, send, done) => {
+              if (topic) {
+                amqp.setRoutingKey(topic)
+              }
 
-            /* istanbul ignore else */
-            if (done) {
-              done()
-            }
-          })
+              amqp.publish(JSON.stringify(payload), properties)
+
+              /* istanbul ignore else */
+              if (done) {
+                done()
+              }
+            },
+          )
 
           self.on(
             'close',

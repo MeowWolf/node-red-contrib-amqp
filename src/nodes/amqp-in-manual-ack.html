@@ -125,21 +125,35 @@
       An <a href="http://www.squaremobius.net/amqp.node/" target="_blank">amqplib</a>
       fields object. Contains:
       <ul>
-        <li><code>consumerTag</code>: string</code></li>
-        <li><code>deliveryTag</code>: number</code></li>
-        <li><code>redelivered</code>: boolean</code></li>
-        <li><code>exchange</code>: string</code></li>
-        <li><code>routingKey</code>: string</code></li>
+        <li><code>consumerTag</code>: string</li>
+        <li><code>deliveryTag</code>: number</li>
+        <li><code>redelivered</code>: boolean</li>
+        <li><code>exchange</code>: string</li>
+        <li><code>routingKey</code>: string</li>
       </ul>
     </dd>
     <dt>properties
       <span class="property-type">object</span>
     </dt>
     <dd>
+      Standard AMQP message properties as specified in <a href="https://www.squaremobius.net/amqp.node/channel_api.html#channel_publish" target="_blank">the amqplib docs</a>.
+      <br />
       <ul>
-        <li><code>headers</code>: object</code></li>
-        <li><code>deliveryMode</code>: number</code></li>
-      </ul>
+        <li><code>contentType</code>: any | undefined</li>
+        <li><code>contentEncoding</code>: any | undefined</li>
+        <li><code>headers</code>: Object | undefined</li>
+        <li><code>deliveryMode</code>: any | undefined</li>
+        <li><code>priority</code>: any | undefined</li>
+        <li><code>correlationId</code>: any | undefined</li>
+        <li><code>replyTo</code>: any | undefined</li>
+        <li><code>expiration</code>: any | undefined</li>
+        <li><code>messageId</code>: any | undefined</li>
+        <li><code>timestamp</code>: any | undefined</li>
+        <li><code>type</code>: any | undefined</li>
+        <li><code>userId</code>: any | undefined</li>
+        <li><code>appId</code>: any | undefined</li>
+        <li><code>clusterId</code>: any | undefined</li>
+      </ul>>
     </dd>
     <dt>content
       <span class="property-type">buffer</span>
