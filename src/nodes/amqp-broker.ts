@@ -1,6 +1,6 @@
 import { Red } from 'node-red'
 
-module.exports = function(RED: Red): void {
+module.exports = function (RED: Red): void {
   function AmqpBroker(n): void {
     RED.nodes.createNode(this, n)
     this.name = n.name

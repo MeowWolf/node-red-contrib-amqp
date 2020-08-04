@@ -111,7 +111,7 @@ export default class Amqp {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  public publish(msg: any, properties?: MessageProperties): void {
+  public publish(msg: unknown, properties?: MessageProperties): void {
     const { name } = this.config.exchange
 
     try {
