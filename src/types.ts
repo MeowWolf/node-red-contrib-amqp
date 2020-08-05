@@ -68,7 +68,7 @@ export enum ExchangeType {
   Direct = 'direct',
   Fanout = 'fanout',
   Topic = 'topic',
-  Headers = 'header',
+  Headers = 'headers',
 }
 
 export enum DefaultExchangeName {
