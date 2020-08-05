@@ -2,7 +2,7 @@
   {
     "id": "bcf76545.a64818",
     "type": "tab",
-    "label": "complete",
+    "label": "AMQP Manual Ack With Complete",
     "disabled": false,
     "info": ""
   },
