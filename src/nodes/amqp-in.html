@@ -25,6 +25,16 @@
       const label = name + colon + this.exchangeRoutingKey
       return label || 'amqp-in'
     },
+    oneditprepare: function () {
+      $('#node-input-exchangeType').change(function (e) {
+        const exchangeType = this.value
+        if (['fanout', 'headers'].includes(exchangeType)) {
+          $('.routing-key-form-input').hide()
+        } else {
+          $('.routing-key-form-input').show()
+        }
+      })
+    },
   })
 </script>
 
@@ -74,11 +84,11 @@
     <label for="node-input-exchangeName" style="width: 30%"><i class="fa fa-tag"></i>&nbsp;&nbsp;Exchange Name</label>
     <input type="text" id="node-input-exchangeName" placeholder="Leave blank for the default exchange">
   </div>
-  <div class="form-row wide-label">
+  <div class="form-row wide-label routing-key-form-input">
     <label for="node-input-exchangeRoutingKey"><i class="fa fa-filter"></i>&nbsp;&nbsp;Routing Key</label>
     <input type="text" id="node-input-exchangeRoutingKey" placeholder="routing.key">
   </div>
-  <div class="form-tips">
+  <div class="form-tips routing-key-form-input">
     <i class="fa fa-info-circle"></i>
     You can specify multiple routing keys and/or topics separated by commas
   </div>
