@@ -15,6 +15,7 @@
       queueExclusive: { value: true },
       queueDurable: { value: false },
       queueAutoDelete: { value: true },
+      headers: { value: '{}' },
     },
     inputs: 0,
     outputs: 1,
@@ -26,12 +27,24 @@
       return label || 'amqp-in'
     },
     oneditprepare: function () {
+      $('#node-input-headers').typedInput({
+        type: 'json',
+        types: ['json'],
+      })
+
       $('#node-input-exchangeType').change(function (e) {
         const exchangeType = this.value
+
         if (['fanout', 'headers'].includes(exchangeType)) {
           $('.routing-key-form-input').hide()
         } else {
           $('.routing-key-form-input').show()
+        }
+
+        if (['headers'].includes(exchangeType)) {
+          $('.headers-form-input').show()
+        } else {
+          $('.headers-form-input').hide()
         }
       })
     },
@@ -77,7 +90,7 @@
       <option value="topic">Topic</option>
       <option value="direct">Direct</option>
       <option value="fanout">Fanout</option>
-      <!-- <option value="header">Header</option> -->
+      <option value="headers">Headers</option>
     </select>
   </div>
   <div class="form-row wide-label">
@@ -91,6 +104,10 @@
   <div class="form-tips routing-key-form-input">
     <i class="fa fa-info-circle"></i>
     You can specify multiple routing keys and/or topics separated by commas
+  </div>
+  <div class="form-row wide-label headers-form-input">
+    <label for="node-input-headers"><i class="fa fa-filter"></i>&nbsp;&nbsp;Headers</label>
+    <input type="text" id="node-input-headers">
   </div>
   <br>
   <div class="form-row">

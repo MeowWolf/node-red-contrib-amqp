@@ -7,7 +7,6 @@
       broker: { value: '', type: 'amqp-broker' },
       exchangeName: { value: '' },
       exchangeType: { value: 'topic' },
-      noAck: { value: true },
       exchangeRoutingKey: { value: '' },
       exchangeDurable: { value: true },
       queueName: { value: '' },
@@ -71,11 +70,6 @@
     <label for="node-input-broker"><i class="fa fa-globe"></i>&nbsp;&nbsp;Broker</label>
     <input type="text" id="node-input-broker" placeholder="AMQP Broker">
   </div>
-  <div class="form-row">
-    <label>&nbsp;</label>
-    <input style="width:20px; vertical-align:baseline; margin-right:5px;" type="checkbox" id="node-input-noAck">
-    <label style="width:auto; margin-top:7px;" for="node-input-noAck">noAck</label>
-  </div>
   <hr>
   <h4>Exchange Info</h4>
   <div class="form-row wide-label">
@@ -84,7 +78,7 @@
       <option value="topic">Topic</option>
       <option value="direct">Direct</option>
       <option value="fanout">Fanout</option>
-      <!-- <option value="header">Header</option> -->
+      <option value="headers">Headers</option>
     </select>
   </div>
   <div class="form-row wide-label">

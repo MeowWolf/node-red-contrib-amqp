@@ -3,7 +3,8 @@ import {
   ExchangeType,
   BrokerConfig,
   NodeType,
-  NodeDefaults,
+  AmqpInNodeDefaults,
+  AmqpOutNodeDefaults,
 } from '../src/types'
 
 export const amqpInFlowFixture = [
@@ -83,7 +84,7 @@ export const amqpOutFlowFixture = [
 
 export const credentialsFixture = { username: 'username', password: 'password' }
 
-export const nodeConfigFixture: NodeDefaults = {
+export const nodeConfigFixture: AmqpInNodeDefaults & AmqpOutNodeDefaults = {
   name: 'name',
   broker: 'b1',
   exchangeName: 'exchangeName',

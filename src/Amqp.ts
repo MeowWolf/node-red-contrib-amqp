@@ -15,7 +15,8 @@ import {
   GenericJsonObject,
   ExchangeType,
   DefaultExchangeName,
-  NodeDefaults,
+  AmqpInNodeDefaults,
+  AmqpOutNodeDefaults,
 } from './types'
 import { NODE_STATUS } from './constants'
 
@@ -29,7 +30,7 @@ export default class Amqp {
   constructor(
     private readonly RED: Red,
     private readonly node: Node,
-    config: NodeDefaults,
+    config: AmqpInNodeDefaults & AmqpOutNodeDefaults,
   ) {
     this.config = {
       name: config.name,
@@ -53,6 +54,7 @@ export default class Amqp {
       amqpProperties: this.parseJson(
         config.amqpProperties,
       ) as MessageProperties,
+      headers: this.parseJson(config.headers),
     }
   }
 
@@ -208,14 +210,24 @@ export default class Amqp {
     })
   }
 
-  private bindQueue(): void {
-    const { name } = this.config.exchange
+  private async bindQueue(): Promise<void> {
+    const { name, type } = this.config.exchange
 
-    /* istanbul ignore else */
-    if (name) {
-      this.parseRoutingKeys().forEach(async routingKey => {
-        await this.channel.bindQueue(this.q.queue, name, routingKey)
-      })
+    if (type === ExchangeType.Direct || type === ExchangeType.Topic) {
+      /* istanbul ignore else */
+      if (name) {
+        this.parseRoutingKeys().forEach(async routingKey => {
+          await this.channel.bindQueue(this.q.queue, name, routingKey)
+        })
+      }
+    }
+
+    if (type === ExchangeType.Fanout) {
+      await this.channel.bindQueue(this.q.queue, name, '')
+    }
+
+    if (type === ExchangeType.Headers) {
+      await this.channel.bindQueue(this.q.queue, name, '', this.config.headers)
     }
   }
 

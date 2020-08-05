@@ -29,13 +29,28 @@ export interface AmqpConfig {
     autoDelete: boolean
   }
   amqpProperties: MessageProperties
+  headers: GenericJsonObject
 }
 
-export interface NodeDefaults {
+export interface AmqpInNodeDefaults {
   name?: any
   broker?: any
   prefetch?: any
   noAck?: any
+  exchangeName?: any
+  exchangeType?: any
+  exchangeRoutingKey?: any
+  exchangeDurable?: any
+  queueName?: any
+  queueExclusive?: any
+  queueDurable?: any
+  queueAutoDelete?: any
+  headers?: any
+}
+
+export interface AmqpOutNodeDefaults {
+  name?: any
+  broker?: any
   exchangeName?: any
   exchangeType?: any
   exchangeRoutingKey?: any
