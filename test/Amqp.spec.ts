@@ -5,7 +5,11 @@ import * as sinon from 'sinon'
 import * as amqplib from 'amqplib'
 import Amqp from '../src/Amqp'
 import { nodeConfigFixture, nodeFixture, brokerConfigFixture } from './doubles'
-import { GenericJsonObject } from 'src/types'
+import {
+  GenericJsonObject,
+  ExchangeType,
+  DefaultExchangeName,
+} from '../src/types'
 
 let RED: any
 let amqp: any
@@ -26,6 +30,46 @@ describe('Amqp Class', () => {
   afterEach(function (done) {
     sinon.restore()
     done()
+  })
+
+  it('constructs with default Direct exchange', () => {
+    // @ts-ignore
+    amqp = new Amqp(RED, nodeFixture, {
+      ...nodeConfigFixture,
+      exchangeType: ExchangeType.Direct,
+      exchangeName: '',
+    })
+    expect(amqp.config.exchange.name).to.eq(DefaultExchangeName.Direct)
+  })
+
+  it('constructs with default Fanout exchange', () => {
+    // @ts-ignore
+    amqp = new Amqp(RED, nodeFixture, {
+      ...nodeConfigFixture,
+      exchangeType: ExchangeType.Fanout,
+      exchangeName: '',
+    })
+    expect(amqp.config.exchange.name).to.eq(DefaultExchangeName.Fanout)
+  })
+
+  it('constructs with default Topic exchange', () => {
+    // @ts-ignore
+    amqp = new Amqp(RED, nodeFixture, {
+      ...nodeConfigFixture,
+      exchangeType: ExchangeType.Topic,
+      exchangeName: '',
+    })
+    expect(amqp.config.exchange.name).to.eq(DefaultExchangeName.Topic)
+  })
+
+  it('constructs with default Headers exchange', () => {
+    // @ts-ignore
+    amqp = new Amqp(RED, nodeFixture, {
+      ...nodeConfigFixture,
+      exchangeType: ExchangeType.Headers,
+      exchangeName: '',
+    })
+    expect(amqp.config.exchange.name).to.eq(DefaultExchangeName.Headers)
   })
 
   it('connect()', async () => {
@@ -114,15 +158,24 @@ describe('Amqp Class', () => {
   })
 
   it('close()', async () => {
+    const { exchangeName, exchangeRoutingKey } = nodeConfigFixture
+    const queueName = 'queueName'
+
     const unbindQueueStub = sinon.stub()
     const channelCloseStub = sinon.stub()
     const connectionCloseStub = sinon.stub()
+    const assertQueueStub = sinon.stub().resolves({ queue: queueName })
 
-    amqp.channel = { unbindQueue: unbindQueueStub, close: channelCloseStub }
+    amqp.channel = {
+      unbindQueue: unbindQueueStub,
+      close: channelCloseStub,
+      assertQueue: assertQueueStub,
+    }
     amqp.connection = { close: connectionCloseStub }
-    const { exchangeName, exchangeRoutingKey, queueName } = nodeConfigFixture
+    await amqp.assertQueue()
 
     await amqp.close()
+
     expect(unbindQueueStub.calledOnce).to.equal(true)
     expect(
       unbindQueueStub.calledWith(queueName, exchangeName, exchangeRoutingKey),

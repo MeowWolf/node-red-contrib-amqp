@@ -15,20 +15,20 @@
       queueDurable: { value: false },
       queueAutoDelete: { value: true },
       amqpProperties: {
-        value: '{}',
+        value: '{ "headers": {} }',
       },
     },
     inputs: 1,
     outputs: 0,
     align: 'right',
     icon: 'snaggy.svg',
-    label: function() {
+    label: function () {
       const name = this.name ? this.name : this.exchangeName
       const colon = name && this.exchangeRoutingKey ? ': ' : ''
       const label = truncate(name + colon + this.exchangeRoutingKey)
       return label || 'amqp-out'
     },
-    oneditprepare: function() {
+    oneditprepare: function () {
       $('#node-input-amqpProperties').typedInput({
         type: 'json',
         types: ['json'],
