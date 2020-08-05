@@ -19,7 +19,7 @@
     inputs: 1,
     outputs: 1,
     icon: 'snaggy.png',
-    label: function() {
+    label: function () {
       const name = this.name ? this.name : this.exchangeName
       const colon = name && this.exchangeRoutingKey ? ': ' : ''
       const label = name + colon + this.exchangeRoutingKey

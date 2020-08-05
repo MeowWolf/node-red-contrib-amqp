@@ -31,6 +31,22 @@ export interface AmqpConfig {
   amqpProperties: MessageProperties
 }
 
+export interface NodeDefaults {
+  name?: any
+  broker?: any
+  prefetch?: any
+  noAck?: any
+  exchangeName?: any
+  exchangeType?: any
+  exchangeRoutingKey?: any
+  exchangeDurable?: any
+  queueName?: any
+  queueExclusive?: any
+  queueDurable?: any
+  queueAutoDelete?: any
+  amqpProperties?: any
+}
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type GenericJsonObject = Record<string, any>
 
@@ -49,8 +65,15 @@ export enum NodeType {
 }
 
 export enum ExchangeType {
-  DIRECT = 'direct',
-  FANOUT = 'fanout',
-  TOPIC = 'topic',
-  HEADERS = 'header',
+  Direct = 'direct',
+  Fanout = 'fanout',
+  Topic = 'topic',
+  Headers = 'header',
+}
+
+export enum DefaultExchangeName {
+  Direct = 'amq.direct',
+  Fanout = 'amq.fanout',
+  Topic = 'amq.topic',
+  Headers = 'amq.headers',
 }

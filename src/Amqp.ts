@@ -13,6 +13,9 @@ import {
   NodeType,
   AssembledMessage,
   GenericJsonObject,
+  ExchangeType,
+  DefaultExchangeName,
+  NodeDefaults,
 } from './types'
 import { NODE_STATUS } from './constants'
 
@@ -21,14 +24,12 @@ export default class Amqp {
   private broker: Node
   private connection: Connection
   private channel: Channel
-  private properties: MessageProperties
   private q: Replies.AssertQueue
 
   constructor(
     private readonly RED: Red,
     private readonly node: Node,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    config: GenericJsonObject,
+    config: NodeDefaults,
   ) {
     this.config = {
       name: config.name,
@@ -36,7 +37,9 @@ export default class Amqp {
       prefetch: config.prefetch,
       noAck: config.noAck,
       exchange: {
-        name: config.exchangeName,
+        name:
+          config.exchangeName ||
+          this.determineDefaultExchange(config.exchangeType),
         type: config.exchangeType,
         routingKey: config.exchangeRoutingKey,
         durable: config.exchangeDurable,
@@ -50,6 +53,23 @@ export default class Amqp {
       amqpProperties: this.parseJson(
         config.amqpProperties,
       ) as MessageProperties,
+    }
+  }
+
+  private determineDefaultExchange(
+    exchangeType: ExchangeType,
+  ): DefaultExchangeName {
+    switch (exchangeType) {
+      case ExchangeType.Direct:
+        return DefaultExchangeName.Direct
+      case ExchangeType.Fanout:
+        return DefaultExchangeName.Fanout
+      case ExchangeType.Topic:
+        return DefaultExchangeName.Topic
+      case ExchangeType.Headers:
+        return DefaultExchangeName.Headers
+      default:
+        return DefaultExchangeName.Direct
     }
   }
 
@@ -127,16 +147,28 @@ export default class Amqp {
   }
 
   public async close(): Promise<void> {
-    const { name: exchangeName, routingKey } = this.config.exchange
-    const { name: queueName } = this.config.queue
+    const { name: exchangeName } = this.config.exchange
+    const queueName = this.q?.queue
 
     try {
       /* istanbul ignore else */
-      if (exchangeName) {
-        await this.channel.unbindQueue(queueName, exchangeName, routingKey)
+      if (exchangeName && queueName) {
+        const routingKeys = this.parseRoutingKeys()
+        for (let x = 0; x < routingKeys.length; x++) {
+          try {
+            await this.channel.unbindQueue(
+              queueName,
+              exchangeName,
+              routingKeys[x],
+            )
+          } catch (e) {
+            /* istanbul ignore next */
+            console.error('Error unbinding queue: ', e)
+          }
+        }
       }
-      this.channel.close()
-      this.connection.close()
+      await this.channel.close()
+      await this.connection.close()
     } catch (e) {} // Need to catch here but nothing further is necessary
   }
 
@@ -161,7 +193,7 @@ export default class Amqp {
     /* istanbul ignore else */
     if (name) {
       await this.channel.assertExchange(name, type, {
-        durable: durable,
+        durable,
       })
     }
   }
@@ -181,8 +213,8 @@ export default class Amqp {
 
     /* istanbul ignore else */
     if (name) {
-      this.parseRoutingKeys().forEach(routingKey => {
-        this.channel.bindQueue(this.q.queue, name, routingKey)
+      this.parseRoutingKeys().forEach(async routingKey => {
+        await this.channel.bindQueue(this.q.queue, name, routingKey)
       })
     }
   }
