@@ -55,10 +55,6 @@ export interface AmqpOutNodeDefaults {
   exchangeType?: any
   exchangeRoutingKey?: any
   exchangeDurable?: any
-  queueName?: any
-  queueExclusive?: any
-  queueDurable?: any
-  queueAutoDelete?: any
   amqpProperties?: any
 }
 

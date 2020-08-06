@@ -9,10 +9,6 @@
       exchangeType: { value: 'topic' },
       exchangeRoutingKey: { value: '' },
       exchangeDurable: { value: true },
-      queueName: { value: '' },
-      queueExclusive: { value: true },
-      queueDurable: { value: false },
-      queueAutoDelete: { value: true },
       amqpProperties: {
         value: '{ "headers": {} }',
       },
@@ -22,9 +18,12 @@
     align: 'right',
     icon: 'snaggy.svg',
     label: function () {
-      const name = this.name ? this.name : this.exchangeName
+      if (this.name) {
+        return this.name
+      }
+      const name = this.exchangeName
       const colon = name && this.exchangeRoutingKey ? ': ' : ''
-      const label = truncate(name + colon + this.exchangeRoutingKey)
+      const label = name + colon + this.exchangeRoutingKey
       return label || 'amqp-out'
     },
     oneditprepare: function () {

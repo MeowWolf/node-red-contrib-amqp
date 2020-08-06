@@ -21,7 +21,10 @@
     outputs: 1,
     icon: 'snaggy.png',
     label: function () {
-      const name = this.name ? this.name : this.exchangeName
+      if (this.name) {
+        return this.name
+      }
+      const name = this.exchangeName
       const colon = name && this.exchangeRoutingKey ? ': ' : ''
       const label = name + colon + this.exchangeRoutingKey
       return label || 'amqp-in-manual-ack'

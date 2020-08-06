@@ -1,34 +1,30 @@
 [
   {
-    "id": "18d1e56.3e5381b",
+    "id": "9cdadcf5.6c5dd",
     "type": "tab",
     "label": "AMQP General Examples",
     "disabled": false,
     "info": ""
   },
   {
-    "id": "a10f41f2.3d376",
+    "id": "d1fa159f.733798",
     "type": "amqp-out",
-    "z": "18d1e56.3e5381b",
+    "z": "9cdadcf5.6c5dd",
     "name": "",
     "broker": "3efe01c6.16a3de",
     "exchangeName": "amq.topic",
     "exchangeType": "topic",
     "exchangeRoutingKey": "old.routing.key",
     "exchangeDurable": true,
-    "queueName": "",
-    "queueExclusive": true,
-    "queueDurable": false,
-    "queueAutoDelete": true,
     "amqpProperties": "{\"appId\":\"app-123\"}",
-    "x": 590,
+    "x": 550,
     "y": 340,
     "wires": []
   },
   {
-    "id": "6dca479b.22c658",
+    "id": "98eee37.7a0c82",
     "type": "inject",
-    "z": "18d1e56.3e5381b",
+    "z": "9cdadcf5.6c5dd",
     "name": "Topic Input",
     "props": [
       { "p": "payload" },
@@ -48,12 +44,12 @@
     "payloadType": "json",
     "x": 140,
     "y": 340,
-    "wires": [["a10f41f2.3d376"]]
+    "wires": [["d1fa159f.733798"]]
   },
   {
-    "id": "6d940743.353a98",
+    "id": "888987cb.5fd418",
     "type": "debug",
-    "z": "18d1e56.3e5381b",
+    "z": "9cdadcf5.6c5dd",
     "name": "Topic Output",
     "active": true,
     "tosidebar": true,
@@ -63,14 +59,14 @@
     "targetType": "full",
     "statusVal": "",
     "statusType": "auto",
-    "x": 550,
+    "x": 510,
     "y": 400,
     "wires": []
   },
   {
-    "id": "f27141f.e382cc",
+    "id": "5d5eadb9.55ab14",
     "type": "amqp-in",
-    "z": "18d1e56.3e5381b",
+    "z": "9cdadcf5.6c5dd",
     "name": "",
     "broker": "3efe01c6.16a3de",
     "prefetch": 0,
@@ -86,12 +82,12 @@
     "headers": "",
     "x": 180,
     "y": 400,
-    "wires": [["6d940743.353a98"]]
+    "wires": [["888987cb.5fd418"]]
   },
   {
-    "id": "3019f2a6.25874e",
+    "id": "85c29ca0.a5f5b",
     "type": "comment",
-    "z": "18d1e56.3e5381b",
+    "z": "9cdadcf5.6c5dd",
     "name": "Topic Exchange Example",
     "info": "",
     "x": 130,
@@ -99,28 +95,24 @@
     "wires": []
   },
   {
-    "id": "b255091b.258b58",
+    "id": "345c8bda.4d50c4",
     "type": "amqp-out",
-    "z": "18d1e56.3e5381b",
+    "z": "9cdadcf5.6c5dd",
     "name": "",
     "broker": "3efe01c6.16a3de",
     "exchangeName": "amq.fanout",
     "exchangeType": "fanout",
     "exchangeRoutingKey": "",
     "exchangeDurable": true,
-    "queueName": "",
-    "queueExclusive": true,
-    "queueDurable": false,
-    "queueAutoDelete": true,
     "amqpProperties": "{\"appId\":\"really_new\"}",
-    "x": 550,
+    "x": 510,
     "y": 560,
     "wires": []
   },
   {
-    "id": "c92c26eb.ac5828",
+    "id": "e2f67aa6.ed73b8",
     "type": "inject",
-    "z": "18d1e56.3e5381b",
+    "z": "9cdadcf5.6c5dd",
     "name": "Fanout Input",
     "props": [
       { "p": "payload" },
@@ -139,12 +131,12 @@
     "payloadType": "json",
     "x": 150,
     "y": 560,
-    "wires": [["b255091b.258b58"]]
+    "wires": [["345c8bda.4d50c4"]]
   },
   {
-    "id": "98138c0b.c2936",
+    "id": "f83bf25d.2a94a",
     "type": "debug",
-    "z": "18d1e56.3e5381b",
+    "z": "9cdadcf5.6c5dd",
     "name": "Fanout Output",
     "active": true,
     "tosidebar": true,
@@ -154,14 +146,14 @@
     "targetType": "full",
     "statusVal": "",
     "statusType": "auto",
-    "x": 560,
+    "x": 520,
     "y": 640,
     "wires": []
   },
   {
-    "id": "2b8a74f6.4062dc",
+    "id": "20368e76.d5e112",
     "type": "amqp-in",
-    "z": "18d1e56.3e5381b",
+    "z": "9cdadcf5.6c5dd",
     "name": "",
     "broker": "3efe01c6.16a3de",
     "prefetch": 0,
@@ -177,12 +169,12 @@
     "headers": "",
     "x": 150,
     "y": 620,
-    "wires": [["98138c0b.c2936"]]
+    "wires": [["f83bf25d.2a94a"]]
   },
   {
-    "id": "8adc8472.ff6e08",
+    "id": "2af1abe6.ce85d4",
     "type": "amqp-in",
-    "z": "18d1e56.3e5381b",
+    "z": "9cdadcf5.6c5dd",
     "name": "",
     "broker": "3efe01c6.16a3de",
     "prefetch": 0,
@@ -198,12 +190,12 @@
     "headers": "",
     "x": 150,
     "y": 680,
-    "wires": [["98138c0b.c2936"]]
+    "wires": [["f83bf25d.2a94a"]]
   },
   {
-    "id": "d2a960e8.2cd87",
+    "id": "e6d79bd8.3a9ea8",
     "type": "comment",
-    "z": "18d1e56.3e5381b",
+    "z": "9cdadcf5.6c5dd",
     "name": "Fanout Exchange Example",
     "info": "",
     "x": 130,
@@ -211,28 +203,24 @@
     "wires": []
   },
   {
-    "id": "ad5427ea.968ab8",
+    "id": "e38fa05f.705cf",
     "type": "amqp-out",
-    "z": "18d1e56.3e5381b",
+    "z": "9cdadcf5.6c5dd",
     "name": "",
     "broker": "3efe01c6.16a3de",
     "exchangeName": "amq.direct",
     "exchangeType": "direct",
     "exchangeRoutingKey": "old-routing-key",
     "exchangeDurable": true,
-    "queueName": "",
-    "queueExclusive": true,
-    "queueDurable": false,
-    "queueAutoDelete": true,
     "amqpProperties": "{\"appId\":\"app-123\"}",
-    "x": 600,
+    "x": 560,
     "y": 120,
     "wires": []
   },
   {
-    "id": "ab9425a9.2726b8",
+    "id": "4c5f0492.c21bfc",
     "type": "inject",
-    "z": "18d1e56.3e5381b",
+    "z": "9cdadcf5.6c5dd",
     "name": "Direct Input",
     "props": [
       { "p": "payload" },
@@ -252,12 +240,12 @@
     "payloadType": "json",
     "x": 150,
     "y": 120,
-    "wires": [["ad5427ea.968ab8"]]
+    "wires": [["e38fa05f.705cf"]]
   },
   {
-    "id": "d615b5a1.d55398",
+    "id": "5f5b15e1.b8728c",
     "type": "debug",
-    "z": "18d1e56.3e5381b",
+    "z": "9cdadcf5.6c5dd",
     "name": "Direct Output",
     "active": true,
     "tosidebar": true,
@@ -267,14 +255,14 @@
     "targetType": "full",
     "statusVal": "",
     "statusType": "auto",
-    "x": 560,
+    "x": 520,
     "y": 180,
     "wires": []
   },
   {
-    "id": "305ace9c.8665f2",
+    "id": "4d4718bd.38b998",
     "type": "amqp-in",
-    "z": "18d1e56.3e5381b",
+    "z": "9cdadcf5.6c5dd",
     "name": "",
     "broker": "3efe01c6.16a3de",
     "prefetch": 0,
@@ -290,12 +278,12 @@
     "headers": "",
     "x": 200,
     "y": 180,
-    "wires": [["d615b5a1.d55398"]]
+    "wires": [["5f5b15e1.b8728c"]]
   },
   {
-    "id": "51f0c170.2da23",
+    "id": "e74091ea.d1eac",
     "type": "comment",
-    "z": "18d1e56.3e5381b",
+    "z": "9cdadcf5.6c5dd",
     "name": "Direct Exchange Example",
     "info": "",
     "x": 130,
@@ -303,9 +291,9 @@
     "wires": []
   },
   {
-    "id": "a8c6f139.222e8",
+    "id": "fa94c0a1.2ba4d",
     "type": "amqp-in",
-    "z": "18d1e56.3e5381b",
+    "z": "9cdadcf5.6c5dd",
     "name": "",
     "broker": "3efe01c6.16a3de",
     "prefetch": 0,
@@ -321,31 +309,27 @@
     "headers": "{\"x-match\":\"any\",\"name\":\"header-name2\",\"topic\":\"header-topic\"}",
     "x": 150,
     "y": 900,
-    "wires": [["bc145b9a.3c4fe8"]]
+    "wires": [["87c08601.640f88"]]
   },
   {
-    "id": "fd12ea5a.a16d78",
+    "id": "895f6929.8d0df8",
     "type": "amqp-out",
-    "z": "18d1e56.3e5381b",
+    "z": "9cdadcf5.6c5dd",
     "name": "",
     "broker": "3efe01c6.16a3de",
     "exchangeName": "amq.headers",
     "exchangeType": "headers",
     "exchangeRoutingKey": "",
     "exchangeDurable": true,
-    "queueName": "",
-    "queueExclusive": true,
-    "queueDurable": false,
-    "queueAutoDelete": true,
     "amqpProperties": "{\"appId\":\"really_new\",\"headers\":{\"name\":\"header-name\",\"topic\":\"header-topic\"}}",
-    "x": 550,
+    "x": 510,
     "y": 840,
     "wires": []
   },
   {
-    "id": "8dfabbb0.cf1948",
+    "id": "eea44fb.34bf1b",
     "type": "inject",
-    "z": "18d1e56.3e5381b",
+    "z": "9cdadcf5.6c5dd",
     "name": "Headers Input",
     "props": [
       { "p": "payload" },
@@ -360,12 +344,12 @@
     "payloadType": "json",
     "x": 150,
     "y": 840,
-    "wires": [["fd12ea5a.a16d78"]]
+    "wires": [["895f6929.8d0df8"]]
   },
   {
-    "id": "bc145b9a.3c4fe8",
+    "id": "87c08601.640f88",
     "type": "debug",
-    "z": "18d1e56.3e5381b",
+    "z": "9cdadcf5.6c5dd",
     "name": "Headers Output",
     "active": true,
     "tosidebar": true,
@@ -375,14 +359,14 @@
     "targetType": "full",
     "statusVal": "",
     "statusType": "auto",
-    "x": 560,
+    "x": 520,
     "y": 900,
     "wires": []
   },
   {
-    "id": "da8ef7d6.e58f48",
+    "id": "52e9b9b8.339638",
     "type": "comment",
-    "z": "18d1e56.3e5381b",
+    "z": "9cdadcf5.6c5dd",
     "name": "Headers Exchange Example",
     "info": "",
     "x": 140,
