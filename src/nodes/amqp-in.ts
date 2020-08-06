@@ -11,12 +11,12 @@ module.exports = function (RED: Red): void {
 
     // So we can use async/await here
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const iife = (async function init(
+    const iife = (async function initializeNode(
       self,
       isReconnect = false,
-    ): Promise<void> {
+    ): Promise<any> {
       try {
-        let connection = await amqp.connect()
+        const connection = await amqp.connect()
 
         // istanbul ignore else
         if (connection) {
@@ -25,33 +25,36 @@ module.exports = function (RED: Red): void {
           await amqp.initialize()
           await amqp.consume()
 
-          // When the node is re-deployed
-          self.on(
-            'close',
-            async (done: () => void): Promise<void> => {
-              await amqp.close()
-              done()
-            },
-          )
+          // We don't want to duplicate these handlers on reconnect
+          if (!isReconnect) {
+            // When the node is re-deployed
+            self.on(
+              'close',
+              async (done: () => void): Promise<void> => {
+                await amqp.close()
+                done()
+              },
+            )
 
-          // When the server goes down
-          connection.on('close', async e => {
-            if (e) {
-              const reconnect = () =>
-                new Promise(resolve => {
-                  setTimeout(async () => {
-                    try {
-                      await init(self, true)
-                      resolve()
-                    } catch (e) {
-                      await reconnect()
-                    }
-                  }, 2000)
-                })
+            // When the server goes down
+            connection.on('close', async e => {
+              if (e) {
+                const reconnect = () =>
+                  new Promise((resolve, reject) => {
+                    setTimeout(async () => {
+                      try {
+                        await initializeNode(self, true)
+                        resolve()
+                      } catch (e) {
+                        await reconnect()
+                      }
+                    }, 2000)
+                  })
 
-              await reconnect()
-            }
-          })
+                await reconnect()
+              }
+            })
+          }
         }
       } catch (e) {
         if (isReconnect) {

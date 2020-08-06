@@ -11,7 +11,7 @@ module.exports = function (RED: Red): void {
 
     // So we can use async/await here
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const iife = (async function init(
+    const iife = (async function initializeNode(
       self,
       isReconnect = false,
     ): Promise<void> {
@@ -24,49 +24,52 @@ module.exports = function (RED: Red): void {
 
           await amqp.initialize()
 
-          self.on(
-            'input',
-            async ({ payload, topic, properties }, send, done) => {
-              if (topic) {
-                amqp.setRoutingKey(topic)
-              }
+          // We don't want to duplicate these handlers on reconnect
+          if (!isReconnect) {
+            self.on(
+              'input',
+              async ({ payload, topic, properties }, send, done) => {
+                if (topic) {
+                  amqp.setRoutingKey(topic)
+                }
 
-              amqp.publish(JSON.stringify(payload), properties)
+                amqp.publish(JSON.stringify(payload), properties)
 
-              /* istanbul ignore else */
-              if (done) {
+                /* istanbul ignore else */
+                if (done) {
+                  done()
+                }
+              },
+            )
+
+            // When the node is re-deployed
+            self.on(
+              'close',
+              async (done: () => void): Promise<void> => {
+                await amqp.close()
                 done()
+              },
+            )
+
+            // When the server goes down
+            connection.on('close', async e => {
+              if (e) {
+                const reconnect = () =>
+                  new Promise(resolve => {
+                    setTimeout(async () => {
+                      try {
+                        await initializeNode(self, true)
+                        resolve()
+                      } catch (e) {
+                        await reconnect()
+                      }
+                    }, 2000)
+                  })
+
+                await reconnect()
               }
-            },
-          )
-
-          // When the node is re-deployed
-          self.on(
-            'close',
-            async (done: () => void): Promise<void> => {
-              await amqp.close()
-              done()
-            },
-          )
-
-          // When the server goes down
-          connection.on('close', async e => {
-            if (e) {
-              const reconnect = () =>
-                new Promise(resolve => {
-                  setTimeout(async () => {
-                    try {
-                      await init(self, true)
-                      resolve()
-                    } catch (e) {
-                      await reconnect()
-                    }
-                  }, 2000)
-                })
-
-              await reconnect()
-            }
-          })
+            })
+          }
         }
       } catch (e) {
         if (isReconnect) {

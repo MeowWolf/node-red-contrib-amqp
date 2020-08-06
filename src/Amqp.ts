@@ -156,17 +156,21 @@ export default class Amqp {
       /* istanbul ignore else */
       if (exchangeName && queueName) {
         const routingKeys = this.parseRoutingKeys()
-        for (let x = 0; x < routingKeys.length; x++) {
-          try {
-            await this.channel.unbindQueue(
-              queueName,
-              exchangeName,
-              routingKeys[x],
-            )
-          } catch (e) {
-            /* istanbul ignore next */
-            console.error('Error unbinding queue: ', e)
+        try {
+          if (routingKeys.length > 0) {
+            for (let x = 0; x < routingKeys.length; x++) {
+              await this.channel.unbindQueue(
+                queueName,
+                exchangeName,
+                routingKeys[x],
+              )
+            }
+          } else {
+            await this.channel.unbindQueue(queueName, exchangeName, '')
           }
+        } catch (e) {
+          /* istanbul ignore next */
+          console.error('Error unbinding queue: ', e.message)
         }
       }
       await this.channel.close()
