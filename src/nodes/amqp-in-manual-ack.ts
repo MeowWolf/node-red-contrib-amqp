@@ -1,19 +1,22 @@
-import { Red } from 'node-red'
+import { Red, NodeProperties } from 'node-red'
 import { NODE_STATUS } from '../constants'
 import { ErrorType, NodeType } from '../types'
 import Amqp from '../Amqp'
 
 module.exports = function (RED: Red): void {
-  function AmqpInManualAck(config): void {
+  function AmqpInManualAck(config: NodeProperties): void {
     RED.nodes.createNode(this, config)
     this.status(NODE_STATUS.Disconnected)
     const amqp = new Amqp(RED, this, config)
 
     // So we can use async/await here
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const iife = (async function (self): Promise<void> {
+    const iife = (async function init(
+      self,
+      isReconnect = false,
+    ): Promise<void> {
       try {
-        const connection = await amqp.connect()
+        let connection = await amqp.connect()
 
         // istanbul ignore else
         if (connection) {
@@ -31,6 +34,7 @@ module.exports = function (RED: Red): void {
             }
           })
 
+          // When the server goes down
           self.on(
             'close',
             async (done: () => void): Promise<void> => {
@@ -38,8 +42,31 @@ module.exports = function (RED: Red): void {
               done()
             },
           )
+
+          // When the server goes down
+          connection.on('close', async e => {
+            if (e) {
+              const reconnect = () =>
+                new Promise(resolve => {
+                  setTimeout(async () => {
+                    try {
+                      await init(self, true)
+                      resolve()
+                    } catch (e) {
+                      await reconnect()
+                    }
+                  }, 2000)
+                })
+
+              await reconnect()
+            }
+          })
         }
       } catch (e) {
+        if (isReconnect) {
+          throw e
+        }
+
         if (e.code === ErrorType.INALID_LOGIN) {
           self.status(NODE_STATUS.Invalid)
           self.error(`AmqpInManualAck() Could not connect to broker ${e}`)
