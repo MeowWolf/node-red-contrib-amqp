@@ -234,7 +234,7 @@ describe('Amqp Class', () => {
     ).to.equal(true)
   })
 
-  it('bindQueue()', () => {
+  it('bindQueue() topic exchange', () => {
     const queue = 'queueName'
     const bindQueueStub = sinon.stub()
     amqp.channel = { bindQueue: bindQueueStub }
@@ -246,5 +246,70 @@ describe('Amqp Class', () => {
     expect(
       bindQueueStub.calledWith(queue, exchangeName, exchangeRoutingKey),
     ).to.equal(true)
+  })
+
+  it('bindQueue() direct exchange', () => {
+    const config = {
+      ...nodeConfigFixture,
+      exchangeType: ExchangeType.Direct,
+      exchangeRoutingKey: 'routing-key',
+    }
+    // @ts-ignore
+    amqp = new Amqp(RED, nodeFixture, config)
+
+    const queue = 'queueName'
+    const bindQueueStub = sinon.stub()
+    amqp.channel = { bindQueue: bindQueueStub }
+    amqp.q = { queue }
+    const { exchangeName, exchangeRoutingKey } = config
+
+    amqp.bindQueue()
+    // expect(bindQueueStub.calledOnce).to.equal(true)
+    expect(
+      bindQueueStub.calledWith(queue, exchangeName, exchangeRoutingKey),
+    ).to.equal(true)
+  })
+
+  it('bindQueue() fanout exchange', () => {
+    const config = {
+      ...nodeConfigFixture,
+      exchangeType: ExchangeType.Fanout,
+      exchangeRoutingKey: '',
+    }
+    // @ts-ignore
+    amqp = new Amqp(RED, nodeFixture, config)
+
+    const queue = 'queueName'
+    const bindQueueStub = sinon.stub()
+    amqp.channel = { bindQueue: bindQueueStub }
+    amqp.q = { queue }
+    const { exchangeName } = config
+
+    amqp.bindQueue()
+    expect(bindQueueStub.calledOnce).to.equal(true)
+    expect(bindQueueStub.calledWith(queue, exchangeName, '')).to.equal(true)
+  })
+
+  it('bindQueue() headers exchange', () => {
+    const config = {
+      ...nodeConfigFixture,
+      exchangeType: ExchangeType.Headers,
+      exchangeRoutingKey: '',
+      headers: { some: 'headers' },
+    }
+    // @ts-ignore
+    amqp = new Amqp(RED, nodeFixture, config)
+
+    const queue = 'queueName'
+    const bindQueueStub = sinon.stub()
+    amqp.channel = { bindQueue: bindQueueStub }
+    amqp.q = { queue }
+    const { exchangeName, headers } = config
+
+    amqp.bindQueue()
+    expect(bindQueueStub.calledOnce).to.equal(true)
+    expect(bindQueueStub.calledWith(queue, exchangeName, '', headers)).to.equal(
+      true,
+    )
   })
 })
