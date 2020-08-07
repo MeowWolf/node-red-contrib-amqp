@@ -36,6 +36,6 @@ npm test
 Run coverage:
 
 ```
-npm run test:coverage
+npm run test:cov
 ```
 
