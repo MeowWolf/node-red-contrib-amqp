@@ -33,29 +33,29 @@ export interface AmqpConfig {
 }
 
 export interface AmqpInNodeDefaults {
-  name?: any
-  broker?: any
-  prefetch?: any
-  noAck?: any
-  exchangeName?: any
-  exchangeType?: any
-  exchangeRoutingKey?: any
-  exchangeDurable?: any
-  queueName?: any
-  queueExclusive?: any
-  queueDurable?: any
-  queueAutoDelete?: any
-  headers?: any
+  name?: unknown
+  broker?: unknown
+  prefetch?: unknown
+  noAck?: unknown
+  exchangeName?: unknown
+  exchangeType?: unknown
+  exchangeRoutingKey?: unknown
+  exchangeDurable?: unknown
+  queueName?: unknown
+  queueExclusive?: unknown
+  queueDurable?: unknown
+  queueAutoDelete?: unknown
+  headers?: unknown
 }
 
 export interface AmqpOutNodeDefaults {
-  name?: any
-  broker?: any
-  exchangeName?: any
-  exchangeType?: any
-  exchangeRoutingKey?: any
-  exchangeDurable?: any
-  amqpProperties?: any
+  name?: unknown
+  broker?: unknown
+  exchangeName?: unknown
+  exchangeType?: unknown
+  exchangeRoutingKey?: unknown
+  exchangeDurable?: unknown
+  amqpProperties?: unknown
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

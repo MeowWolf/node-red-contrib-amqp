@@ -16,7 +16,7 @@ module.exports = function (RED: Red): void {
       isReconnect = false,
     ): Promise<void> {
       try {
-        let connection = await amqp.connect()
+        const connection = await amqp.connect()
 
         // istanbul ignore else
         if (connection) {
