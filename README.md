@@ -39,7 +39,3 @@ Run coverage:
 npm run test:coverage
 ```
 
-## Roadmap
-
-- Add TLS authentication
-- Implement headers exchange
