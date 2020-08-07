@@ -15,7 +15,7 @@ npm i @meowwolf/node-red-contrib-amqp
 ## Usage
 
 Provides three standard nodes and an amqp broker config node.  
-Please see the `Node Help` section from wihin node-red for more info
+Please see the `Node Help` section from within node-red for more info
 
 ## Development
 
