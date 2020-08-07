@@ -34,10 +34,19 @@
 
       $('#node-input-exchangeType').change(function (e) {
         const exchangeType = this.value
+
+        // hide/show routing key field
         if (['fanout', 'headers'].includes(exchangeType)) {
           $('.routing-key-form-input').hide()
         } else {
           $('.routing-key-form-input').show()
+        }
+
+        // hide/show headers exchange help text
+        if (['headers'].includes(exchangeType)) {
+          $('.headers-form-input').show()
+        } else {
+          $('.headers-form-input').hide()
         }
       })
     },
@@ -57,6 +66,9 @@
   }
   div.wide-label input {
     width: 65% !important;
+  }
+  div.form-tips {
+    margin: 20px 0;
   }
 </style>
 
@@ -80,6 +92,10 @@
       <option value="headers">Headers</option>
     </select>
   </div>
+  <div class="form-tips headers-form-input">
+    <i class="fa fa-info-circle"></i>
+    Add key/value pairs to a `headers` field in the AMQP Properties field below
+  </div>
   <div class="form-row wide-label">
     <label for="node-input-exchangeName"><i class="fa fa-tag"></i>&nbsp;&nbsp;Exchange Name</label>
     <input type="text" id="node-input-exchangeName" placeholder="Leave blank for the default exchange">
@@ -92,7 +108,6 @@
     <i class="fa fa-info-circle"></i>
     You can specify multiple routing keys separated by commas
   </div>
-  <br>
   <div class="form-row">
     <label>&nbsp;</label>
     <input style="width:20px; vertical-align:baseline; margin-right:5px;" type="checkbox" id="node-input-exchangeDurable">
@@ -105,24 +120,6 @@
   <div class="form-tips">
     <i class="fa fa-info-circle"></i>
     Standard AMQP message properties as specified in <a href="https://www.squaremobius.net/amqp.node/channel_api.html#channel_publish" target="_blank">the amqplib docs</a>.
-    <br />
-    <br />
-    <ul>
-      <li><code>contentType</code>: any | undefined</li>
-      <li><code>contentEncoding</code>: any | undefined</li>
-      <li><code>headers</code>: Object | undefined</li>
-      <li><code>deliveryMode</code>: any | undefined</li>
-      <li><code>priority</code>: any | undefined</li>
-      <li><code>correlationId</code>: any | undefined</li>
-      <li><code>replyTo</code>: any | undefined</li>
-      <li><code>expiration</code>: any | undefined</li>
-      <li><code>messageId</code>: any | undefined</li>
-      <li><code>timestamp</code>: any | undefined</li>
-      <li><code>type</code>: any | undefined</li>
-      <li><code>userId</code>: any | undefined</li>
-      <li><code>appId</code>: any | undefined</li>
-      <li><code>clusterId</code>: any | undefined</li>
-    </ul>
   </div>
 </script>
 
