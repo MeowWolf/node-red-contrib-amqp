@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ConsumeMessage, MessageProperties } from 'amqplib'
 
 export interface BrokerConfig extends Node {
@@ -29,9 +30,10 @@ export interface AmqpConfig {
     autoDelete: boolean
   }
   amqpProperties: MessageProperties
+  headers: GenericJsonObject
 }
 
-export interface NodeDefaults {
+export interface AmqpInNodeDefaults {
   name?: any
   broker?: any
   prefetch?: any
@@ -44,6 +46,16 @@ export interface NodeDefaults {
   queueExclusive?: any
   queueDurable?: any
   queueAutoDelete?: any
+  headers?: any
+}
+
+export interface AmqpOutNodeDefaults {
+  name?: any
+  broker?: any
+  exchangeName?: any
+  exchangeType?: any
+  exchangeRoutingKey?: any
+  exchangeDurable?: any
   amqpProperties?: any
 }
 

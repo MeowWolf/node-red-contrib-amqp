@@ -7,13 +7,8 @@
       broker: { value: '', type: 'amqp-broker' },
       exchangeName: { value: '' },
       exchangeType: { value: 'topic' },
-      noAck: { value: true },
       exchangeRoutingKey: { value: '' },
       exchangeDurable: { value: true },
-      queueName: { value: '' },
-      queueExclusive: { value: true },
-      queueDurable: { value: false },
-      queueAutoDelete: { value: true },
       amqpProperties: {
         value: '{ "headers": {} }',
       },
@@ -23,9 +18,12 @@
     align: 'right',
     icon: 'snaggy.svg',
     label: function () {
-      const name = this.name ? this.name : this.exchangeName
+      if (this.name) {
+        return this.name
+      }
+      const name = this.exchangeName
       const colon = name && this.exchangeRoutingKey ? ': ' : ''
-      const label = truncate(name + colon + this.exchangeRoutingKey)
+      const label = name + colon + this.exchangeRoutingKey
       return label || 'amqp-out'
     },
     oneditprepare: function () {
@@ -71,11 +69,6 @@
     <label for="node-input-broker"><i class="fa fa-globe"></i>&nbsp;&nbsp;Broker</label>
     <input type="text" id="node-input-broker" placeholder="AMQP Broker">
   </div>
-  <div class="form-row">
-    <label>&nbsp;</label>
-    <input style="width:20px; vertical-align:baseline; margin-right:5px;" type="checkbox" id="node-input-noAck">
-    <label style="width:auto; margin-top:7px;" for="node-input-noAck">noAck</label>
-  </div>
   <hr>
   <h4>Exchange Info</h4>
   <div class="form-row wide-label">
@@ -84,7 +77,7 @@
       <option value="topic">Topic</option>
       <option value="direct">Direct</option>
       <option value="fanout">Fanout</option>
-      <!-- <option value="header">Header</option> -->
+      <option value="headers">Headers</option>
     </select>
   </div>
   <div class="form-row wide-label">

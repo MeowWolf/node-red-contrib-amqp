@@ -15,7 +15,8 @@ import {
   GenericJsonObject,
   ExchangeType,
   DefaultExchangeName,
-  NodeDefaults,
+  AmqpInNodeDefaults,
+  AmqpOutNodeDefaults,
 } from './types'
 import { NODE_STATUS } from './constants'
 
@@ -29,7 +30,7 @@ export default class Amqp {
   constructor(
     private readonly RED: Red,
     private readonly node: Node,
-    config: NodeDefaults,
+    config: AmqpInNodeDefaults & AmqpOutNodeDefaults,
   ) {
     this.config = {
       name: config.name,
@@ -53,6 +54,7 @@ export default class Amqp {
       amqpProperties: this.parseJson(
         config.amqpProperties,
       ) as MessageProperties,
+      headers: this.parseJson(config.headers),
     }
   }
 
@@ -154,17 +156,17 @@ export default class Amqp {
       /* istanbul ignore else */
       if (exchangeName && queueName) {
         const routingKeys = this.parseRoutingKeys()
-        for (let x = 0; x < routingKeys.length; x++) {
-          try {
+        try {
+          for (let x = 0; x < routingKeys.length; x++) {
             await this.channel.unbindQueue(
               queueName,
               exchangeName,
               routingKeys[x],
             )
-          } catch (e) {
-            /* istanbul ignore next */
-            console.error('Error unbinding queue: ', e)
           }
+        } catch (e) {
+          /* istanbul ignore next */
+          console.error('Error unbinding queue: ', e.message)
         }
       }
       await this.channel.close()
@@ -208,14 +210,24 @@ export default class Amqp {
     })
   }
 
-  private bindQueue(): void {
-    const { name } = this.config.exchange
+  private async bindQueue(): Promise<void> {
+    const { name, type } = this.config.exchange
 
-    /* istanbul ignore else */
-    if (name) {
-      this.parseRoutingKeys().forEach(async routingKey => {
-        await this.channel.bindQueue(this.q.queue, name, routingKey)
-      })
+    if (type === ExchangeType.Direct || type === ExchangeType.Topic) {
+      /* istanbul ignore else */
+      if (name) {
+        this.parseRoutingKeys().forEach(async routingKey => {
+          await this.channel.bindQueue(this.q.queue, name, routingKey)
+        })
+      }
+    }
+
+    if (type === ExchangeType.Fanout) {
+      await this.channel.bindQueue(this.q.queue, name, '')
+    }
+
+    if (type === ExchangeType.Headers) {
+      await this.channel.bindQueue(this.q.queue, name, '', this.config.headers)
     }
   }
 
