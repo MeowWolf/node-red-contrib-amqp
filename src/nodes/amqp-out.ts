@@ -28,9 +28,9 @@ module.exports = function (RED: Red): void {
           if (!isReconnect) {
             self.on(
               'input',
-              async ({ payload, topic, properties }, send, done) => {
-                if (topic) {
-                  amqp.setRoutingKey(topic)
+              async ({ payload, routingKey, properties }, send, done) => {
+                if (routingKey) {
+                  amqp.setRoutingKey(routingKey)
                 }
 
                 amqp.publish(JSON.stringify(payload), properties)

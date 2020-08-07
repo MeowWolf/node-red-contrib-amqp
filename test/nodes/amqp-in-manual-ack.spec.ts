@@ -25,7 +25,7 @@ describe('amqp-in-manual-ack Node', () => {
     sinon.restore()
   })
 
-  it('should be loaded', (done) => {
+  it('should be loaded', done => {
     const flow = [
       { id: 'n1', type: NodeType.AMQP_IN_MANUAL_ACK, name: 'test name' },
     ]
@@ -64,7 +64,7 @@ describe('amqp-in-manual-ack Node', () => {
         // expect(initializeStub.calledOnce).to.be.true
 
         const amqpInManualAckNode = helper.getNode('n1')
-        amqpInManualAckNode.receive({ payload: 'foo', topic: 'bar' })
+        amqpInManualAckNode.receive({ payload: 'foo', routingKey: 'bar' })
         amqpInManualAckNode.close()
         done()
       },
