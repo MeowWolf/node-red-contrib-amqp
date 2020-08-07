@@ -1,17 +1,17 @@
 [
   {
-    "id": "9cdadcf5.6c5dd",
+    "id": "e4fe9c44.6dee1",
     "type": "tab",
     "label": "AMQP General Examples",
     "disabled": false,
     "info": ""
   },
   {
-    "id": "d1fa159f.733798",
+    "id": "19af6507.cc992b",
     "type": "amqp-out",
-    "z": "9cdadcf5.6c5dd",
+    "z": "e4fe9c44.6dee1",
     "name": "",
-    "broker": "3efe01c6.16a3de",
+    "broker": "",
     "exchangeName": "amq.topic",
     "exchangeType": "topic",
     "exchangeRoutingKey": "old.routing.key",
@@ -22,9 +22,9 @@
     "wires": []
   },
   {
-    "id": "98eee37.7a0c82",
+    "id": "32ebb2ab.99fc6e",
     "type": "inject",
-    "z": "9cdadcf5.6c5dd",
+    "z": "e4fe9c44.6dee1",
     "name": "Topic Input",
     "props": [
       { "p": "payload" },
@@ -44,12 +44,12 @@
     "payloadType": "json",
     "x": 140,
     "y": 340,
-    "wires": [["d1fa159f.733798"]]
+    "wires": [["19af6507.cc992b"]]
   },
   {
-    "id": "888987cb.5fd418",
+    "id": "716664b4.d3e6fc",
     "type": "debug",
-    "z": "9cdadcf5.6c5dd",
+    "z": "e4fe9c44.6dee1",
     "name": "Topic Output",
     "active": true,
     "tosidebar": true,
@@ -64,11 +64,11 @@
     "wires": []
   },
   {
-    "id": "5d5eadb9.55ab14",
+    "id": "3c555900.750918",
     "type": "amqp-in",
-    "z": "9cdadcf5.6c5dd",
+    "z": "e4fe9c44.6dee1",
     "name": "",
-    "broker": "3efe01c6.16a3de",
+    "broker": "",
     "prefetch": 0,
     "noAck": true,
     "exchangeName": "amq.topic",
@@ -82,12 +82,12 @@
     "headers": "",
     "x": 180,
     "y": 400,
-    "wires": [["888987cb.5fd418"]]
+    "wires": [["716664b4.d3e6fc"]]
   },
   {
-    "id": "85c29ca0.a5f5b",
+    "id": "c76c0f14.f6bf8",
     "type": "comment",
-    "z": "9cdadcf5.6c5dd",
+    "z": "e4fe9c44.6dee1",
     "name": "Topic Exchange Example",
     "info": "",
     "x": 130,
@@ -95,11 +95,11 @@
     "wires": []
   },
   {
-    "id": "345c8bda.4d50c4",
+    "id": "985c80c7.32f88",
     "type": "amqp-out",
-    "z": "9cdadcf5.6c5dd",
+    "z": "e4fe9c44.6dee1",
     "name": "",
-    "broker": "3efe01c6.16a3de",
+    "broker": "",
     "exchangeName": "amq.fanout",
     "exchangeType": "fanout",
     "exchangeRoutingKey": "",
@@ -110,9 +110,9 @@
     "wires": []
   },
   {
-    "id": "e2f67aa6.ed73b8",
+    "id": "47a41431.e1c49c",
     "type": "inject",
-    "z": "9cdadcf5.6c5dd",
+    "z": "e4fe9c44.6dee1",
     "name": "Fanout Input",
     "props": [
       { "p": "payload" },
@@ -131,12 +131,12 @@
     "payloadType": "json",
     "x": 150,
     "y": 560,
-    "wires": [["345c8bda.4d50c4"]]
+    "wires": [["985c80c7.32f88"]]
   },
   {
-    "id": "f83bf25d.2a94a",
+    "id": "31cf21dd.3de65e",
     "type": "debug",
-    "z": "9cdadcf5.6c5dd",
+    "z": "e4fe9c44.6dee1",
     "name": "Fanout Output",
     "active": true,
     "tosidebar": true,
@@ -151,11 +151,11 @@
     "wires": []
   },
   {
-    "id": "20368e76.d5e112",
+    "id": "da3a3158.c844e",
     "type": "amqp-in",
-    "z": "9cdadcf5.6c5dd",
+    "z": "e4fe9c44.6dee1",
     "name": "",
-    "broker": "3efe01c6.16a3de",
+    "broker": "",
     "prefetch": 0,
     "noAck": true,
     "exchangeName": "amq.fanout",
@@ -169,14 +169,14 @@
     "headers": "",
     "x": 150,
     "y": 620,
-    "wires": [["f83bf25d.2a94a"]]
+    "wires": [["31cf21dd.3de65e"]]
   },
   {
-    "id": "2af1abe6.ce85d4",
+    "id": "e13f5415.b32358",
     "type": "amqp-in",
-    "z": "9cdadcf5.6c5dd",
+    "z": "e4fe9c44.6dee1",
     "name": "",
-    "broker": "3efe01c6.16a3de",
+    "broker": "",
     "prefetch": 0,
     "noAck": true,
     "exchangeName": "amq.fanout",
@@ -190,12 +190,12 @@
     "headers": "",
     "x": 150,
     "y": 680,
-    "wires": [["f83bf25d.2a94a"]]
+    "wires": [["31cf21dd.3de65e"]]
   },
   {
-    "id": "e6d79bd8.3a9ea8",
+    "id": "91b26155.dc80e",
     "type": "comment",
-    "z": "9cdadcf5.6c5dd",
+    "z": "e4fe9c44.6dee1",
     "name": "Fanout Exchange Example",
     "info": "",
     "x": 130,
@@ -203,11 +203,11 @@
     "wires": []
   },
   {
-    "id": "e38fa05f.705cf",
+    "id": "c93fe173.9c98c",
     "type": "amqp-out",
-    "z": "9cdadcf5.6c5dd",
+    "z": "e4fe9c44.6dee1",
     "name": "",
-    "broker": "3efe01c6.16a3de",
+    "broker": "",
     "exchangeName": "amq.direct",
     "exchangeType": "direct",
     "exchangeRoutingKey": "old-routing-key",
@@ -218,9 +218,9 @@
     "wires": []
   },
   {
-    "id": "4c5f0492.c21bfc",
+    "id": "cd5ab12b.e0e04",
     "type": "inject",
-    "z": "9cdadcf5.6c5dd",
+    "z": "e4fe9c44.6dee1",
     "name": "Direct Input",
     "props": [
       { "p": "payload" },
@@ -229,23 +229,23 @@
         "v": "{\"correlationId\":\"correlation-123\",\"headers\":{\"arbitrary\":\"data\"}}",
         "vt": "json"
       },
-      { "p": "topic", "vt": "str" }
+      { "p": "routingKey", "v": "new-routing-key", "vt": "str" }
     ],
     "repeat": "",
     "crontab": "",
     "once": false,
     "onceDelay": 0.1,
-    "topic": "new-routing-key",
+    "topic": "",
     "payload": "{\"data\":\"the payload\"}",
     "payloadType": "json",
     "x": 150,
     "y": 120,
-    "wires": [["e38fa05f.705cf"]]
+    "wires": [["c93fe173.9c98c"]]
   },
   {
-    "id": "5f5b15e1.b8728c",
+    "id": "88ed2319.87f56",
     "type": "debug",
-    "z": "9cdadcf5.6c5dd",
+    "z": "e4fe9c44.6dee1",
     "name": "Direct Output",
     "active": true,
     "tosidebar": true,
@@ -260,11 +260,11 @@
     "wires": []
   },
   {
-    "id": "4d4718bd.38b998",
+    "id": "66ba8a46.b3ba84",
     "type": "amqp-in",
-    "z": "9cdadcf5.6c5dd",
+    "z": "e4fe9c44.6dee1",
     "name": "",
-    "broker": "3efe01c6.16a3de",
+    "broker": "",
     "prefetch": 0,
     "noAck": true,
     "exchangeName": "amq.direct",
@@ -278,12 +278,12 @@
     "headers": "",
     "x": 200,
     "y": 180,
-    "wires": [["5f5b15e1.b8728c"]]
+    "wires": [["88ed2319.87f56"]]
   },
   {
-    "id": "e74091ea.d1eac",
+    "id": "33421fba.f8418",
     "type": "comment",
-    "z": "9cdadcf5.6c5dd",
+    "z": "e4fe9c44.6dee1",
     "name": "Direct Exchange Example",
     "info": "",
     "x": 130,
@@ -291,11 +291,11 @@
     "wires": []
   },
   {
-    "id": "fa94c0a1.2ba4d",
+    "id": "12c8048f.4eaefb",
     "type": "amqp-in",
-    "z": "9cdadcf5.6c5dd",
+    "z": "e4fe9c44.6dee1",
     "name": "",
-    "broker": "3efe01c6.16a3de",
+    "broker": "",
     "prefetch": 0,
     "noAck": true,
     "exchangeName": "amq.headers",
@@ -306,17 +306,17 @@
     "queueExclusive": true,
     "queueDurable": false,
     "queueAutoDelete": true,
-    "headers": "{\"x-match\":\"any\",\"name\":\"header-name2\",\"topic\":\"header-topic\"}",
+    "headers": "{\"x-match\":\"all\",\"name\":\"header-name\",\"topic\":\"header-topic\"}",
     "x": 150,
     "y": 900,
-    "wires": [["87c08601.640f88"]]
+    "wires": [["8ec3fa87.70c338"]]
   },
   {
-    "id": "895f6929.8d0df8",
+    "id": "6eccc4f.c6a2a3c",
     "type": "amqp-out",
-    "z": "9cdadcf5.6c5dd",
+    "z": "e4fe9c44.6dee1",
     "name": "",
-    "broker": "3efe01c6.16a3de",
+    "broker": "",
     "exchangeName": "amq.headers",
     "exchangeType": "headers",
     "exchangeRoutingKey": "",
@@ -327,9 +327,9 @@
     "wires": []
   },
   {
-    "id": "eea44fb.34bf1b",
+    "id": "cb5093bf.1d524",
     "type": "inject",
-    "z": "9cdadcf5.6c5dd",
+    "z": "e4fe9c44.6dee1",
     "name": "Headers Input",
     "props": [
       { "p": "payload" },
@@ -344,12 +344,12 @@
     "payloadType": "json",
     "x": 150,
     "y": 840,
-    "wires": [["895f6929.8d0df8"]]
+    "wires": [["6eccc4f.c6a2a3c"]]
   },
   {
-    "id": "87c08601.640f88",
+    "id": "8ec3fa87.70c338",
     "type": "debug",
-    "z": "9cdadcf5.6c5dd",
+    "z": "e4fe9c44.6dee1",
     "name": "Headers Output",
     "active": true,
     "tosidebar": true,
@@ -364,23 +364,13 @@
     "wires": []
   },
   {
-    "id": "52e9b9b8.339638",
+    "id": "3f7dd2f6.9db46e",
     "type": "comment",
-    "z": "9cdadcf5.6c5dd",
+    "z": "e4fe9c44.6dee1",
     "name": "Headers Exchange Example",
     "info": "",
     "x": 140,
     "y": 780,
     "wires": []
-  },
-  {
-    "id": "3efe01c6.16a3de",
-    "type": "amqp-broker",
-    "z": "",
-    "name": "default-broker",
-    "host": "localhost",
-    "port": "5672",
-    "vhost": "",
-    "tls": false
   }
 ]
