@@ -1,15 +1,15 @@
 [
   {
-    "id": "f28e7d9c.7dedc",
+    "id": "da0e69ee.791638",
     "type": "tab",
     "label": "AMQP Manual Ack With Complete",
     "disabled": false,
     "info": ""
   },
   {
-    "id": "a4836ac5.35f218",
+    "id": "54883a06.6ce0f4",
     "type": "debug",
-    "z": "f28e7d9c.7dedc",
+    "z": "da0e69ee.791638",
     "name": "With \"Complete\" Message",
     "active": true,
     "tosidebar": true,
@@ -24,11 +24,11 @@
     "wires": []
   },
   {
-    "id": "bc0be85a.14fc58",
+    "id": "42a93135.4cad3",
     "type": "amqp-in-manual-ack",
-    "z": "f28e7d9c.7dedc",
+    "z": "da0e69ee.791638",
     "name": "amqp-in-manual-ack",
-    "broker": "3efe01c6.16a3de",
+    "broker": "",
     "prefetch": "0",
     "exchangeName": "amq.topic",
     "exchangeType": "topic",
@@ -41,12 +41,12 @@
     "headers": "",
     "x": 280,
     "y": 180,
-    "wires": [["a4836ac5.35f218", "5c6eb08a.700e4"]]
+    "wires": [["54883a06.6ce0f4", "e6a075e1.1c4b28"]]
   },
   {
-    "id": "5c6eb08a.700e4",
+    "id": "e6a075e1.1c4b28",
     "type": "delay",
-    "z": "f28e7d9c.7dedc",
+    "z": "da0e69ee.791638",
     "name": "",
     "pauseType": "delay",
     "timeout": "5",
@@ -60,12 +60,12 @@
     "drop": false,
     "x": 460,
     "y": 240,
-    "wires": [["e689756b.b921b8"]]
+    "wires": [["eb547c9e.cf806"]]
   },
   {
-    "id": "e689756b.b921b8",
+    "id": "eb547c9e.cf806",
     "type": "debug",
-    "z": "f28e7d9c.7dedc",
+    "z": "da0e69ee.791638",
     "name": "After \"Complete\" Delay",
     "active": true,
     "tosidebar": true,
@@ -80,11 +80,11 @@
     "wires": []
   },
   {
-    "id": "d47043e2.8c0c9",
+    "id": "25cc7051.4b336",
     "type": "amqp-out",
-    "z": "f28e7d9c.7dedc",
+    "z": "da0e69ee.791638",
     "name": "amqp-out",
-    "broker": "3efe01c6.16a3de",
+    "broker": "",
     "exchangeName": "amq.topic",
     "exchangeType": "topic",
     "exchangeRoutingKey": "acked.with.complete",
@@ -95,9 +95,9 @@
     "wires": []
   },
   {
-    "id": "5c6406fe.a93508",
+    "id": "b34052fb.fd329",
     "type": "inject",
-    "z": "f28e7d9c.7dedc",
+    "z": "da0e69ee.791638",
     "name": "Topic Input",
     "props": [
       { "p": "payload" },
@@ -116,27 +116,17 @@
     "payloadType": "json",
     "x": 140,
     "y": 80,
-    "wires": [["d47043e2.8c0c9"]]
+    "wires": [["25cc7051.4b336"]]
   },
   {
-    "id": "f2839df.8afa16",
+    "id": "32b91549.383ffa",
     "type": "complete",
-    "z": "f28e7d9c.7dedc",
+    "z": "da0e69ee.791638",
     "name": "ack",
-    "scope": ["e689756b.b921b8"],
+    "scope": ["eb547c9e.cf806"],
     "uncaught": false,
     "x": 90,
     "y": 180,
-    "wires": [["bc0be85a.14fc58"]]
-  },
-  {
-    "id": "3efe01c6.16a3de",
-    "type": "amqp-broker",
-    "z": "",
-    "name": "default-broker",
-    "host": "localhost",
-    "port": "5672",
-    "vhost": "",
-    "tls": false
+    "wires": [["42a93135.4cad3"]]
   }
 ]

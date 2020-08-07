@@ -1,15 +1,15 @@
 [
   {
-    "id": "c4cc433b.ce72f",
+    "id": "6408ba88.c1e304",
     "type": "tab",
     "label": "AMQP Manual Ack With Links",
     "disabled": false,
     "info": ""
   },
   {
-    "id": "1479c6a8.c4a8a9",
+    "id": "72db3892.5e0e78",
     "type": "debug",
-    "z": "c4cc433b.ce72f",
+    "z": "6408ba88.c1e304",
     "name": "With \"Link\" Message",
     "active": true,
     "tosidebar": true,
@@ -24,11 +24,11 @@
     "wires": []
   },
   {
-    "id": "14080307.3d6aed",
+    "id": "1129b47c.81b8dc",
     "type": "amqp-in-manual-ack",
-    "z": "c4cc433b.ce72f",
+    "z": "6408ba88.c1e304",
     "name": "amqp-in-manual-ack",
-    "broker": "3efe01c6.16a3de",
+    "broker": "",
     "prefetch": 0,
     "exchangeName": "amq.topic",
     "exchangeType": "topic",
@@ -41,12 +41,12 @@
     "headers": "",
     "x": 240,
     "y": 200,
-    "wires": [["1479c6a8.c4a8a9", "524d0aa5.275164"]]
+    "wires": [["72db3892.5e0e78", "8d988bdd.46d508"]]
   },
   {
-    "id": "524d0aa5.275164",
+    "id": "8d988bdd.46d508",
     "type": "delay",
-    "z": "c4cc433b.ce72f",
+    "z": "6408ba88.c1e304",
     "name": "",
     "pauseType": "delay",
     "timeout": "5",
@@ -60,34 +60,34 @@
     "drop": false,
     "x": 440,
     "y": 260,
-    "wires": [["8d3e07b8.e7bc18", "aa3bc4fb.0e3258"]]
+    "wires": [["dc2363d.8f5b9a", "8b98b224.5675"]]
   },
   {
-    "id": "349588b.159ad78",
+    "id": "9d861002.d13da",
     "type": "link in",
-    "z": "c4cc433b.ce72f",
+    "z": "6408ba88.c1e304",
     "name": "Send Ack",
-    "links": ["8d3e07b8.e7bc18"],
+    "links": ["dc2363d.8f5b9a"],
     "x": 75,
     "y": 200,
-    "wires": [["14080307.3d6aed"]]
+    "wires": [["1129b47c.81b8dc"]]
   },
   {
-    "id": "8d3e07b8.e7bc18",
+    "id": "dc2363d.8f5b9a",
     "type": "link out",
-    "z": "c4cc433b.ce72f",
+    "z": "6408ba88.c1e304",
     "name": "Acknowledge",
-    "links": ["349588b.159ad78"],
+    "links": ["9d861002.d13da"],
     "x": 595,
     "y": 260,
     "wires": []
   },
   {
-    "id": "b3eab96e.e169c8",
+    "id": "be7918ee.7dee98",
     "type": "amqp-out",
-    "z": "c4cc433b.ce72f",
+    "z": "6408ba88.c1e304",
     "name": "amqp-out",
-    "broker": "3efe01c6.16a3de",
+    "broker": "",
     "exchangeName": "amq.topic",
     "exchangeType": "topic",
     "exchangeRoutingKey": "acked.with.link",
@@ -98,9 +98,9 @@
     "wires": []
   },
   {
-    "id": "866858ff.dd8ab8",
+    "id": "2410e130.331b2e",
     "type": "inject",
-    "z": "c4cc433b.ce72f",
+    "z": "6408ba88.c1e304",
     "name": "Topic Input",
     "props": [
       { "p": "payload" },
@@ -119,12 +119,12 @@
     "payloadType": "json",
     "x": 140,
     "y": 100,
-    "wires": [["b3eab96e.e169c8"]]
+    "wires": [["be7918ee.7dee98"]]
   },
   {
-    "id": "aa3bc4fb.0e3258",
+    "id": "8b98b224.5675",
     "type": "debug",
-    "z": "c4cc433b.ce72f",
+    "z": "6408ba88.c1e304",
     "name": "After \"Link\" Delay",
     "active": true,
     "tosidebar": true,
@@ -137,15 +137,5 @@
     "x": 610,
     "y": 320,
     "wires": []
-  },
-  {
-    "id": "3efe01c6.16a3de",
-    "type": "amqp-broker",
-    "z": "",
-    "name": "default-broker",
-    "host": "localhost",
-    "port": "5672",
-    "vhost": "",
-    "tls": false
   }
 ]

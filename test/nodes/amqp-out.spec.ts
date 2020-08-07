@@ -21,7 +21,7 @@ describe('amqp-out Node', () => {
     sinon.restore()
   })
 
-  it('should be loaded', (done) => {
+  it('should be loaded', done => {
     const flow = [{ id: 'n1', type: NodeType.AMQP_OUT, name: 'test name' }]
     helper.load(amqpOut, flow, () => {
       const n1 = helper.getNode('n1')
@@ -56,7 +56,7 @@ describe('amqp-out Node', () => {
         // expect(initializeStub.calledOnce).to.be.true
 
         const amqpOutNode = helper.getNode('n1')
-        amqpOutNode.receive({ payload: 'foo', topic: 'bar' })
+        amqpOutNode.receive({ payload: 'foo', routingKey: 'bar' })
         amqpOutNode.receive({ payload: 'foo' })
         amqpOutNode.close()
 
