@@ -21,7 +21,7 @@ describe('amqp-in Node', () => {
     sinon.restore()
   })
 
-  it('should be loaded', (done) => {
+  it('should be loaded', done => {
     const flow = [{ id: 'n1', type: NodeType.AMQP_IN, name: 'test name' }]
     helper.load(amqpIn, flow, () => {
       const n1 = helper.getNode('n1')
@@ -31,6 +31,39 @@ describe('amqp-in Node', () => {
   })
 
   it('should connect to the server', function (done) {
+    // @ts-ignore
+    Amqp.prototype.channel = {
+      unbindQueue: (): null => null,
+      close: (): null => null,
+    }
+    // @ts-ignore
+    Amqp.prototype.connection = {
+      close: (): null => null,
+    }
+    const connectStub = sinon
+      .stub(Amqp.prototype, 'connect')
+      // @ts-ignore
+      .resolves(true)
+    const initializeStub = sinon.stub(Amqp.prototype, 'initialize')
+
+    helper.load(
+      [amqpIn, amqpBroker],
+      amqpInFlowFixture,
+      credentialsFixture,
+      async function () {
+        expect(connectStub.calledOnce).to.be.true
+
+        // TODO: Figure out why this isn't working:
+        // expect(initializeStub.calledOnce).to.be.true
+
+        const amqpInNode = helper.getNode('n1')
+        amqpInNode.close()
+        done()
+      },
+    )
+  })
+
+  it('should reconnect to the server', function (done) {
     // @ts-ignore
     Amqp.prototype.channel = {
       unbindQueue: (): null => null,

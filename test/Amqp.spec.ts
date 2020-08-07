@@ -106,7 +106,7 @@ describe('Amqp Class', () => {
     const channel = {
       consume: function (
         queue: string,
-        cb: Function,
+        cb: (arg0: any) => void,
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         config: GenericJsonObject,
       ): void {

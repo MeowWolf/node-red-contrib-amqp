@@ -14,7 +14,7 @@ module.exports = function (RED: Red): void {
     const iife = (async function initializeNode(
       self,
       isReconnect = false,
-    ): Promise<any> {
+    ): Promise<void> {
       try {
         const connection = await amqp.connect()
 
@@ -40,7 +40,7 @@ module.exports = function (RED: Red): void {
             connection.on('close', async e => {
               if (e) {
                 const reconnect = () =>
-                  new Promise((resolve, reject) => {
+                  new Promise(resolve => {
                     setTimeout(async () => {
                       try {
                         await initializeNode(self, true)
