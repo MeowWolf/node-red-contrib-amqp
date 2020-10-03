@@ -1,6 +1,6 @@
-import { Red, Node } from 'node-red'
+import { NodeRedApp, Node } from 'node-red'
 import { v4 as uuidv4 } from 'uuid'
-import cloneDeep from 'lodash.clonedeep'
+import cloneDeep = require('lodash.clonedeep')
 import {
   Connection,
   Channel,
@@ -30,7 +30,7 @@ export default class Amqp {
   private q: Replies.AssertQueue
 
   constructor(
-    private readonly RED: Red,
+    private readonly RED: NodeRedApp,
     private readonly node: Node,
     config: AmqpInNodeDefaults & AmqpOutNodeDefaults,
   ) {
@@ -81,7 +81,12 @@ export default class Amqp {
 
   public async connect(): Promise<Connection> {
     const { broker } = this.config
+
+    // wtf happened to the types?
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     this.broker = this.RED.nodes.getNode(broker)
+
     const brokerUrl = Amqp.getBrokerUrl(this.broker)
     this.connection = await connect(brokerUrl, { heartbeat: 2 })
 
@@ -145,8 +150,8 @@ export default class Amqp {
       outputs: rpcRequested,
     } = this.config
 
-    try {
-      this.parseRoutingKeys().forEach(async routingKey => {
+    this.parseRoutingKeys().forEach(async routingKey => {
+      try {
         // correlationId & replyTo in case RPC is requested
         const rpcProperties = rpcRequested
           ? this.getRpcMessageProperties(routingKey)
@@ -162,10 +167,10 @@ export default class Amqp {
           const { correlationId, replyTo } = rpcProperties
           this.handleRemoteProcedureCall(correlationId, replyTo)
         }
-      })
-    } catch (e) {
-      this.node.error(`Could not publish message: ${e}`)
-    }
+      } catch (e) {
+        this.node.error(`Could not publish message: ${e}`)
+      }
+    })
   }
 
   private getRpcConfig(replyTo: string): AmqpConfig {
@@ -229,8 +234,10 @@ export default class Amqp {
         try {
           if (!rpcQueueHasBeenDeleted) {
             this.node.send({
-              payload: 'Timeout while waiting for RPC response',
-              config: rpcConfig,
+              payload: {
+                message: 'Timeout while waiting for RPC response',
+                config: rpcConfig,
+              },
             })
             await this.channel.deleteQueue(this.q.queue)
           }

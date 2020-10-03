@@ -1,12 +1,14 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { expect } from 'chai'
 import * as sinon from 'sinon'
-import * as helper from 'node-red-node-test-helper'
-import * as amqpOut from '../../src/nodes/amqp-out'
 import Amqp from '../../src/Amqp'
-import * as amqpBroker from '../../src/nodes/amqp-broker'
 import { ErrorType, NodeType } from '../../src/types'
 import { CustomError, amqpOutFlowFixture, credentialsFixture } from '../doubles'
+
+const helper = require('node-red-node-test-helper')
+const amqpOut = require('../../src/nodes/amqp-out')
+const amqpBroker = require('../../src/nodes/amqp-broker')
 
 helper.init(require.resolve('node-red'))
 
@@ -68,7 +70,7 @@ describe('amqp-out Node', () => {
   it('catches an invalid login exception', function (done) {
     const connectStub = sinon
       .stub(Amqp.prototype, 'connect')
-      .throws(new CustomError(ErrorType.INALID_LOGIN))
+      .throws(new CustomError(ErrorType.INVALID_LOGIN))
     helper.load(
       [amqpOut, amqpBroker],
       amqpOutFlowFixture,

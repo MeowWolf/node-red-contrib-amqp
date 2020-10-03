@@ -142,7 +142,7 @@ describe('Amqp Class', () => {
       expect(publishStub.calledOnce).to.equal(true)
     })
 
-    it('tries to publish an invalid message', () => {
+    it('tries to publish an invalid message', async () => {
       const publishStub = sinon.stub().throws()
       const errorStub = sinon.stub()
       amqp.channel = {
@@ -151,7 +151,7 @@ describe('Amqp Class', () => {
       amqp.node = {
         error: errorStub,
       }
-      amqp.publish('a message')
+      await amqp.publish('a message')
       expect(publishStub.calledOnce).to.equal(true)
       expect(errorStub.calledOnce).to.equal(true)
     })

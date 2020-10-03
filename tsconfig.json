@@ -6,8 +6,7 @@
     "sourceMap": true,
     "outDir": "build",
     "baseUrl": "./",
-    "incremental": true,
-    "esModuleInterop": true
+    "incremental": true
   },
   "exclude": ["node_modules", "build", "**/*.html"]
 }
