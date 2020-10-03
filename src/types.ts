@@ -32,6 +32,7 @@ export interface AmqpConfig {
   amqpProperties: MessageProperties
   headers: GenericJsonObject
   outputs?: number
+  rpcTimeout?: number
 }
 
 export interface AmqpInNodeDefaults {
@@ -59,6 +60,7 @@ export interface AmqpOutNodeDefaults {
   exchangeDurable?: any
   amqpProperties?: any
   outputs?: any
+  rpcTimeoutMilliseconds?: any
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

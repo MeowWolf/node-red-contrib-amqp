@@ -58,6 +58,7 @@ export default class Amqp {
       ) as MessageProperties,
       headers: this.parseJson(config.headers),
       outputs: config.outputs,
+      rpcTimeout: config.rpcTimeoutMilliseconds,
     }
   }
 
@@ -238,7 +239,7 @@ export default class Amqp {
           // This might close the whole channel
           console.warn(e)
         }
-      }, 2000)
+      }, rpcConfig.rpcTimeout)
     } catch (e) {
       this.node.error(`Could not consume RPC message: ${e}`)
     }
