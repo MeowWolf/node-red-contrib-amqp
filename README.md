@@ -27,8 +27,6 @@ npm run build
 
 ### Run tests
 
-Run in watch mode:
-
 ```
 npm test
 ```
