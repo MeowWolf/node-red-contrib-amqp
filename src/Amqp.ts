@@ -152,21 +152,20 @@ export default class Amqp {
 
     this.parseRoutingKeys().forEach(async routingKey => {
       try {
-        // correlationId & replyTo in case RPC is requested
-        const rpcProperties = rpcRequested
-          ? this.getRpcMessageProperties(routingKey)
-          : {}
+        let rpcProperties: GenericJsonObject = {}
+
+        if (rpcRequested) {
+          // Send request for remote procedure call
+          rpcProperties = this.getRpcMessageProperties(routingKey)
+          const { correlationId, replyTo } = rpcProperties
+          await this.handleRemoteProcedureCall(correlationId, replyTo)
+        }
 
         this.channel.publish(name, routingKey, Buffer.from(msg), {
           ...rpcProperties,
           ...this.config.amqpProperties,
           ...properties,
         })
-
-        if (rpcRequested) {
-          const { correlationId, replyTo } = rpcProperties
-          this.handleRemoteProcedureCall(correlationId, replyTo)
-        }
       } catch (e) {
         this.node.error(`Could not publish message: ${e}`)
       }
@@ -202,6 +201,7 @@ export default class Amqp {
       // If we try to delete a queue that's already deleted
       // bad things will happen.
       let rpcQueueHasBeenDeleted = false
+      let additionalErrorMessaging = ''
 
       /************************************
        * bind queue and set up consumer
@@ -221,6 +221,8 @@ export default class Amqp {
                 await this.channel.deleteQueue(this.q.queue)
                 rpcQueueHasBeenDeleted = true
               }
+            } else {
+              additionalErrorMessaging += ` Correlation ids do not match. Expecting: ${correlationId}, received: ${msg.properties.correlationId}`
             }
           }
         },
@@ -235,7 +237,7 @@ export default class Amqp {
           if (!rpcQueueHasBeenDeleted) {
             this.node.send({
               payload: {
-                message: 'Timeout while waiting for RPC response',
+                message: `Timeout while waiting for RPC response.${additionalErrorMessaging}`,
                 config: rpcConfig,
               },
             })
