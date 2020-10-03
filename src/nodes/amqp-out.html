@@ -12,6 +12,7 @@
       amqpProperties: {
         value: '{ "headers": {} }',
       },
+      outputs: { value: 0 },
     },
     inputs: 1,
     outputs: 0,
@@ -64,8 +65,11 @@
   div.wide-label label {
     width: 30% !important;
   }
-  div.wide-label input {
-    width: 65% !important;
+  div.wider-label label {
+    width: 50% !important;
+  }
+  select.small {
+    width: 75px !important;
   }
   div.form-tips {
     margin: 20px 0;
@@ -113,6 +117,7 @@
     <input style="width:20px; vertical-align:baseline; margin-right:5px;" type="checkbox" id="node-input-exchangeDurable">
     <label style="width:auto; margin-top:7px;" for="node-input-exchangeDurable">Durable</label>
   </div>
+  <h4>Message Info</h4>
   <div class="form-row wide-label">
     <label for="node-input-amqpProperties"><i class="fa fa-filter"></i>&nbsp;&nbsp;AMQP Properties</label>
     <input type="text" id="node-input-amqpProperties">
@@ -120,6 +125,13 @@
   <div class="form-tips">
     <i class="fa fa-info-circle"></i>
     Standard AMQP message properties as specified in <a href="https://www.squaremobius.net/amqp.node/channel_api.html#channel_publish" target="_blank">the amqplib docs</a>.
+  </div>
+  <div class="form-row wider-label">
+    <label for="node-input-outputs"><i class="fa fa-filter"></i>&nbsp;&nbsp;Request RPC response</label>
+    <select id="node-input-outputs" class="small">
+      <option value="0">No</option>
+      <option value="1">Yes</option>
+    </select>
   </div>
 </script>
 

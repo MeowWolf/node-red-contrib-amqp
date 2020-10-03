@@ -31,6 +31,7 @@ export interface AmqpConfig {
   }
   amqpProperties: MessageProperties
   headers: GenericJsonObject
+  outputs?: number
 }
 
 export interface AmqpInNodeDefaults {
@@ -57,6 +58,7 @@ export interface AmqpOutNodeDefaults {
   exchangeRoutingKey?: any
   exchangeDurable?: any
   amqpProperties?: any
+  outputs?: any
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

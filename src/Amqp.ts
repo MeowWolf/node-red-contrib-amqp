@@ -1,4 +1,6 @@
 import { Red, Node } from 'node-red'
+import { v4 as uuidv4 } from 'uuid'
+import cloneDeep from 'lodash.clonedeep'
 import {
   Connection,
   Channel,
@@ -55,6 +57,7 @@ export default class Amqp {
         config.amqpProperties,
       ) as MessageProperties,
       headers: this.parseJson(config.headers),
+      outputs: config.outputs,
     }
   }
 
@@ -104,9 +107,9 @@ export default class Amqp {
 
   public async consume(): Promise<void> {
     try {
+      const { noAck } = this.config
       await this.assertQueue()
       this.bindQueue()
-      const { noAck } = this.config
       await this.channel.consume(
         this.q.queue,
         amqpMessage => {
@@ -132,19 +135,112 @@ export default class Amqp {
     this.channel.ack(msg)
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  public publish(msg: unknown, properties?: MessageProperties): void {
-    const { name } = this.config.exchange
+  public async publish(
+    msg: unknown,
+    properties?: MessageProperties,
+  ): Promise<void> {
+    const {
+      exchange: { name },
+      outputs: rpcRequested,
+    } = this.config
 
     try {
-      this.parseRoutingKeys().forEach(routingKey => {
+      this.parseRoutingKeys().forEach(async routingKey => {
+        // correlationId & replyTo in case RPC is requested
+        const rpcProperties = rpcRequested
+          ? this.getRpcMessageProperties(routingKey)
+          : {}
+
         this.channel.publish(name, routingKey, Buffer.from(msg), {
+          ...rpcProperties,
           ...this.config.amqpProperties,
           ...properties,
         })
+
+        if (rpcRequested) {
+          const { correlationId, replyTo } = rpcProperties
+          this.handleRemoteProcedureCall(correlationId, replyTo)
+        }
       })
     } catch (e) {
       this.node.error(`Could not publish message: ${e}`)
+    }
+  }
+
+  private getRpcConfig(replyTo: string): AmqpConfig {
+    const rpcConfig = cloneDeep(this.config)
+    rpcConfig.exchange.routingKey = replyTo
+    rpcConfig.queue.autoDelete = true
+    rpcConfig.queue.durable = false
+    rpcConfig.noAck = true
+    return rpcConfig
+  }
+
+  private getRpcMessageProperties(routingKey: string): GenericJsonObject {
+    const correlationId = uuidv4()
+    const replyTo = `${routingKey}.rpc-response`
+
+    return {
+      correlationId,
+      replyTo,
+    }
+  }
+
+  private async handleRemoteProcedureCall(
+    correlationId: string,
+    replyTo: string,
+  ): Promise<void> {
+    const rpcConfig = this.getRpcConfig(replyTo)
+
+    try {
+      // If we try to delete a queue that's already deleted
+      // bad things will happen.
+      let rpcQueueHasBeenDeleted = false
+
+      /************************************
+       * bind queue and set up consumer
+       ************************************/
+      await this.assertQueue(rpcConfig)
+      this.bindQueue(rpcConfig)
+
+      await this.channel.consume(
+        this.q.queue,
+        async amqpMessage => {
+          if (amqpMessage) {
+            const msg = this.assembleMessage(amqpMessage)
+            if (msg.properties.correlationId === correlationId) {
+              this.node.send(msg)
+              /* istanbul ignore else */
+              if (!rpcQueueHasBeenDeleted) {
+                await this.channel.deleteQueue(this.q.queue)
+                rpcQueueHasBeenDeleted = true
+              }
+            }
+          }
+        },
+        { noAck: rpcConfig.noAck },
+      )
+
+      /****************************************
+       * Check if RPC has timed out and handle
+       ****************************************/
+      setTimeout(async () => {
+        try {
+          if (!rpcQueueHasBeenDeleted) {
+            this.node.send({
+              payload: 'Timeout while waiting for RPC response',
+              config: rpcConfig,
+            })
+            await this.channel.deleteQueue(this.q.queue)
+          }
+        } catch (e) {
+          // TODO: Keep an eye on this
+          // This might close the whole channel
+          console.warn(e)
+        }
+      }, 2000)
+    } catch (e) {
+      this.node.error(`Could not consume RPC message: ${e}`)
     }
   }
 
@@ -200,8 +296,9 @@ export default class Amqp {
     }
   }
 
-  private async assertQueue(): Promise<void> {
-    const { name, exclusive, durable, autoDelete } = this.config.queue
+  private async assertQueue(configParams?: AmqpConfig): Promise<void> {
+    const { queue } = configParams || this.config
+    const { name, exclusive, durable, autoDelete } = queue
 
     this.q = await this.channel.assertQueue(name, {
       exclusive,
@@ -210,13 +307,13 @@ export default class Amqp {
     })
   }
 
-  private async bindQueue(): Promise<void> {
-    const { name, type } = this.config.exchange
+  private async bindQueue(configParams?: AmqpConfig): Promise<void> {
+    const { name, type } = configParams?.exchange || this.config.exchange
 
     if (type === ExchangeType.Direct || type === ExchangeType.Topic) {
       /* istanbul ignore else */
       if (name) {
-        this.parseRoutingKeys().forEach(async routingKey => {
+        this.parseRoutingKeys(configParams).forEach(async routingKey => {
           await this.channel.bindQueue(this.q.queue, name, routingKey)
         })
       }
@@ -250,10 +347,9 @@ export default class Amqp {
     return url
   }
 
-  private parseRoutingKeys(): string[] {
-    const keys = this.config.exchange.routingKey
-      .split(',')
-      .map(key => key.trim())
+  private parseRoutingKeys(configParams?: AmqpConfig): string[] {
+    const { routingKey } = configParams?.exchange || this.config.exchange
+    const keys = routingKey.split(',').map(key => key.trim())
     return keys
   }
 
