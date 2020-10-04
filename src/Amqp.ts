@@ -224,10 +224,10 @@ export default class Amqp {
        * bind queue and set up consumer
        ************************************/
       await this.assertQueue(rpcConfig)
-      this.bindQueue(rpcConfig)
+      await this.bindQueue(rpcConfig)
 
       await this.channel.consume(
-        this.q.queue,
+        this.q?.queue,
         async amqpMessage => {
           if (amqpMessage) {
             const msg = this.assembleMessage(amqpMessage)
@@ -263,7 +263,7 @@ export default class Amqp {
         } catch (e) {
           // TODO: Keep an eye on this
           // This might close the whole channel
-          console.warn(e)
+          this.node.error(`Error trying to cancel RPC consumer: ${e}`)
         }
       }, rpcConfig.rpcTimeout || 3000)
     } catch (e) {
