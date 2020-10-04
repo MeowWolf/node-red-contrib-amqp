@@ -42,11 +42,13 @@
       $('#node-input-exchangeType').change(function (e) {
         const exchangeType = this.value
 
-        // hide/show routing key field
+        // hide/show routing key field, and rpc section
         if (['fanout', 'headers'].includes(exchangeType)) {
           $('.routing-key-form-input').hide()
+          $('#rpc-section').hide()
         } else {
           $('.routing-key-form-input').show()
+          $('#rpc-section').show()
         }
 
         // hide/show headers exchange help text
@@ -136,19 +138,21 @@
     <i class="fa fa-info-circle"></i>
     Standard AMQP message properties as specified in <a href="https://www.squaremobius.net/amqp.node/channel_api.html#channel_publish" target="_blank">the amqplib docs</a>.
   </div>
-  <hr>
-  <h4>Remote Procedure Call</h4>
-  <div class="form-row wider-label">
-    <label for="node-input-outputs"><i class="fa fa-globe"></i>&nbsp;&nbsp;Request RPC response</label>
-    <select id="node-input-outputs" class="small">
-      <option value="0">No</option>
-      <option value="1">Yes</option>
-    </select>
-  </div>
-  <div class="form-row wider-label">
-    <label for="node-input-rpcTimeoutMilliseconds"><i class="fa fa-clock-o"></i>&nbsp;&nbsp;RPC Timeout (ms)</label>
-    <input type="text" class="small" id="node-input-rpcTimeoutMilliseconds">
-  </div>
+  <span id="rpc-section">
+    <hr>
+    <h4>Remote Procedure Call</h4>
+    <div class="form-row wider-label">
+      <label for="node-input-outputs"><i class="fa fa-globe"></i>&nbsp;&nbsp;Request RPC response</label>
+      <select id="node-input-outputs" class="small">
+        <option value="0">No</option>
+        <option value="1">Yes</option>
+      </select>
+    </div>
+    <div class="form-row wider-label">
+      <label for="node-input-rpcTimeoutMilliseconds"><i class="fa fa-clock-o"></i>&nbsp;&nbsp;RPC Timeout (ms)</label>
+      <input type="text" class="small" id="node-input-rpcTimeoutMilliseconds">
+    </div>
+  </span>
 </script>
 
 <script type="text/html" data-help-name="amqp-out">

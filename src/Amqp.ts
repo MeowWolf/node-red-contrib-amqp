@@ -146,30 +146,47 @@ export default class Amqp {
     properties?: MessageProperties,
   ): Promise<void> {
     const {
-      exchange: { name },
-      outputs: rpcRequested,
+      exchange: { type },
     } = this.config
 
-    this.parseRoutingKeys().forEach(async routingKey => {
-      try {
-        let rpcProperties: GenericJsonObject = {}
+    if (this.canHaveRoutingKey(type)) {
+      this.parseRoutingKeys().forEach(async routingKey => {
+        this.handlePublish(this.config, msg, properties, routingKey)
+      })
+    } else {
+      this.handlePublish(this.config, msg, properties)
+    }
+  }
 
-        if (rpcRequested) {
-          // Send request for remote procedure call
-          rpcProperties = this.getRpcMessageProperties(routingKey)
-          const { correlationId, replyTo } = rpcProperties
-          await this.handleRemoteProcedureCall(correlationId, replyTo)
-        }
+  private async handlePublish(
+    config: AmqpConfig,
+    msg: unknown,
+    properties?: MessageProperties,
+    routingKey?: string,
+  ) {
+    const {
+      exchange: { name, type },
+      outputs: rpcRequested,
+    } = config
 
-        this.channel.publish(name, routingKey, Buffer.from(msg), {
-          ...rpcProperties,
-          ...this.config.amqpProperties,
-          ...properties,
-        })
-      } catch (e) {
-        this.node.error(`Could not publish message: ${e}`)
+    try {
+      let rpcProperties: GenericJsonObject = {}
+
+      if (rpcRequested && this.canHaveRoutingKey(type)) {
+        // Send request for remote procedure call
+        rpcProperties = this.getRpcMessageProperties(routingKey)
+        const { correlationId, replyTo } = rpcProperties
+        await this.handleRemoteProcedureCall(correlationId, replyTo)
       }
-    })
+
+      this.channel.publish(name, routingKey, Buffer.from(msg), {
+        ...rpcProperties,
+        ...this.config.amqpProperties,
+        ...properties,
+      })
+    } catch (e) {
+      this.node.error(`Could not publish message: ${e}`)
+    }
   }
 
   private getRpcConfig(replyTo: string): AmqpConfig {
@@ -248,7 +265,7 @@ export default class Amqp {
           // This might close the whole channel
           console.warn(e)
         }
-      }, rpcConfig.rpcTimeout)
+      }, rpcConfig.rpcTimeout || 3000)
     } catch (e) {
       this.node.error(`Could not consume RPC message: ${e}`)
     }
@@ -320,7 +337,7 @@ export default class Amqp {
   private async bindQueue(configParams?: AmqpConfig): Promise<void> {
     const { name, type } = configParams?.exchange || this.config.exchange
 
-    if (type === ExchangeType.Direct || type === ExchangeType.Topic) {
+    if (this.canHaveRoutingKey(type)) {
       /* istanbul ignore else */
       if (name) {
         this.parseRoutingKeys(configParams).forEach(async routingKey => {
@@ -336,6 +353,10 @@ export default class Amqp {
     if (type === ExchangeType.Headers) {
       await this.channel.bindQueue(this.q.queue, name, '', this.config.headers)
     }
+  }
+
+  private canHaveRoutingKey(type: ExchangeType): boolean {
+    return type === ExchangeType.Direct || type === ExchangeType.Topic
   }
 
   private static getBrokerUrl(broker: Node): string {
