@@ -1,10 +1,12 @@
-import { Red, NodeProperties } from 'node-red'
+import { NodeRedApp, EditorNodeProperties } from 'node-red'
 import { NODE_STATUS } from '../constants'
 import { ErrorType, NodeType } from '../types'
 import Amqp from '../Amqp'
 
-module.exports = function (RED: Red): void {
-  function AmqpInManualAck(config: NodeProperties): void {
+module.exports = function (RED: NodeRedApp): void {
+  function AmqpInManualAck(config: EditorNodeProperties): void {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     RED.nodes.createNode(this, config)
     this.status(NODE_STATUS.Disconnected)
     const amqp = new Amqp(RED, this, config)
@@ -70,7 +72,7 @@ module.exports = function (RED: Red): void {
           throw e
         }
 
-        if (e.code === ErrorType.INALID_LOGIN) {
+        if (e.code === ErrorType.INVALID_LOGIN) {
           self.status(NODE_STATUS.Invalid)
           self.error(`AmqpInManualAck() Could not connect to broker ${e}`)
         } else {
@@ -80,5 +82,7 @@ module.exports = function (RED: Red): void {
       }
     })(this)
   }
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   RED.nodes.registerType(NodeType.AMQP_IN_MANUAL_ACK, AmqpInManualAck)
 }

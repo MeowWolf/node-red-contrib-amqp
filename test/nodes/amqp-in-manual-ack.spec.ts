@@ -1,16 +1,17 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { expect } from 'chai'
 import * as sinon from 'sinon'
-import * as helper from 'node-red-node-test-helper'
-import * as amqpInManualAck from '../../src/nodes/amqp-in-manual-ack'
 import Amqp from '../../src/Amqp'
-import * as amqpBroker from '../../src/nodes/amqp-broker'
 import { ErrorType, NodeType } from '../../src/types'
 import {
   CustomError,
   amqpInManualAckFlowFixture,
   credentialsFixture,
 } from '../doubles'
+const helper = require('node-red-node-test-helper')
+const amqpInManualAck = require('../../src/nodes/amqp-in-manual-ack')
+const amqpBroker = require('../../src/nodes/amqp-broker')
 
 helper.init(require.resolve('node-red'))
 
@@ -64,8 +65,9 @@ describe('amqp-in-manual-ack Node', () => {
         // expect(initializeStub.calledOnce).to.be.true
 
         const amqpInManualAckNode = helper.getNode('n1')
+        // @ts-ignore
         amqpInManualAckNode.receive({ payload: 'foo', routingKey: 'bar' })
-        amqpInManualAckNode.close()
+        amqpInManualAckNode.close(true)
         done()
       },
     )
@@ -74,7 +76,7 @@ describe('amqp-in-manual-ack Node', () => {
   it('catches an invalid login exception', function (done) {
     const connectStub = sinon
       .stub(Amqp.prototype, 'connect')
-      .throws(new CustomError(ErrorType.INALID_LOGIN))
+      .throws(new CustomError(ErrorType.INVALID_LOGIN))
     helper.load(
       [amqpInManualAck, amqpBroker],
       amqpInManualAckFlowFixture,

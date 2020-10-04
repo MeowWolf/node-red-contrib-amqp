@@ -133,7 +133,7 @@ describe('Amqp Class', () => {
   })
 
   describe('publish()', () => {
-    it('publishes a message', () => {
+    it('publishes a message (topic)', () => {
       const publishStub = sinon.stub()
       amqp.channel = {
         publish: publishStub,
@@ -142,7 +142,58 @@ describe('Amqp Class', () => {
       expect(publishStub.calledOnce).to.equal(true)
     })
 
-    it('tries to publish an invalid message', () => {
+    it('publishes a message (fanout)', () => {
+      // @ts-ignore
+      amqp = new Amqp(RED, nodeFixture, {
+        ...nodeConfigFixture,
+        exchangeType: ExchangeType.Fanout,
+      })
+      const publishStub = sinon.stub()
+      amqp.channel = {
+        publish: publishStub,
+      }
+      amqp.publish('a message')
+      expect(publishStub.calledOnce).to.equal(true)
+    })
+
+    it('publishes a message (direct w/RPC)', () => {
+      // @ts-ignore
+      amqp = new Amqp(RED, nodeFixture, {
+        ...nodeConfigFixture,
+        exchangeType: ExchangeType.Direct,
+        outputs: 1,
+      })
+      const publishStub = sinon.stub()
+      const assertQueueStub = sinon.stub()
+      const consumeStub = sinon.stub()
+      amqp.channel = {
+        publish: publishStub,
+        assertQueue: assertQueueStub,
+        consume: consumeStub,
+      }
+
+      const routingKey = 'rpc-routingkey'
+      amqp.config = {
+        broker: '',
+        exchange: { type: ExchangeType.Direct, routingKey },
+        queue: {},
+        amqpProperties: {},
+        outputs: 1,
+      }
+      amqp.node = {
+        error: sinon.stub(),
+      }
+      amqp.q = {}
+
+      amqp.publish('a message')
+
+      // FIXME: we're losing `this` in here and can't assert on mocks.
+      // So no assertions :(
+      // expect(consumeStub.calledOnce).to.equal(true)
+      // expect(publishStub.calledOnce).to.equal(true)
+    })
+
+    it('tries to publish an invalid message', async () => {
       const publishStub = sinon.stub().throws()
       const errorStub = sinon.stub()
       amqp.channel = {
@@ -151,7 +202,7 @@ describe('Amqp Class', () => {
       amqp.node = {
         error: errorStub,
       }
-      amqp.publish('a message')
+      await amqp.publish('a message')
       expect(publishStub.calledOnce).to.equal(true)
       expect(errorStub.calledOnce).to.equal(true)
     })

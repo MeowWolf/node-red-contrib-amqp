@@ -12,6 +12,8 @@
       amqpProperties: {
         value: '{ "headers": {} }',
       },
+      rpcTimeoutMilliseconds: { value: 3000 },
+      outputs: { value: 0 },
     },
     inputs: 1,
     outputs: 0,
@@ -32,14 +34,21 @@
         types: ['json'],
       })
 
+      $('#node-input-rpcTimeoutMilliseconds').typedInput({
+        type: 'num',
+        types: ['num'],
+      })
+
       $('#node-input-exchangeType').change(function (e) {
         const exchangeType = this.value
 
-        // hide/show routing key field
+        // hide/show routing key field, and rpc section
         if (['fanout', 'headers'].includes(exchangeType)) {
           $('.routing-key-form-input').hide()
+          $('#rpc-section').hide()
         } else {
           $('.routing-key-form-input').show()
+          $('#rpc-section').show()
         }
 
         // hide/show headers exchange help text
@@ -64,8 +73,14 @@
   div.wide-label label {
     width: 30% !important;
   }
-  div.wide-label input {
-    width: 65% !important;
+  div.wider-label label {
+    width: 50% !important;
+  }
+  select.small {
+    width: 75px !important;
+  }
+  input.small {
+    width: 120px !important;
   }
   div.form-tips {
     margin: 20px 0;
@@ -113,6 +128,8 @@
     <input style="width:20px; vertical-align:baseline; margin-right:5px;" type="checkbox" id="node-input-exchangeDurable">
     <label style="width:auto; margin-top:7px;" for="node-input-exchangeDurable">Durable</label>
   </div>
+  <hr>
+  <h4>Message Info</h4>
   <div class="form-row wide-label">
     <label for="node-input-amqpProperties"><i class="fa fa-filter"></i>&nbsp;&nbsp;AMQP Properties</label>
     <input type="text" id="node-input-amqpProperties">
@@ -121,6 +138,28 @@
     <i class="fa fa-info-circle"></i>
     Standard AMQP message properties as specified in <a href="https://www.squaremobius.net/amqp.node/channel_api.html#channel_publish" target="_blank">the amqplib docs</a>.
   </div>
+  <span id="rpc-section">
+    <hr>
+    <h4>Remote Procedure Call</h4>
+    <div class="form-row wider-label">
+      <label for="node-input-outputs"><i class="fa fa-globe"></i>&nbsp;&nbsp;Request RPC response</label>
+      <select id="node-input-outputs" class="small">
+        <option value="0">No</option>
+        <option value="1">Yes</option>
+      </select>
+    </div>
+    <div class="form-row wider-label">
+      <label for="node-input-rpcTimeoutMilliseconds"><i class="fa fa-clock-o"></i>&nbsp;&nbsp;RPC Timeout (ms)</label>
+      <input type="text" class="small" id="node-input-rpcTimeoutMilliseconds">
+    </div>
+    <div class="form-tips">
+      <i class="fa fa-info-circle"></i>
+      If set to yes, the amqp properties <em>correlationId</em> and <em>replyTo</em> will be auto-generated and sent along with the published message. The message consumer will need to send a response using those fields for this node to then consume and send to output. See the <a href="https://www.rabbitmq.com/tutorials/tutorial-six-javascript.html" target="_blank">RabbitMQ RPC Tutorial</a> for more info. If the consumer for whatever reason does not send a response the request will timeout (configurable here with a default of 3000ms) and the rpc consumer will be cancelled.
+      <br />
+      <br />
+      Note: You <em>can</em> override the <em>correlationId</em> and <em>replyTo</em> AMQP properties by specifying them above or sending them via the node input but it is not recommended.
+    </div>
+  </span>
 </script>
 
 <script type="text/html" data-help-name="amqp-out">
