@@ -42,12 +42,17 @@
       $('#node-input-exchangeType').change(function (e) {
         const exchangeType = this.value
 
-        // hide/show routing key field, and rpc section
+        // hide/show routing key field
         if (['fanout', 'headers'].includes(exchangeType)) {
           $('.routing-key-form-input').hide()
-          $('#rpc-section').hide()
         } else {
           $('.routing-key-form-input').show()
+        }
+
+        // hide/show rpc section
+        if (['fanout'].includes(exchangeType)) {
+          $('#rpc-section').hide()
+        } else {
           $('#rpc-section').show()
         }
 

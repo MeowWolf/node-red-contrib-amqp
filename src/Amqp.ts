@@ -129,13 +129,9 @@ export default class Amqp {
       exchange: { type },
     } = this.config
 
-    if (this.canHaveRoutingKey(type)) {
-      this.parseRoutingKeys().forEach(async routingKey => {
-        this.handlePublish(this.config, msg, properties, routingKey)
-      })
-    } else {
-      this.handlePublish(this.config, msg, properties)
-    }
+    this.parseRoutingKeys().forEach(async routingKey => {
+      this.handlePublish(this.config, msg, properties, routingKey)
+    })
   }
 
   private async handlePublish(
@@ -153,7 +149,7 @@ export default class Amqp {
       let correlationId = ''
       let replyTo = ''
 
-      if (rpcRequested && this.canHaveRoutingKey(type)) {
+      if (rpcRequested) {
         // Send request for remote procedure call
         correlationId =
           properties?.correlationId ||
@@ -177,12 +173,17 @@ export default class Amqp {
 
   private getRpcConfig(replyTo: string): AmqpConfig {
     const rpcConfig = cloneDeep(this.config)
-    rpcConfig.exchange.routingKey = `${replyTo}-routingKey`
+    rpcConfig.exchange.routingKey = replyTo
     rpcConfig.queue.name = replyTo
     rpcConfig.queue.autoDelete = true
     rpcConfig.queue.exclusive = true
     rpcConfig.queue.durable = false
     rpcConfig.noAck = true
+
+    if (rpcConfig.exchange.type == ExchangeType.Headers) {
+      // Make sure there's no way we consume the message we're sending
+      rpcConfig.amqpProperties.headers = { 'x-match': 'all', noMatch: uuidv4() }
+    }
 
     return rpcConfig
   }
@@ -316,6 +317,7 @@ export default class Amqp {
   private async bindQueue(configParams?: AmqpConfig): Promise<void> {
     const { name, type, routingKey } =
       configParams?.exchange || this.config.exchange
+    const { headers } = configParams?.amqpProperties || this.config
 
     if (this.canHaveRoutingKey(type)) {
       /* istanbul ignore else */
@@ -331,7 +333,7 @@ export default class Amqp {
     }
 
     if (type === ExchangeType.Headers) {
-      await this.channel.bindQueue(this.q.queue, name, '', this.config.headers)
+      await this.channel.bindQueue(this.q.queue, name, '', headers)
     }
   }
 
