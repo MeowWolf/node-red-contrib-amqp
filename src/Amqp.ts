@@ -16,7 +16,6 @@ import {
   AssembledMessage,
   GenericJsonObject,
   ExchangeType,
-  DefaultExchangeName,
   AmqpInNodeDefaults,
   AmqpOutNodeDefaults,
 } from './types'
@@ -40,9 +39,7 @@ export default class Amqp {
       prefetch: config.prefetch,
       noAck: config.noAck,
       exchange: {
-        name:
-          config.exchangeName ||
-          this.determineDefaultExchange(config.exchangeType),
+        name: config.exchangeName,
         type: config.exchangeType,
         routingKey: config.exchangeRoutingKey,
         durable: config.exchangeDurable,
@@ -59,23 +56,6 @@ export default class Amqp {
       headers: this.parseJson(config.headers),
       outputs: config.outputs,
       rpcTimeout: config.rpcTimeoutMilliseconds,
-    }
-  }
-
-  private determineDefaultExchange(
-    exchangeType: ExchangeType,
-  ): DefaultExchangeName {
-    switch (exchangeType) {
-      case ExchangeType.Direct:
-        return DefaultExchangeName.Direct
-      case ExchangeType.Fanout:
-        return DefaultExchangeName.Fanout
-      case ExchangeType.Topic:
-        return DefaultExchangeName.Topic
-      case ExchangeType.Headers:
-        return DefaultExchangeName.Headers
-      default:
-        return DefaultExchangeName.Direct
     }
   }
 
@@ -170,17 +150,23 @@ export default class Amqp {
     } = config
 
     try {
-      let rpcProperties: GenericJsonObject = {}
+      let correlationId = ''
+      let replyTo = ''
 
       if (rpcRequested && this.canHaveRoutingKey(type)) {
         // Send request for remote procedure call
-        rpcProperties = this.getRpcMessageProperties(routingKey)
-        const { correlationId, replyTo } = rpcProperties
+        correlationId =
+          properties?.correlationId ||
+          this.config.amqpProperties?.correlationId ||
+          uuidv4()
+        replyTo =
+          properties?.replyTo || this.config.amqpProperties?.replyTo || uuidv4()
         await this.handleRemoteProcedureCall(correlationId, replyTo)
       }
 
       this.channel.publish(name, routingKey, Buffer.from(msg), {
-        ...rpcProperties,
+        correlationId,
+        replyTo,
         ...this.config.amqpProperties,
         ...properties,
       })
@@ -191,21 +177,14 @@ export default class Amqp {
 
   private getRpcConfig(replyTo: string): AmqpConfig {
     const rpcConfig = cloneDeep(this.config)
-    rpcConfig.exchange.routingKey = replyTo
+    rpcConfig.exchange.routingKey = `${replyTo}-routingKey`
+    rpcConfig.queue.name = replyTo
     rpcConfig.queue.autoDelete = true
+    rpcConfig.queue.exclusive = true
     rpcConfig.queue.durable = false
     rpcConfig.noAck = true
+
     return rpcConfig
-  }
-
-  private getRpcMessageProperties(routingKey: string): GenericJsonObject {
-    const correlationId = uuidv4()
-    const replyTo = `${routingKey}.rpc-response`
-
-    return {
-      correlationId,
-      replyTo,
-    }
   }
 
   private async handleRemoteProcedureCall(
@@ -335,12 +314,13 @@ export default class Amqp {
   }
 
   private async bindQueue(configParams?: AmqpConfig): Promise<void> {
-    const { name, type } = configParams?.exchange || this.config.exchange
+    const { name, type, routingKey } =
+      configParams?.exchange || this.config.exchange
 
     if (this.canHaveRoutingKey(type)) {
       /* istanbul ignore else */
       if (name) {
-        this.parseRoutingKeys(configParams).forEach(async routingKey => {
+        this.parseRoutingKeys(routingKey).forEach(async routingKey => {
           await this.channel.bindQueue(this.q.queue, name, routingKey)
         })
       }
@@ -378,9 +358,10 @@ export default class Amqp {
     return url
   }
 
-  private parseRoutingKeys(configParams?: AmqpConfig): string[] {
-    const { routingKey } = configParams?.exchange || this.config.exchange
-    const keys = routingKey.split(',').map(key => key.trim())
+  private parseRoutingKeys(routingKeyArg?: string): string[] {
+    const routingKey =
+      routingKeyArg || this.config.exchange.routingKey || this.q?.queue || ''
+    const keys = routingKey?.split(',').map(key => key.trim())
     return keys
   }
 

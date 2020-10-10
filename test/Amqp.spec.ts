@@ -37,7 +37,7 @@ describe('Amqp Class', () => {
     amqp = new Amqp(RED, nodeFixture, {
       ...nodeConfigFixture,
       exchangeType: ExchangeType.Direct,
-      exchangeName: '',
+      exchangeName: DefaultExchangeName.Direct,
     })
     expect(amqp.config.exchange.name).to.eq(DefaultExchangeName.Direct)
   })
@@ -47,7 +47,7 @@ describe('Amqp Class', () => {
     amqp = new Amqp(RED, nodeFixture, {
       ...nodeConfigFixture,
       exchangeType: ExchangeType.Fanout,
-      exchangeName: '',
+      exchangeName: DefaultExchangeName.Fanout,
     })
     expect(amqp.config.exchange.name).to.eq(DefaultExchangeName.Fanout)
   })
@@ -57,7 +57,7 @@ describe('Amqp Class', () => {
     amqp = new Amqp(RED, nodeFixture, {
       ...nodeConfigFixture,
       exchangeType: ExchangeType.Topic,
-      exchangeName: '',
+      exchangeName: DefaultExchangeName.Topic,
     })
     expect(amqp.config.exchange.name).to.eq(DefaultExchangeName.Topic)
   })
@@ -67,7 +67,7 @@ describe('Amqp Class', () => {
     amqp = new Amqp(RED, nodeFixture, {
       ...nodeConfigFixture,
       exchangeType: ExchangeType.Headers,
-      exchangeName: '',
+      exchangeName: DefaultExchangeName.Headers,
     })
     expect(amqp.config.exchange.name).to.eq(DefaultExchangeName.Headers)
   })
