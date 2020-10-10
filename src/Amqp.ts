@@ -125,10 +125,6 @@ export default class Amqp {
     msg: unknown,
     properties?: MessageProperties,
   ): Promise<void> {
-    const {
-      exchange: { type },
-    } = this.config
-
     this.parseRoutingKeys().forEach(async routingKey => {
       this.handlePublish(this.config, msg, properties, routingKey)
     })
@@ -160,12 +156,17 @@ export default class Amqp {
         await this.handleRemoteProcedureCall(correlationId, replyTo)
       }
 
-      this.channel.publish(name, routingKey, Buffer.from(msg), {
+      const options = {
         correlationId,
         replyTo,
         ...this.config.amqpProperties,
         ...properties,
-      })
+      }
+      if (name) {
+        this.channel.publish(name, routingKey, Buffer.from(msg), options)
+      } else {
+        this.channel.sendToQueue(options.replyTo, Buffer.from(msg), options)
+      }
     } catch (e) {
       this.node.error(`Could not publish message: ${e}`)
     }
@@ -173,17 +174,12 @@ export default class Amqp {
 
   private getRpcConfig(replyTo: string): AmqpConfig {
     const rpcConfig = cloneDeep(this.config)
-    rpcConfig.exchange.routingKey = replyTo
+    rpcConfig.exchange.name = ''
     rpcConfig.queue.name = replyTo
     rpcConfig.queue.autoDelete = true
     rpcConfig.queue.exclusive = true
     rpcConfig.queue.durable = false
     rpcConfig.noAck = true
-
-    if (rpcConfig.exchange.type == ExchangeType.Headers) {
-      // Make sure there's no way we consume the message we're sending
-      rpcConfig.amqpProperties.headers = { 'x-match': 'all', noMatch: uuidv4() }
-    }
 
     return rpcConfig
   }
@@ -201,10 +197,9 @@ export default class Amqp {
       let additionalErrorMessaging = ''
 
       /************************************
-       * bind queue and set up consumer
+       * assert queue and set up consumer
        ************************************/
-      await this.assertQueue(rpcConfig)
-      await this.bindQueue(rpcConfig)
+      const queueName = await this.assertQueue(rpcConfig)
 
       await this.channel.consume(
         this.q?.queue,
@@ -215,7 +210,7 @@ export default class Amqp {
               this.node.send(msg)
               /* istanbul ignore else */
               if (!rpcQueueHasBeenDeleted) {
-                await this.channel.deleteQueue(this.q.queue)
+                await this.channel.deleteQueue(queueName)
                 rpcQueueHasBeenDeleted = true
               }
             } else {
@@ -238,7 +233,7 @@ export default class Amqp {
                 config: rpcConfig,
               },
             })
-            await this.channel.deleteQueue(this.q.queue)
+            await this.channel.deleteQueue(queueName)
           }
         } catch (e) {
           // TODO: Keep an eye on this
@@ -303,7 +298,7 @@ export default class Amqp {
     }
   }
 
-  private async assertQueue(configParams?: AmqpConfig): Promise<void> {
+  private async assertQueue(configParams?: AmqpConfig): Promise<string> {
     const { queue } = configParams || this.config
     const { name, exclusive, durable, autoDelete } = queue
 
@@ -312,6 +307,8 @@ export default class Amqp {
       durable,
       autoDelete,
     })
+
+    return name
   }
 
   private async bindQueue(configParams?: AmqpConfig): Promise<void> {
