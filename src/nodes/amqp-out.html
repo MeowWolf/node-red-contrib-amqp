@@ -42,13 +42,11 @@
       $('#node-input-exchangeType').change(function (e) {
         const exchangeType = this.value
 
-        // hide/show routing key field, and rpc section
+        // hide/show routing key field
         if (['fanout', 'headers'].includes(exchangeType)) {
           $('.routing-key-form-input').hide()
-          $('#rpc-section').hide()
         } else {
           $('.routing-key-form-input').show()
-          $('#rpc-section').show()
         }
 
         // hide/show headers exchange help text
@@ -157,7 +155,7 @@
       If set to yes, the amqp properties <em>correlationId</em> and <em>replyTo</em> will be auto-generated and sent along with the published message. The message consumer will need to send a response using those fields for this node to then consume and send to output. See the <a href="https://www.rabbitmq.com/tutorials/tutorial-six-javascript.html" target="_blank">RabbitMQ RPC Tutorial</a> for more info. If the consumer for whatever reason does not send a response the request will timeout (configurable here with a default of 3000ms) and the rpc consumer will be cancelled.
       <br />
       <br />
-      Note: You <em>can</em> override the <em>correlationId</em> and <em>replyTo</em> AMQP properties by specifying them above or sending them via the node input but it is not recommended.
+      Note: You <em>can</em> override the <em>correlationId</em> and <em>replyTo</em> AMQP properties by specifying them above or sending them via the node input but it is not recommended except for special use cases.
     </div>
   </span>
 </script>

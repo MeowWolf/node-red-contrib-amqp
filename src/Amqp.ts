@@ -16,7 +16,6 @@ import {
   AssembledMessage,
   GenericJsonObject,
   ExchangeType,
-  DefaultExchangeName,
   AmqpInNodeDefaults,
   AmqpOutNodeDefaults,
 } from './types'
@@ -40,9 +39,7 @@ export default class Amqp {
       prefetch: config.prefetch,
       noAck: config.noAck,
       exchange: {
-        name:
-          config.exchangeName ||
-          this.determineDefaultExchange(config.exchangeType),
+        name: config.exchangeName,
         type: config.exchangeType,
         routingKey: config.exchangeRoutingKey,
         durable: config.exchangeDurable,
@@ -59,23 +56,6 @@ export default class Amqp {
       headers: this.parseJson(config.headers),
       outputs: config.outputs,
       rpcTimeout: config.rpcTimeoutMilliseconds,
-    }
-  }
-
-  private determineDefaultExchange(
-    exchangeType: ExchangeType,
-  ): DefaultExchangeName {
-    switch (exchangeType) {
-      case ExchangeType.Direct:
-        return DefaultExchangeName.Direct
-      case ExchangeType.Fanout:
-        return DefaultExchangeName.Fanout
-      case ExchangeType.Topic:
-        return DefaultExchangeName.Topic
-      case ExchangeType.Headers:
-        return DefaultExchangeName.Headers
-      default:
-        return DefaultExchangeName.Direct
     }
   }
 
@@ -145,17 +125,9 @@ export default class Amqp {
     msg: unknown,
     properties?: MessageProperties,
   ): Promise<void> {
-    const {
-      exchange: { type },
-    } = this.config
-
-    if (this.canHaveRoutingKey(type)) {
-      this.parseRoutingKeys().forEach(async routingKey => {
-        this.handlePublish(this.config, msg, properties, routingKey)
-      })
-    } else {
-      this.handlePublish(this.config, msg, properties)
-    }
+    this.parseRoutingKeys().forEach(async routingKey => {
+      this.handlePublish(this.config, msg, properties, routingKey)
+    })
   }
 
   private async handlePublish(
@@ -170,20 +142,31 @@ export default class Amqp {
     } = config
 
     try {
-      let rpcProperties: GenericJsonObject = {}
+      let correlationId = ''
+      let replyTo = ''
 
-      if (rpcRequested && this.canHaveRoutingKey(type)) {
+      if (rpcRequested) {
         // Send request for remote procedure call
-        rpcProperties = this.getRpcMessageProperties(routingKey)
-        const { correlationId, replyTo } = rpcProperties
+        correlationId =
+          properties?.correlationId ||
+          this.config.amqpProperties?.correlationId ||
+          uuidv4()
+        replyTo =
+          properties?.replyTo || this.config.amqpProperties?.replyTo || uuidv4()
         await this.handleRemoteProcedureCall(correlationId, replyTo)
       }
 
-      this.channel.publish(name, routingKey, Buffer.from(msg), {
-        ...rpcProperties,
+      const options = {
+        correlationId,
+        replyTo,
         ...this.config.amqpProperties,
         ...properties,
-      })
+      }
+      if (name) {
+        this.channel.publish(name, routingKey, Buffer.from(msg), options)
+      } else {
+        this.channel.sendToQueue(options.replyTo, Buffer.from(msg), options)
+      }
     } catch (e) {
       this.node.error(`Could not publish message: ${e}`)
     }
@@ -191,21 +174,14 @@ export default class Amqp {
 
   private getRpcConfig(replyTo: string): AmqpConfig {
     const rpcConfig = cloneDeep(this.config)
-    rpcConfig.exchange.routingKey = replyTo
+    rpcConfig.exchange.name = ''
+    rpcConfig.queue.name = replyTo
     rpcConfig.queue.autoDelete = true
+    rpcConfig.queue.exclusive = true
     rpcConfig.queue.durable = false
     rpcConfig.noAck = true
+
     return rpcConfig
-  }
-
-  private getRpcMessageProperties(routingKey: string): GenericJsonObject {
-    const correlationId = uuidv4()
-    const replyTo = `${routingKey}.rpc-response`
-
-    return {
-      correlationId,
-      replyTo,
-    }
   }
 
   private async handleRemoteProcedureCall(
@@ -221,13 +197,12 @@ export default class Amqp {
       let additionalErrorMessaging = ''
 
       /************************************
-       * bind queue and set up consumer
+       * assert queue and set up consumer
        ************************************/
-      await this.assertQueue(rpcConfig)
-      await this.bindQueue(rpcConfig)
+      const queueName = await this.assertQueue(rpcConfig)
 
       await this.channel.consume(
-        this.q?.queue,
+        queueName,
         async amqpMessage => {
           if (amqpMessage) {
             const msg = this.assembleMessage(amqpMessage)
@@ -235,7 +210,7 @@ export default class Amqp {
               this.node.send(msg)
               /* istanbul ignore else */
               if (!rpcQueueHasBeenDeleted) {
-                await this.channel.deleteQueue(this.q.queue)
+                await this.channel.deleteQueue(queueName)
                 rpcQueueHasBeenDeleted = true
               }
             } else {
@@ -258,7 +233,7 @@ export default class Amqp {
                 config: rpcConfig,
               },
             })
-            await this.channel.deleteQueue(this.q.queue)
+            await this.channel.deleteQueue(queueName)
           }
         } catch (e) {
           // TODO: Keep an eye on this
@@ -323,7 +298,7 @@ export default class Amqp {
     }
   }
 
-  private async assertQueue(configParams?: AmqpConfig): Promise<void> {
+  private async assertQueue(configParams?: AmqpConfig): Promise<string> {
     const { queue } = configParams || this.config
     const { name, exclusive, durable, autoDelete } = queue
 
@@ -332,15 +307,19 @@ export default class Amqp {
       durable,
       autoDelete,
     })
+
+    return name
   }
 
   private async bindQueue(configParams?: AmqpConfig): Promise<void> {
-    const { name, type } = configParams?.exchange || this.config.exchange
+    const { name, type, routingKey } =
+      configParams?.exchange || this.config.exchange
+    const { headers } = configParams?.amqpProperties || this.config
 
     if (this.canHaveRoutingKey(type)) {
       /* istanbul ignore else */
       if (name) {
-        this.parseRoutingKeys(configParams).forEach(async routingKey => {
+        this.parseRoutingKeys(routingKey).forEach(async routingKey => {
           await this.channel.bindQueue(this.q.queue, name, routingKey)
         })
       }
@@ -351,7 +330,7 @@ export default class Amqp {
     }
 
     if (type === ExchangeType.Headers) {
-      await this.channel.bindQueue(this.q.queue, name, '', this.config.headers)
+      await this.channel.bindQueue(this.q.queue, name, '', headers)
     }
   }
 
@@ -378,9 +357,10 @@ export default class Amqp {
     return url
   }
 
-  private parseRoutingKeys(configParams?: AmqpConfig): string[] {
-    const { routingKey } = configParams?.exchange || this.config.exchange
-    const keys = routingKey.split(',').map(key => key.trim())
+  private parseRoutingKeys(routingKeyArg?: string): string[] {
+    const routingKey =
+      routingKeyArg || this.config.exchange.routingKey || this.q?.queue || ''
+    const keys = routingKey?.split(',').map(key => key.trim())
     return keys
   }
 
