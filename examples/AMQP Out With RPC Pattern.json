@@ -1,55 +1,55 @@
 [
   {
-    "id": "51855660.beaee8",
+    "id": "eefbe223.cc053",
     "type": "tab",
     "label": "AMQP Out - RPC Pattern",
     "disabled": false,
     "info": ""
   },
   {
-    "id": "d669ed9c.88509",
+    "id": "108e6de3.693562",
     "type": "amqp-out",
-    "z": "51855660.beaee8",
+    "z": "eefbe223.cc053",
     "name": "amqp out",
-    "broker": "",
-    "exchangeName": "",
+    "broker": "3efe01c6.16a3de",
+    "exchangeName": "amq.direct",
     "exchangeType": "direct",
-    "exchangeRoutingKey": "try_direct",
+    "exchangeRoutingKey": "direct_route",
     "exchangeDurable": true,
     "amqpProperties": "{ \"headers\": {} }",
     "rpcTimeoutMilliseconds": "1000",
     "outputs": 1,
-    "x": 400,
+    "x": 360,
     "y": 180,
-    "wires": [["3be8a9cd.c73e56"]]
+    "wires": [["6d2ea4fe.b5731c"]]
   },
   {
-    "id": "66a4d04.070023",
+    "id": "faa23e4.affc0c",
     "type": "amqp-in",
-    "z": "51855660.beaee8",
+    "z": "eefbe223.cc053",
     "name": "Listening for RPC",
-    "broker": "",
+    "broker": "3efe01c6.16a3de",
     "prefetch": 0,
     "noAck": true,
-    "exchangeName": "",
+    "exchangeName": "amq.direct",
     "exchangeType": "direct",
-    "exchangeRoutingKey": "try_direct",
+    "exchangeRoutingKey": "direct_route",
     "exchangeDurable": true,
-    "queueName": "direct_queue_send_rpc",
+    "queueName": "",
     "queueExclusive": false,
     "queueDurable": false,
     "queueAutoDelete": true,
     "headers": "{}",
-    "x": 180,
+    "x": 160,
     "y": 280,
-    "wires": [["cc4876b1.7f9028"]]
+    "wires": [["cc27c446.274c18"]]
   },
   {
-    "id": "726c2d82.dd8c64",
+    "id": "91cf531e.4455c",
     "type": "inject",
-    "z": "51855660.beaee8",
+    "z": "eefbe223.cc053",
     "name": "",
-    "props": [{ "p": "payload" }, { "p": "topic", "vt": "str" }],
+    "props": [{ "p": "payload" }],
     "repeat": "",
     "crontab": "",
     "once": false,
@@ -57,16 +57,16 @@
     "topic": "",
     "payload": "",
     "payloadType": "date",
-    "x": 190,
+    "x": 170,
     "y": 180,
-    "wires": [["d669ed9c.88509"]]
+    "wires": [["108e6de3.693562"]]
   },
   {
-    "id": "af057954.669fc8",
+    "id": "83f0ae3b.a732f",
     "type": "amqp-out",
-    "z": "51855660.beaee8",
+    "z": "eefbe223.cc053",
     "name": "Send RPC Response",
-    "broker": "",
+    "broker": "3efe01c6.16a3de",
     "exchangeName": "",
     "exchangeType": "direct",
     "exchangeRoutingKey": "",
@@ -74,14 +74,14 @@
     "amqpProperties": "{ \"headers\": {} }",
     "rpcTimeoutMilliseconds": 3000,
     "outputs": 0,
-    "x": 620,
+    "x": 600,
     "y": 280,
     "wires": []
   },
   {
-    "id": "3be8a9cd.c73e56",
+    "id": "6d2ea4fe.b5731c",
     "type": "debug",
-    "z": "51855660.beaee8",
+    "z": "eefbe223.cc053",
     "name": "RPC Response",
     "active": true,
     "tosidebar": true,
@@ -91,14 +91,14 @@
     "targetType": "full",
     "statusVal": "",
     "statusType": "auto",
-    "x": 590,
+    "x": 560,
     "y": 180,
     "wires": []
   },
   {
-    "id": "cc4876b1.7f9028",
+    "id": "cc27c446.274c18",
     "type": "change",
-    "z": "51855660.beaee8",
+    "z": "eefbe223.cc053",
     "name": "",
     "rules": [
       {
@@ -107,6 +107,13 @@
         "pt": "msg",
         "to": "properties.replyTo",
         "tot": "msg"
+      },
+      {
+        "t": "set",
+        "p": "payload",
+        "pt": "msg",
+        "to": "Coming from RPC",
+        "tot": "str"
       }
     ],
     "action": "",
@@ -114,8 +121,8 @@
     "from": "",
     "to": "",
     "reg": false,
-    "x": 390,
+    "x": 380,
     "y": 280,
-    "wires": [["af057954.669fc8"]]
+    "wires": [["83f0ae3b.a732f"]]
   }
 ]
