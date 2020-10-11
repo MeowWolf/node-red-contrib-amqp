@@ -202,7 +202,7 @@ export default class Amqp {
       const queueName = await this.assertQueue(rpcConfig)
 
       await this.channel.consume(
-        this.q?.queue,
+        queueName,
         async amqpMessage => {
           if (amqpMessage) {
             const msg = this.assembleMessage(amqpMessage)
