@@ -11,12 +11,23 @@ module.exports = function (RED: NodeRedApp): void {
     this.status(NODE_STATUS.Disconnected)
     const amqp = new Amqp(RED, this, config)
 
-    // So we can use async/await here
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const iife = (async function initializeNode(
+    ;(async function initializeNode(
       self,
-      isReconnect = false,
+      doSetupEventHandlers = false,
     ): Promise<void> {
+      const reconnect = (doSetupEventHandlers = true) =>
+        new Promise<void>(resolve => {
+          console.warn('amqp out RECONNECT!!!!')
+          setTimeout(async () => {
+            try {
+              await initializeNode(self, doSetupEventHandlers)
+              resolve()
+            } catch (e) {
+              await reconnect(doSetupEventHandlers)
+            }
+          }, 2000)
+        })
+
       try {
         const connection = await amqp.connect()
 
@@ -27,7 +38,8 @@ module.exports = function (RED: NodeRedApp): void {
           await amqp.initialize()
 
           // We don't want to duplicate these handlers on reconnect
-          if (!isReconnect) {
+          if (!doSetupEventHandlers) {
+            console.warn('OUT we are setting up event hanlders')
             self.on(
               'input',
               async ({ payload, routingKey, properties }, send, done) => {
@@ -56,29 +68,15 @@ module.exports = function (RED: NodeRedApp): void {
             // When the server goes down
             connection.on('close', async e => {
               if (e) {
-                const reconnect = () =>
-                  new Promise(resolve => {
-                    setTimeout(async () => {
-                      try {
-                        await initializeNode(self, true)
-                        resolve()
-                      } catch (e) {
-                        await reconnect()
-                      }
-                    }, 2000)
-                  })
-
                 await reconnect()
               }
             })
           }
         }
       } catch (e) {
-        if (isReconnect) {
-          throw e
-        }
-
-        if (e.code === ErrorType.INVALID_LOGIN) {
+        if (e.code === ErrorType.CONNECTION_REFUSED || e.isOperational) {
+          await reconnect(false)
+        } else if (e.code === ErrorType.INVALID_LOGIN) {
           self.status(NODE_STATUS.Invalid)
           self.error(`AmqpOut() Could not connect to broker ${e}`)
         } else {

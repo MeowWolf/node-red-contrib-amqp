@@ -72,6 +72,7 @@ export type AssembledMessage = ConsumeMessage & {
 
 export enum ErrorType {
   INVALID_LOGIN = 'ENOTFOUND',
+  CONNECTION_REFUSED = 'ECONNREFUSED',
 }
 
 export enum NodeType {
