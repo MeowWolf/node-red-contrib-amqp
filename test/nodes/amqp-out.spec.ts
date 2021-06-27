@@ -24,6 +24,7 @@ describe('amqp-out Node', () => {
   })
 
   it('should be loaded', done => {
+    sinon.stub(Amqp.prototype, 'connect')
     const flow = [{ id: 'n1', type: NodeType.AMQP_OUT, name: 'test name' }]
     helper.load(amqpOut, flow, () => {
       const n1 = helper.getNode('n1')
@@ -62,6 +63,21 @@ describe('amqp-out Node', () => {
         amqpOutNode.receive({ payload: 'foo' })
         amqpOutNode.close()
 
+        done()
+      },
+    )
+  })
+
+  it('tries to connect but the broker is down', function (done) {
+    const connectStub = sinon
+      .stub(Amqp.prototype, 'connect')
+      .throws(new CustomError(ErrorType.CONNECTION_REFUSED))
+    helper.load(
+      [amqpOut, amqpBroker],
+      amqpOutFlowFixture,
+      credentialsFixture,
+      function () {
+        expect(connectStub).to.throw()
         done()
       },
     )
