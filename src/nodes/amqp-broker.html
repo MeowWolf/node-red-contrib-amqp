@@ -7,6 +7,7 @@
       port: { value: 5672, required: true, validate: RED.validators.number() },
       vhost: { value: '' },
       tls: { value: false },
+      credsFromEnv: { value: false },
     },
     credentials: {
       username: { type: 'text' },
@@ -22,6 +23,19 @@
       const protocol = this.tls ? 'amqps' : 'amqp'
       return `${protocol}://${host}:${port}/${vhost}`
     },
+    oneditprepare: function () {
+      $('#node-config-input-credsFromEnv').change(function (e) {
+        // const credsFromEnv = this.value
+
+        if (this.checked) {
+          $('#username-field').hide()
+          $('#password-field').hide()
+        } else {
+          $('#username-field').show()
+          $('#password-field').show()
+        }
+      })
+    }
   })
 </script>
 
@@ -42,15 +56,32 @@
     <input type="text" id="node-config-input-vhost" placeholder="Leave blank for default">
   </div>
   <div class="form-row">
-    <label for="node-config-input-tls"><i class="fa fa-expeditedssl"></i>&nbsp;&nbsp;Use TLS</label>
-    <input type="checkbox" id="node-config-input-tls" style="margin: 0px 0px 4px;">
+    <label for="node-config-input-tls" style="width: 250px;"><i class="fa fa-expeditedssl"></i>&nbsp;&nbsp;Use TLS</label>
+    <input type="checkbox" id="node-config-input-tls" style="margin: 0px 0px 4px; width: 20px;">
   </div>
+  <hr />
   <div class="form-row">
+    <label for="node-config-input-credsFromEnv" style="width: 250px;"><i class="fa fa-expeditedssl"></i>&nbsp;&nbsp;Use environment for credentials</label>
+    <input type="checkbox" id="node-config-input-credsFromEnv" style="margin: 0px 0px 4px; width: 20px;">
+  </div>
+  <div class="form-row" id="username-field">
     <label for="node-config-input-username"><i class="fa fa-user"></i>&nbsp;&nbsp;User</label>
     <input type="text" id="node-config-input-username">
   </div>
-  <div class="form-row">
+  <div class="form-row" id="password-field">
     <label for="node-config-input-password"><i class="fa fa-lock"></i>&nbsp;&nbsp;Password</label>
     <input type="password" id="node-config-input-password">
   </div>
+</script>
+
+
+<script type="text/html" data-help-name="amqp-broker">
+  <h3>Use environment for credentials</h3>
+  <p>If this is checked, environment variables will be used for the username and password to connect to the broker</p>
+  <p>
+    The field names used for username and password are:
+      <strong>MW_CONTRIB_AMQP_USERNAME</strong> and
+      <strong>MW_CONTRIB_AMQP_PASSWORD</strong> respectively.
+  </p>
+  <p>These environment variables should be specified in a .env file on the running node-red instance and can be loaded using the <a href="https://www.npmjs.com/package/dotenv" target="_blank">dotenv</a> package.</p>
 </script>

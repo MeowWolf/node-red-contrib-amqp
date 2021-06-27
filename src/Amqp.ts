@@ -347,14 +347,29 @@ export default class Amqp {
         port,
         vhost,
         tls,
-        credentials: { username, password },
+        credsFromEnv,
+        credentials,
       } = (broker as unknown) as BrokerConfig
+
+      const { username, password } = credsFromEnv
+        ? Amqp.getCredsFromEnvironment()
+        : credentials
 
       const protocol = tls ? /* istanbul ignore next */ 'amqps' : 'amqp'
       url = `${protocol}://${username}:${password}@${host}:${port}/${vhost}`
     }
 
     return url
+  }
+
+  private static getCredsFromEnvironment(): {
+    username: string
+    password: string
+  } {
+    return {
+      username: process.env.MW_CONTRIB_AMQP_USERNAME,
+      password: process.env.MW_CONTRIB_AMQP_PASSWORD,
+    }
   }
 
   private parseRoutingKeys(routingKeyArg?: string): string[] {
