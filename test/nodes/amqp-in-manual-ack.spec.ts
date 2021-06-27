@@ -27,6 +27,7 @@ describe('amqp-in-manual-ack Node', () => {
   })
 
   it('should be loaded', done => {
+    sinon.stub(Amqp.prototype, 'connect')
     const flow = [
       { id: 'n1', type: NodeType.AMQP_IN_MANUAL_ACK, name: 'test name' },
     ]
@@ -68,6 +69,21 @@ describe('amqp-in-manual-ack Node', () => {
         // @ts-ignore
         amqpInManualAckNode.receive({ payload: 'foo', routingKey: 'bar' })
         amqpInManualAckNode.close(true)
+        done()
+      },
+    )
+  })
+
+  it('tries to connect but the broker is down', function (done) {
+    const connectStub = sinon
+      .stub(Amqp.prototype, 'connect')
+      .throws(new CustomError(ErrorType.CONNECTION_REFUSED))
+    helper.load(
+      [amqpInManualAck, amqpBroker],
+      amqpInManualAckFlowFixture,
+      credentialsFixture,
+      function () {
+        expect(connectStub).to.throw()
         done()
       },
     )

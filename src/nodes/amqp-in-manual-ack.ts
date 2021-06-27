@@ -5,74 +5,65 @@ import Amqp from '../Amqp'
 
 module.exports = function (RED: NodeRedApp): void {
   function AmqpInManualAck(config: EditorNodeProperties): void {
+    let reconnectTimeout: NodeJS.Timeout
+    RED.events.once('nodes-stopped', () => {
+      clearTimeout(reconnectTimeout)
+    })
+
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     RED.nodes.createNode(this, config)
     this.status(NODE_STATUS.Disconnected)
     const amqp = new Amqp(RED, this, config)
 
-    // So we can use async/await here
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const iife = (async function initializeNode(
-      self,
-      isReconnect = false,
-    ): Promise<void> {
+    ;(async function initializeNode(self): Promise<void> {
+      const reconnect = () =>
+        new Promise<void>(resolve => {
+          reconnectTimeout = setTimeout(async () => {
+            try {
+              await initializeNode(self)
+              resolve()
+            } catch (e) {
+              await reconnect()
+            }
+          }, 2000)
+        })
+
       try {
         const connection = await amqp.connect()
 
         // istanbul ignore else
         if (connection) {
-          self.status(NODE_STATUS.Connected)
-
           await amqp.initialize()
           await amqp.consume()
 
-          // We don't want to duplicate these handlers on reconnect
-          if (!isReconnect) {
-            self.on('input', async (msg, send, done) => {
-              amqp.ack(msg)
+          self.on('input', async (msg, send, done) => {
+            amqp.ack(msg)
 
-              /* istanbul ignore else */
-              if (done) {
-                done()
-              }
-            })
+            /* istanbul ignore else */
+            done && done()
+          })
 
-            // When the server goes down
-            self.on(
-              'close',
-              async (done: () => void): Promise<void> => {
-                await amqp.close()
-                done()
-              },
-            )
+          // When the server goes down
+          self.once(
+            'close',
+            async (done: () => void): Promise<void> => {
+              await amqp.close()
+              done && done()
+            },
+          )
 
-            // When the server goes down
-            connection.on('close', async e => {
-              if (e) {
-                const reconnect = () =>
-                  new Promise(resolve => {
-                    setTimeout(async () => {
-                      try {
-                        await initializeNode(self, true)
-                        resolve()
-                      } catch (e) {
-                        await reconnect()
-                      }
-                    }, 2000)
-                  })
+          // When the server goes down
+          connection.on('close', async e => {
+            e && (await reconnect())
+          })
 
-                await reconnect()
-              }
-            })
-          }
+          self.status(NODE_STATUS.Connected)
         }
       } catch (e) {
-        if (isReconnect) {
-          throw e
-        }
-
-        if (e.code === ErrorType.INVALID_LOGIN) {
+        if (e.code === ErrorType.CONNECTION_REFUSED || e.isOperational) {
+          await reconnect()
+        } else if (e.code === ErrorType.INVALID_LOGIN) {
           self.status(NODE_STATUS.Invalid)
           self.error(`AmqpInManualAck() Could not connect to broker ${e}`)
         } else {

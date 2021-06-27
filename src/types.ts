@@ -6,6 +6,7 @@ export interface BrokerConfig extends Node {
   port: number
   vhost: string
   tls: boolean
+  credsFromEnv: boolean
   credentials: {
     username: string
     password: string
@@ -72,6 +73,7 @@ export type AssembledMessage = ConsumeMessage & {
 
 export enum ErrorType {
   INVALID_LOGIN = 'ENOTFOUND',
+  CONNECTION_REFUSED = 'ECONNREFUSED',
 }
 
 export enum NodeType {
