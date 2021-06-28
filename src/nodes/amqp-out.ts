@@ -6,7 +6,7 @@ import Amqp from '../Amqp'
 module.exports = function (RED: NodeRedApp): void {
   function AmqpOut(config: EditorNodeProperties): void {
     let reconnectTimeout: NodeJS.Timeout
-    RED.events.once('nodes-stopped', () => {
+    RED.events.once('flows:stopped', () => {
       clearTimeout(reconnectTimeout)
     })
 
