@@ -356,7 +356,9 @@ export default class Amqp {
         : credentials
 
       const protocol = tls ? /* istanbul ignore next */ 'amqps' : 'amqp'
-      url = `${protocol}://${username}:${password}@${host}:${port}/${vhost}`
+      url = `${protocol}://${encodeURIComponent(username)}:${encodeURIComponent(
+        password,
+      )}@${host}:${port}/${vhost}`
     }
 
     return url
