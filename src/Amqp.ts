@@ -1,7 +1,6 @@
 import { NodeRedApp, Node } from 'node-red'
 import { v4 as uuidv4 } from 'uuid'
 import cloneDeep = require('lodash.clonedeep')
-import * as querystring from 'querystring';
 import {
   Connection,
   Channel,
@@ -357,7 +356,7 @@ export default class Amqp {
         : credentials
 
       const protocol = tls ? /* istanbul ignore next */ 'amqps' : 'amqp'
-      url = `${protocol}://${querystring.escape(username)}:${querystring.escape(password)}@${host}:${port}/${vhost}`
+      url = `${protocol}://${encodeURIComponent(username)}:${encodeURIComponent(password)}@${host}:${port}/${vhost}`
     }
 
     return url
