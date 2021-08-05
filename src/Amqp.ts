@@ -137,7 +137,7 @@ export default class Amqp {
     routingKey?: string,
   ) {
     const {
-      exchange: { name, type },
+      exchange: { name },
       outputs: rpcRequested,
     } = config
 
@@ -163,9 +163,18 @@ export default class Amqp {
         ...properties,
       }
       if (name) {
-        this.channel.publish(name, routingKey, Buffer.from(msg), options)
+        this.channel.publish(
+          name,
+          routingKey,
+          Buffer.from(msg as string),
+          options,
+        )
       } else {
-        this.channel.sendToQueue(options.replyTo, Buffer.from(msg), options)
+        this.channel.sendToQueue(
+          options.replyTo,
+          Buffer.from(msg as string),
+          options,
+        )
       }
     } catch (e) {
       this.node.error(`Could not publish message: ${e}`)
