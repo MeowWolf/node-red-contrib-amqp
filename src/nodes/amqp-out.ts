@@ -4,7 +4,12 @@ import { ErrorType, NodeType } from '../types'
 import Amqp from '../Amqp'
 
 module.exports = function (RED: NodeRedApp): void {
-  function AmqpOut(config: EditorNodeProperties): void {
+  function AmqpOut(
+    config: EditorNodeProperties & {
+      exchangeRoutingKey: string
+      exchangeRoutingKeyType: string
+    },
+  ): void {
     let reconnectTimeout: NodeJS.Timeout
     RED.events.once('flows:stopped', () => {
       clearTimeout(reconnectTimeout)
@@ -36,17 +41,48 @@ module.exports = function (RED: NodeRedApp): void {
         if (connection) {
           await amqp.initialize()
 
-          self.on(
-            'input',
-            async ({ payload, routingKey, properties }, send, done) => {
-              if (routingKey) {
-                amqp.setRoutingKey(routingKey)
-              }
-              amqp.publish(JSON.stringify(payload), properties)
+          self.on('input', async (msg, _, done) => {
+            const { payload, routingKey, properties } = msg
+            const { exchangeRoutingKey, exchangeRoutingKeyType } = config
 
-              done && done()
-            },
-          )
+            switch (exchangeRoutingKeyType) {
+              case 'msg':
+              case 'flow':
+              case 'global':
+                amqp.setRoutingKey(
+                  RED.util.evaluateNodeProperty(
+                    exchangeRoutingKey,
+                    exchangeRoutingKeyType,
+                    self,
+                    msg,
+                  ),
+                )
+                break
+              case 'jsonata':
+                amqp.setRoutingKey(
+                  RED.util.evaluateJSONataExpression(
+                    RED.util.prepareJSONataExpression(exchangeRoutingKey, self),
+                    msg,
+                  ),
+                )
+                break
+              case 'str':
+              default:
+                if (routingKey) {
+                  // if incoming payload contains a routingKey value
+                  // override our string value with it.
+
+                  // Superfluous (and possibly confusing) at this point
+                  // but keeping it to retain backwards compatibility
+                  amqp.setRoutingKey(routingKey)
+                }
+                break
+            }
+
+            amqp.publish(JSON.stringify(payload), properties)
+
+            done && done()
+          })
 
           // When the node is re-deployed
           self.once(
