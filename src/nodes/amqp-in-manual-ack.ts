@@ -45,13 +45,10 @@ module.exports = function (RED: NodeRedApp): void {
           })
 
           // When the server goes down
-          self.once(
-            'close',
-            async (done: () => void): Promise<void> => {
-              await amqp.close()
-              done && done()
-            },
-          )
+          self.once('close', async (done: () => void): Promise<void> => {
+            await amqp.close()
+            done && done()
+          })
 
           // When the server goes down
           connection.on('close', async e => {

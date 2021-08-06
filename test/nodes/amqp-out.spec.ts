@@ -33,7 +33,7 @@ describe('amqp-out Node', () => {
     })
   })
 
-  it('should connect to the server', function (done) {
+  it('should connect to the server and send some messages', function (done) {
     // @ts-ignore
     Amqp.prototype.channel = {
       unbindQueue: (): null => null,
@@ -60,6 +60,82 @@ describe('amqp-out Node', () => {
 
         const amqpOutNode = helper.getNode('n1')
         amqpOutNode.receive({ payload: 'foo', routingKey: 'bar' })
+        amqpOutNode.receive({ payload: 'foo' })
+        amqpOutNode.close()
+
+        done()
+      },
+    )
+  })
+
+  it('should connect to the server and send some messages with a dynamic routing key from `msg`', function (done) {
+    // @ts-ignore
+    Amqp.prototype.channel = {
+      unbindQueue: (): null => null,
+      close: (): null => null,
+    }
+    // @ts-ignore
+    Amqp.prototype.connection = {
+      close: (): null => null,
+    }
+    const connectStub = sinon
+      .stub(Amqp.prototype, 'connect')
+      // @ts-ignore
+      .resolves(true)
+    sinon.stub(Amqp.prototype, 'initialize')
+
+    const flowFixture = [...amqpOutFlowFixture]
+    // @ts-ignore
+    flowFixture[0].exchangeRoutingKeyType = 'msg'
+
+    helper.load(
+      [amqpOut, amqpBroker],
+      flowFixture,
+      credentialsFixture,
+      async function () {
+        expect(connectStub.calledOnce).to.be.true
+        // TODO: Figure out why this isn't working:
+        // expect(initializeStub.calledOnce).to.be.true
+
+        const amqpOutNode = helper.getNode('n1')
+        amqpOutNode.receive({ payload: 'foo' })
+        amqpOutNode.close()
+
+        done()
+      },
+    )
+  })
+
+  it('should connect to the server and send some messages with a dynamic jsonata routing key', function (done) {
+    // @ts-ignore
+    Amqp.prototype.channel = {
+      unbindQueue: (): null => null,
+      close: (): null => null,
+    }
+    // @ts-ignore
+    Amqp.prototype.connection = {
+      close: (): null => null,
+    }
+    const connectStub = sinon
+      .stub(Amqp.prototype, 'connect')
+      // @ts-ignore
+      .resolves(true)
+    sinon.stub(Amqp.prototype, 'initialize')
+
+    const flowFixture = [...amqpOutFlowFixture]
+    // @ts-ignore
+    flowFixture[0].exchangeRoutingKeyType = 'jsonata'
+
+    helper.load(
+      [amqpOut, amqpBroker],
+      flowFixture,
+      credentialsFixture,
+      async function () {
+        expect(connectStub.calledOnce).to.be.true
+        // TODO: Figure out why this isn't working:
+        // expect(initializeStub.calledOnce).to.be.true
+
+        const amqpOutNode = helper.getNode('n1')
         amqpOutNode.receive({ payload: 'foo' })
         amqpOutNode.close()
 

@@ -8,6 +8,7 @@
       exchangeName: { value: '' },
       exchangeType: { value: 'topic' },
       exchangeRoutingKey: { value: '' },
+      exchangeRoutingKeyType: { value: 'str' },
       exchangeDurable: { value: true },
       amqpProperties: {
         value: '{ "headers": {} }',
@@ -29,6 +30,12 @@
       return label || 'amqp-out'
     },
     oneditprepare: function () {
+      $("#node-input-exchangeRoutingKey").typedInput({
+        default: "str",
+        types: ["str", "msg", "flow", "global", "jsonata"],
+        typeField: $("#node-input-exchangeRoutingKeyType")
+      })
+
       $('#node-input-amqpProperties').typedInput({
         type: 'json',
         types: ['json'],
@@ -115,7 +122,8 @@
   </div>
   <div class="form-row wide-label routing-key-form-input">
     <label for="node-input-exchangeRoutingKey"><i class="fa fa-filter"></i>&nbsp;&nbsp;Routing Key</label>
-    <input type="text" id="node-input-exchangeRoutingKey" placeholder="routing.key">
+    <input type="text" id="node-input-exchangeRoutingKey" placeholder="routing.key" />
+    <input type="hidden" id="node-input-exchangeRoutingKeyType" />
   </div>
   <div class="form-tips routing-key-form-input">
     <i class="fa fa-info-circle"></i>
@@ -173,7 +181,9 @@
     <dt>routingKey
       <span class="property-type">string</span>
     </dt>
-    <dd>The value of this field will override the node's configured routing key(s)</dd>
+    <dd>
+      If the node's routing key field type is specified as a string, the value of this field will override the node's configured routing key(s). If the node's routing key field type is not specified as a string, this value will have no effect and the value of the typedinput will be used as the routing key.
+    </dd>
     <dt>properties
       <span class="property-type">object</span>
     </dt>
