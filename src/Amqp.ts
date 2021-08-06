@@ -351,14 +351,8 @@ export default class Amqp {
     let url = ''
 
     if (broker) {
-      const {
-        host,
-        port,
-        vhost,
-        tls,
-        credsFromEnv,
-        credentials,
-      } = (broker as unknown) as BrokerConfig
+      const { host, port, vhost, tls, credsFromEnv, credentials } =
+        broker as unknown as BrokerConfig
 
       const { username, password } = credsFromEnv
         ? Amqp.getCredsFromEnvironment()
