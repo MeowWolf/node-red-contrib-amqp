@@ -7,7 +7,7 @@
       port: { value: 5672, required: true, validate: RED.validators.number() },
       vhost: { value: '' },
       tls: { value: false },
-      credsFromEnv: { value: false },
+      credsFromSettings: { value: false },
     },
     credentials: {
       username: { type: 'text' },
@@ -24,7 +24,7 @@
       return `${protocol}://${host}:${port}/${vhost}`
     },
     oneditprepare: function () {
-      $('#node-config-input-credsFromEnv').change(function (e) {
+      $('#node-config-input-credsFromSettings').change(function (e) {
         if (this.checked) {
           $('#username-field').hide()
           $('#password-field').hide()
@@ -59,8 +59,8 @@
   </div>
   <hr />
   <div class="form-row">
-    <label for="node-config-input-credsFromEnv" style="width: 250px;"><i class="fa fa-expeditedssl"></i>&nbsp;&nbsp;Use environment for credentials</label>
-    <input type="checkbox" id="node-config-input-credsFromEnv" style="margin: 0px 0px 4px; width: 20px;">
+    <label for="node-config-input-credsFromSettings" style="width: 250px;"><i class="fa fa-expeditedssl"></i>&nbsp;&nbsp;Get credentials from settings</label>
+    <input type="checkbox" id="node-config-input-credsFromSettings" style="margin: 0px 0px 4px; width: 20px;">
   </div>
   <div class="form-row" id="username-field">
     <label for="node-config-input-username"><i class="fa fa-user"></i>&nbsp;&nbsp;User</label>
@@ -74,12 +74,36 @@
 
 
 <script type="text/html" data-help-name="amqp-broker">
-  <h3>Use environment for credentials</h3>
-  <p>If this is checked, environment variables will be used for the username and password to connect to the broker</p>
+  <h3>Get credentials from settings</h3>
+  <p>
+    If this is checked, variables specified in the settings.js file will be used for the username and password to connect to the broker
+  </p>
   <p>
     The field names used for username and password are:
-      <strong>MW_CONTRIB_AMQP_USERNAME</strong> and
-      <strong>MW_CONTRIB_AMQP_PASSWORD</strong> respectively.
+    <br />
+    <strong>MW_CONTRIB_AMQP_USERNAME</strong> and
+    <br />
+    <strong>MW_CONTRIB_AMQP_PASSWORD</strong> respectively.
   </p>
-  <p>These environment variables should be specified in a .env file on the running node-red instance and can be loaded using the <a href="https://www.npmjs.com/package/dotenv" target="_blank">dotenv</a> package.</p>
+  <p>
+    They can be added to the settings.js file along with the other fields:
+  </p>
+    <pre>
+module.exports = {
+  ...
+  MW_CONTRIB_AMQP_USERNAME: 'rabbitmq',
+  MW_CONTRIB_AMQP_PASSWORD: 'rabbitmq',
+  ...
+}
+    </pre>
+
+  <p>
+    A good setup would be:
+    <ol>
+      <li>Use environment variables with the <em>dotenv</em> npm package to specify your credentials.</li>
+      <li>In the settings file set them as exports like in the above example.</li>
+      <li>Set them to empty strings in the environment like this: `process.env.MW_CONTRIB_AMQP_PASSWORD = ''`.</li>
+    </ol>
+    The last step is very important because environment variables are accessible via the front end and can be accessed by any user.
+  </p>
 </script>

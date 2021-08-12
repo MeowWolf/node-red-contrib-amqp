@@ -67,7 +67,7 @@ export default class Amqp {
     // @ts-ignore
     this.broker = this.RED.nodes.getNode(broker)
 
-    const brokerUrl = Amqp.getBrokerUrl(this.broker)
+    const brokerUrl = this.getBrokerUrl(this.broker)
     this.connection = await connect(brokerUrl, { heartbeat: 2 })
 
     /* istanbul ignore next */
@@ -347,15 +347,15 @@ export default class Amqp {
     return type === ExchangeType.Direct || type === ExchangeType.Topic
   }
 
-  private static getBrokerUrl(broker: Node): string {
+  private getBrokerUrl(broker: Node): string {
     let url = ''
 
     if (broker) {
-      const { host, port, vhost, tls, credsFromEnv, credentials } =
+      const { host, port, vhost, tls, credsFromSettings, credentials } =
         broker as unknown as BrokerConfig
 
-      const { username, password } = credsFromEnv
-        ? Amqp.getCredsFromEnvironment()
+      const { username, password } = credsFromSettings
+        ? this.getCredsFromSettings()
         : credentials
 
       const protocol = tls ? /* istanbul ignore next */ 'amqps' : 'amqp'
@@ -367,13 +367,17 @@ export default class Amqp {
     return url
   }
 
-  private static getCredsFromEnvironment(): {
+  private getCredsFromSettings(): {
     username: string
     password: string
   } {
     return {
-      username: process.env.MW_CONTRIB_AMQP_USERNAME,
-      password: process.env.MW_CONTRIB_AMQP_PASSWORD,
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      username: this.RED.settings.MW_CONTRIB_AMQP_USERNAME,
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      password: this.RED.settings.MW_CONTRIB_AMQP_USERNAME,
     }
   }
 

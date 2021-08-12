@@ -11,7 +11,7 @@ module.exports = function (RED: NodeRedApp): void {
     this.port = n.port
     this.tls = n.tls
     this.vhost = n.vhost
-    this.credsFromEnv = n.credsFromEnv
+    this.credsFromSettings = n.credsFromSettings
   }
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
