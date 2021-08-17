@@ -69,6 +69,21 @@ export type GenericJsonObject = Record<string, any>
 
 export type AssembledMessage = ConsumeMessage & {
   payload: GenericJsonObject | string
+  manualAck?: ManualAckFields
+}
+
+export interface ManualAckFields {
+  ackMode: ManualAckType;
+  allUpTo?: boolean;
+  requeue?: boolean;
+}
+
+export enum ManualAckType {
+  ACK = 'ack',
+  ACKALL = 'ackAll',
+  NACK = 'nack',
+  NACKALL = 'nackAll',
+  REJECT = 'reject',
 }
 
 export enum ErrorType {
