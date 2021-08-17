@@ -50,7 +50,7 @@ module.exports = function (RED: NodeRedApp): void {
                 } else if (msg.ackMode === ManualAckType.REJECT) {
                   amqp.reject(msg)
                 } else {
-                  this.node.error(`Manual ack mode is not set`)
+                  self.error(`Manual ack mode is not set`)
                 }
               } else {
                 // backward compatible if the manualAck is not set
