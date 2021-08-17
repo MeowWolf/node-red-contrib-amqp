@@ -41,13 +41,13 @@ module.exports = function (RED: NodeRedApp): void {
               if (msg.manualAck) {
                 if (msg.manualAck.ackMode === ManualAckType.ACK) {
                   amqp.ack(msg)
-                } else if (msg.ackMode === ManualAckType.ACKALL) {
+                } else if (msg.manualAck.ackMode === ManualAckType.ACKALL) {
                   amqp.ackAll()
                 } else if (msg.manualAck.ackMode === ManualAckType.NACK) {
                   amqp.nack(msg)
-                } else if (msg.ackMode === ManualAckType.NACKALL) {
+                } else if (msg.manualAck.ackMode === ManualAckType.NACKALL) {
                   amqp.nackAll(msg)
-                } else if (msg.ackMode === ManualAckType.REJECT) {
+                } else if (msg.manualAck.ackMode === ManualAckType.REJECT) {
                   amqp.reject(msg)
                 } else {
                   self.error(`Manual ack mode is not set`)
