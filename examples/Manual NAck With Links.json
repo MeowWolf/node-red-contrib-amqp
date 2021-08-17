@@ -1,0 +1,199 @@
+[
+    {
+        "id": "5b25576.756a028",
+        "type": "amqp-in-manual-ack",
+        "z": "57e5d8ba3549525e",
+        "name": "",
+        "broker": "",
+        "prefetch": "1",
+        "noAck": false,
+        "exchangeName": "",
+        "exchangeType": "direct",
+        "exchangeRoutingKey": "",
+        "exchangeDurable": true,
+        "queueName": "test-direct-queue",
+        "queueExclusive": false,
+        "queueDurable": true,
+        "queueAutoDelete": false,
+        "headers": "{}",
+        "x": 280,
+        "y": 220,
+        "wires": [
+            [
+                "e5684336.1a2478",
+                "4331eab8.43a254"
+            ]
+        ]
+    },
+    {
+        "id": "e5684336.1a2478",
+        "type": "debug",
+        "z": "57e5d8ba3549525e",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 510,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "4331eab8.43a254",
+        "type": "function",
+        "z": "57e5d8ba3549525e",
+        "name": "Your business logic",
+        "func": "\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 550,
+        "y": 220,
+        "wires": [
+            [
+                "d41721f0.31eaa8"
+            ]
+        ]
+    },
+    {
+        "id": "badc44d3.f80678",
+        "type": "function",
+        "z": "57e5d8ba3549525e",
+        "name": "Decide ACK mode",
+        "func": "msg.manualAck = {\n    // ackMode: \"ack\"\n    // ackMode: \"ackAll\"\n    ackMode: \"nack\"\n    // ackMode: \"nackAll\"\n    // ackMode: \"reject\"\n};\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1130,
+        "y": 220,
+        "wires": [
+            [
+                "1e4f9af0.05bab5",
+                "1042e3a8.1153b4"
+            ]
+        ]
+    },
+    {
+        "id": "1042e3a8.1153b4",
+        "type": "link out",
+        "z": "57e5d8ba3549525e",
+        "name": "",
+        "links": [
+            "2edcabd0.3d68e4"
+        ],
+        "x": 1295,
+        "y": 220,
+        "wires": []
+    },
+    {
+        "id": "2edcabd0.3d68e4",
+        "type": "link in",
+        "z": "57e5d8ba3549525e",
+        "name": "",
+        "links": [
+            "1042e3a8.1153b4"
+        ],
+        "x": 75,
+        "y": 220,
+        "wires": [
+            [
+                "5b25576.756a028"
+            ]
+        ]
+    },
+    {
+        "id": "d41721f0.31eaa8",
+        "type": "delay",
+        "z": "57e5d8ba3549525e",
+        "name": "Work takes long time to finish",
+        "pauseType": "delay",
+        "timeout": "20",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "x": 840,
+        "y": 220,
+        "wires": [
+            [
+                "badc44d3.f80678"
+            ]
+        ]
+    },
+    {
+        "id": "1e4f9af0.05bab5",
+        "type": "debug",
+        "z": "57e5d8ba3549525e",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1350,
+        "y": 280,
+        "wires": []
+    },
+    {
+        "id": "cb7746d054ecc5df",
+        "type": "inject",
+        "z": "57e5d8ba3549525e",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 140,
+        "y": 100,
+        "wires": [
+            [
+                "d08b0fe8e2645064"
+            ]
+        ]
+    },
+    {
+        "id": "d08b0fe8e2645064",
+        "type": "amqp-out",
+        "z": "57e5d8ba3549525e",
+        "name": "",
+        "broker": "",
+        "exchangeName": "test-direct-exchange",
+        "exchangeType": "direct",
+        "exchangeRoutingKey": "",
+        "exchangeRoutingKeyType": "str",
+        "exchangeDurable": true,
+        "amqpProperties": "{ \"headers\": {} }",
+        "rpcTimeoutMilliseconds": 3000,
+        "outputs": 0,
+        "x": 380,
+        "y": 100,
+        "wires": []
+    }
+]
