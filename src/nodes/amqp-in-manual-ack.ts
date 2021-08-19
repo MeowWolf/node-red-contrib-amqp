@@ -39,22 +39,27 @@ module.exports = function (RED: NodeRedApp): void {
 
           self.on('input', async (msg, send, done) => {
             if (msg.manualAck) {
-              if (msg.manualAck.ackMode === ManualAckType.Ack) {
-                amqp.ack(msg)
-              } else if (msg.manualAck.ackMode === ManualAckType.AckAll) {
-                amqp.ackAll()
-              } else if (msg.manualAck.ackMode === ManualAckType.Nack) {
-                amqp.nack(msg)
-              } else if (msg.manualAck.ackMode === ManualAckType.NackAll) {
-                amqp.nackAll(msg)
-              } else if (msg.manualAck.ackMode === ManualAckType.Reject) {
-                amqp.reject(msg)
-              } else {
-                self.error(`Manual ack mode is not set`)
+              const ackMode = msg.manualAck.ackMode
+
+              switch (ackMode) {
+                case ManualAckType.AckAll:
+                  amqp.ackAll()
+                  break
+                case ManualAckType.Nack:
+                  amqp.nack(msg)
+                  break
+                case ManualAckType.NackAll:
+                  amqp.nackAll(msg)
+                  break
+                case ManualAckType.Reject:
+                  amqp.reject(msg)
+                  break
+                case ManualAckType.Ack:
+                default:
+                  amqp.ack(msg)
+                  break
               }
             } else {
-              // backward compatible if the manualAck is not set
-              // default behaviour is ack the message
               amqp.ack(msg)
             }
 
