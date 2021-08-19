@@ -118,11 +118,11 @@ export default class Amqp {
   }
 
   public ack(msg: AssembledMessage): void {
-    // Acknowledge the given message, 
+    // Acknowledge the given message,
     // or all messages up to and including the given message.
     if (msg.manualAck.allUpTo) {
-      // If allUpTo is true, all outstanding messages prior to 
-      // and including the given message shall be considered acknowledged. 
+      // If allUpTo is true, all outstanding messages prior to
+      // and including the given message shall be considered acknowledged.
       // If false, or omitted, only the message supplied is acknowledged.
       this.channel.ack(msg, msg.manualAck.allUpTo)
     } else {
@@ -131,17 +131,17 @@ export default class Amqp {
   }
 
   public ackAll(): void {
-    // Acknowledge all outstanding messages on the channel. 
-    // This is a “safe” operation, in that it won’t result in an error 
+    // Acknowledge all outstanding messages on the channel.
+    // This is a “safe” operation, in that it won’t result in an error
     // even if there are no such messages.
     this.channel.ackAll()
   }
 
   public nack(msg: AssembledMessage): void {
-    // Reject a message. 
-    // This instructs the server to either requeue the message or 
+    // Reject a message.
+    // This instructs the server to either requeue the message or
     // throw it away (which may result in it being dead-lettered).
-    if ((msg.manualAck.allUpTo) || (msg.manualAck.requeue)) {
+    if (msg.manualAck.allUpTo || msg.manualAck.requeue) {
       this.channel.nack(msg, msg.manualAck.allUpTo, msg.manualAck.requeue)
     } else {
       this.channel.nack(msg)
@@ -149,7 +149,7 @@ export default class Amqp {
   }
 
   public nackAll(msg: AssembledMessage): void {
-    // Reject all messages outstanding on this channel. 
+    // Reject all messages outstanding on this channel.
     // If requeue is truthy, or omitted, the server will try to re-enqueue the messages.
     if (msg.manualAck.requeue) {
       this.channel.nackAll(msg.manualAck.requeue)
@@ -159,8 +159,8 @@ export default class Amqp {
   }
 
   public reject(msg: AssembledMessage): void {
-    // Reject a message. 
-    // Equivalent to #nack(message, false, requeue), 
+    // Reject a message.
+    // Equivalent to #nack(message, false, requeue),
     // but works in older versions of RabbitMQ (< v2.3.0) where #nack does not.
     if (msg.manualAck.requeue) {
       this.channel.reject(msg, msg.manualAck.requeue)
@@ -326,7 +326,7 @@ export default class Amqp {
       }
       await this.channel.close()
       await this.connection.close()
-    } catch (e) { } // Need to catch here but nothing further is necessary
+    } catch (e) {} // Need to catch here but nothing further is necessary
   }
 
   private async createChannel(): Promise<void> {
@@ -446,7 +446,7 @@ export default class Amqp {
   }
 
   private isManualAck(): boolean {
-    return this.node.type === NodeType.AMQP_IN_MANUAL_ACK
+    return this.node.type === NodeType.AmqpInManualAck
   }
 
   private parseJson(jsonInput: unknown): GenericJsonObject {

@@ -10,7 +10,7 @@ import {
 export const amqpInFlowFixture = [
   {
     id: 'n1',
-    type: NodeType.AMQP_IN,
+    type: NodeType.AmqpIn,
     wires: [['n2']],
     name: '',
     broker: 'n3',
@@ -35,7 +35,7 @@ export const amqpInFlowFixture = [
 export const amqpInManualAckFlowFixture = [
   {
     id: 'n1',
-    type: NodeType.AMQP_IN_MANUAL_ACK,
+    type: NodeType.AmqpInManualAck,
     wires: [['n2']],
     name: '',
     broker: 'n3',
@@ -60,7 +60,7 @@ export const amqpInManualAckFlowFixture = [
 export const amqpOutFlowFixture = [
   {
     id: 'n1',
-    type: NodeType.AMQP_OUT,
+    type: NodeType.AmqpOut,
     wires: [['n2']],
     name: '',
     broker: 'n3',
