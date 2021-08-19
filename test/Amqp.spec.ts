@@ -86,7 +86,6 @@ describe('Amqp Class', () => {
   it('initialize()', async () => {
     const createChannelStub = sinon.stub()
     const assertExchangeStub = sinon.stub()
-    const consumeStub = sinon.stub()
 
     amqp.createChannel = createChannelStub
     amqp.assertExchange = assertExchangeStub
@@ -265,12 +264,8 @@ describe('Amqp Class', () => {
 
   it('assertQueue()', async () => {
     const queue = 'queueName'
-    const {
-      queueName,
-      queueExclusive,
-      queueDurable,
-      queueAutoDelete,
-    } = nodeConfigFixture
+    const { queueName, queueExclusive, queueDurable, queueAutoDelete } =
+      nodeConfigFixture
     const assertQueueStub = sinon.stub().resolves({ queue })
     amqp.channel = { assertQueue: assertQueueStub }
 

@@ -3,7 +3,7 @@
 import { expect } from 'chai'
 import * as sinon from 'sinon'
 import Amqp from '../../src/Amqp'
-import { ErrorType, NodeType } from '../../src/types'
+import { ErrorType, ManualAckType, NodeType } from '../../src/types'
 import {
   CustomError,
   amqpInManualAckFlowFixture,
@@ -62,12 +62,54 @@ describe('amqp-in-manual-ack Node', () => {
       async function () {
         expect(connectStub.calledOnce).to.be.true
 
-        // TODO: Figure out why this isn't working:
+        // FIXME: Figure out why this isn't working:
         // expect(initializeStub.calledOnce).to.be.true
 
         const amqpInManualAckNode = helper.getNode('n1')
-        // @ts-ignore
+
+        // FIXME: these tests are essentially meaningless.
+        // For some reason the node is not being properly loaded by the helper
+        // They are not executing code
         amqpInManualAckNode.receive({ payload: 'foo', routingKey: 'bar' })
+        amqpInManualAckNode.receive({
+          payload: 'foo',
+          routingKey: 'bar',
+          manualAck: {
+            ackMode: ManualAckType.Ack,
+          },
+        })
+        amqpInManualAckNode.receive({
+          payload: 'foo',
+          routingKey: 'bar',
+          manualAck: {
+            ackMode: ManualAckType.AckAll,
+          },
+        })
+        amqpInManualAckNode.receive({
+          payload: 'foo',
+          routingKey: 'bar',
+          manualAck: {
+            ackMode: ManualAckType.Nack,
+          },
+        })
+        amqpInManualAckNode.receive({
+          payload: 'foo',
+          routingKey: 'bar',
+          manualAck: {
+            ackMode: ManualAckType.NackAll,
+          },
+        })
+        amqpInManualAckNode.receive({
+          payload: 'foo',
+          routingKey: 'bar',
+          manualAck: {
+            ackMode: ManualAckType.Reject,
+          },
+        })
+        amqpInManualAckNode.on('input', () => {
+          console.warn('this is input?')
+          done()
+        })
         amqpInManualAckNode.close(true)
         done()
       },
