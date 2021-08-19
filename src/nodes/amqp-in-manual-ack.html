@@ -134,16 +134,45 @@
 </script>
 
 <script type="text/html" data-help-name="amqp-in-manual-ack">
-  <h2>amqp-in-manual-ack</h2>
   <p>Connects to an AMQP broker, receives messages, and <strong>manually acknowledges receipt</strong>.</p>
-  <p>This node sets <em>noAck</em> to false by default. <em style="color: firebrick;">You must manually ack receipt by sending the message back through the input of the node</em>. Any un-acked message will be requeued once the client goes down or restarts. If you don't need to manually ack messages like this just use the <strong>amqp-in</strong> node instead. Please see the example flows in the import library for a better idea on how to use this node.</p>
+  <p>This node sets <em>noAck</em> to false by default. <em style="color: firebrick;">You must manually ack or nack receipt by sending the message back through the input of the node</em>. Any un-acked message will be requeued once the client goes down or restarts. If you don't need to manually ack messages like this just use the <strong>amqp-in</strong> node instead. Please see the example flows in the import library for a better idea on how to use this node.</p>
 
   <h3>Inputs</h3>
   <dl class="message-properties">
     <dt>msg
       <span class="property-type">object</span>
     </dt>
-    <dd>The entire message sent through the output of this node should be sent back through the input to successfully ack</dd>
+    <dd>The entire message sent through the output of this node should be sent back through the input to successfully ack or nack</dd>
+  </dl>
+  <dl class="message-properties">
+    <dt>msg.manualAck
+      <span class="property-type">object</span>
+    </dt>
+    <dd>An optional configuration object that can specify ack mode and behavior. If not specified the message itself is still acked.</dd>
+  </dl>
+  <dl class="message-properties">
+    <dt>msg.manualAck.ackMode
+      <span class="property-type">string</span>
+    </dt>
+    <dd>The type of acknowledgement. Valid values are
+      <code>ack</code>,
+      <code>ackAll</code>,
+      <code>nack</code>,
+      <code>nackAll</code>,
+      and <code>reject</code>.
+      Defaults to <code>ack</code></dd>
+  </dl>
+  <dl class="message-properties">
+    <dt>msg.manualAck.allUpTo
+      <span class="property-type">boolean</span>
+    </dt>
+    <dd><code>allUpTo</code> option for (n)acking. If true will (n)ack all messages in the queue ahead of the current message. Defaults to false.</dd>
+  </dl>
+  <dl class="message-properties">
+    <dt>msg.manualAck.requeue
+      <span class="property-type">boolean</span>
+    </dt>
+    <dd><code>requeue</code> option for nacking. If true will nack and requeue the message. If false will nack and dead letter. Defaults to false.</dd>
   </dl>
 
   <h3>Outputs</h3>
