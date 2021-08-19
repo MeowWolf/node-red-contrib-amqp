@@ -25,7 +25,7 @@ describe('amqp-out Node', () => {
 
   it('should be loaded', done => {
     sinon.stub(Amqp.prototype, 'connect')
-    const flow = [{ id: 'n1', type: NodeType.AMQP_OUT, name: 'test name' }]
+    const flow = [{ id: 'n1', type: NodeType.AmqpOut, name: 'test name' }]
     helper.load(amqpOut, flow, () => {
       const n1 = helper.getNode('n1')
       n1.should.have.property('name', 'test name')
@@ -147,7 +147,7 @@ describe('amqp-out Node', () => {
   it('tries to connect but the broker is down', function (done) {
     const connectStub = sinon
       .stub(Amqp.prototype, 'connect')
-      .throws(new CustomError(ErrorType.CONNECTION_REFUSED))
+      .throws(new CustomError(ErrorType.ConnectionRefused))
     helper.load(
       [amqpOut, amqpBroker],
       amqpOutFlowFixture,
@@ -162,7 +162,7 @@ describe('amqp-out Node', () => {
   it('catches an invalid login exception', function (done) {
     const connectStub = sinon
       .stub(Amqp.prototype, 'connect')
-      .throws(new CustomError(ErrorType.INVALID_LOGIN))
+      .throws(new CustomError(ErrorType.InvalidLogin))
     helper.load(
       [amqpOut, amqpBroker],
       amqpOutFlowFixture,

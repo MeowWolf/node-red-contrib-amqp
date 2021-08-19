@@ -29,7 +29,7 @@ describe('amqp-in-manual-ack Node', () => {
   it('should be loaded', done => {
     sinon.stub(Amqp.prototype, 'connect')
     const flow = [
-      { id: 'n1', type: NodeType.AMQP_IN_MANUAL_ACK, name: 'test name' },
+      { id: 'n1', type: NodeType.AmqpInManualAck, name: 'test name' },
     ]
     helper.load(amqpInManualAck, flow, () => {
       const n1 = helper.getNode('n1')
@@ -77,7 +77,7 @@ describe('amqp-in-manual-ack Node', () => {
   it('tries to connect but the broker is down', function (done) {
     const connectStub = sinon
       .stub(Amqp.prototype, 'connect')
-      .throws(new CustomError(ErrorType.CONNECTION_REFUSED))
+      .throws(new CustomError(ErrorType.ConnectionRefused))
     helper.load(
       [amqpInManualAck, amqpBroker],
       amqpInManualAckFlowFixture,
@@ -92,7 +92,7 @@ describe('amqp-in-manual-ack Node', () => {
   it('catches an invalid login exception', function (done) {
     const connectStub = sinon
       .stub(Amqp.prototype, 'connect')
-      .throws(new CustomError(ErrorType.INVALID_LOGIN))
+      .throws(new CustomError(ErrorType.InvalidLogin))
     helper.load(
       [amqpInManualAck, amqpBroker],
       amqpInManualAckFlowFixture,

@@ -73,28 +73,28 @@ export type AssembledMessage = ConsumeMessage & {
 }
 
 export interface ManualAckFields {
-  ackMode: ManualAckType;
-  allUpTo?: boolean;
-  requeue?: boolean;
+  ackMode: ManualAckType
+  allUpTo?: boolean
+  requeue?: boolean
 }
 
 export enum ManualAckType {
-  ACK = 'ack',
-  ACKALL = 'ackAll',
-  NACK = 'nack',
-  NACKALL = 'nackAll',
-  REJECT = 'reject',
+  Ack = 'ack',
+  AckAll = 'ackAll',
+  Nack = 'nack',
+  NackAll = 'nackAll',
+  Reject = 'reject',
 }
 
 export enum ErrorType {
-  INVALID_LOGIN = 'ENOTFOUND',
-  CONNECTION_REFUSED = 'ECONNREFUSED',
+  InvalidLogin = 'ENOTFOUND',
+  ConnectionRefused = 'ECONNREFUSED',
 }
 
 export enum NodeType {
-  AMQP_IN = 'amqp-in',
-  AMQP_OUT = 'amqp-out',
-  AMQP_IN_MANUAL_ACK = 'amqp-in-manual-ack',
+  AmqpIn = 'amqp-in',
+  AmqpOut = 'amqp-out',
+  AmqpInManualAck = 'amqp-in-manual-ack',
 }
 
 export enum ExchangeType {

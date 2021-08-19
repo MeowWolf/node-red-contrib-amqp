@@ -51,9 +51,9 @@ module.exports = function (RED: NodeRedApp): void {
           self.status(NODE_STATUS.Connected)
         }
       } catch (e) {
-        if (e.code === ErrorType.CONNECTION_REFUSED || e.isOperational) {
+        if (e.code === ErrorType.ConnectionRefused || e.isOperational) {
           await reconnect()
-        } else if (e.code === ErrorType.INVALID_LOGIN) {
+        } else if (e.code === ErrorType.InvalidLogin) {
           self.status(NODE_STATUS.Invalid)
           self.error(`AmqpIn() Could not connect to broker ${e}`)
         } else {
@@ -65,5 +65,5 @@ module.exports = function (RED: NodeRedApp): void {
   }
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
-  RED.nodes.registerType(NodeType.AMQP_IN, AmqpIn)
+  RED.nodes.registerType(NodeType.AmqpIn, AmqpIn)
 }
