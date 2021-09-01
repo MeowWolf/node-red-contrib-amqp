@@ -7,7 +7,7 @@
   "cache": true,
   "check-coverage": true,
   "statements": 82,
-  "branches": 69,
+  "branches": 64,
   "functions": 77,
   "lines": 82
 }
