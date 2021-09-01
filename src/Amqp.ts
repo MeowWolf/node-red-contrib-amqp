@@ -128,17 +128,17 @@ export default class Amqp {
 
   public nack(msg: AssembledMessage): void {
     const allUpTo = !!msg.manualAck?.allUpTo
-    const requeue = !!msg.manualAck?.requeue
+    const requeue = msg.manualAck?.requeue ?? true
     this.channel.nack(msg, allUpTo, requeue)
   }
 
   public nackAll(msg: AssembledMessage): void {
-    const requeue = !!msg.manualAck?.requeue
+    const requeue = msg.manualAck?.requeue ?? true
     this.channel.nackAll(requeue)
   }
 
   public reject(msg: AssembledMessage): void {
-    const requeue = !!msg.manualAck?.requeue
+    const requeue = msg.manualAck?.requeue ?? true
     this.channel.reject(msg, requeue)
   }
 
