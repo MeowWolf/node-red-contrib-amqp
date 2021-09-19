@@ -9,7 +9,7 @@ AMQP nodes for node-red
 Install via the Palette Manager or from within your node-red directory (typically `~/.node-red`) run:
 
 ```
-npm i @meowwolf/node-red-contrib-amqp
+npm i @ashok0617/node-red-contrib-amqp
 ```
 
 ## Usage
