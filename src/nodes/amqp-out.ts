@@ -79,7 +79,7 @@ module.exports = function (RED: NodeRedApp): void {
                 break
             }
 
-            amqp.publish(JSON.stringify(payload), properties)
+            amqp.publish(payload, properties)
 
             done && done()
           })
