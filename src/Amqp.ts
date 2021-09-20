@@ -183,7 +183,10 @@ export default class Amqp {
         ...this.config.amqpProperties,
         ...properties,
       }
-      if (config.amqpProperties?.type != 'xml') {
+      if (config.amqpProperties?.type == 'xml') {
+        //no need to convert payload
+      } else {
+        //backward compatibility - continue stringify
         msg = JSON.stringify(msg)
       }
       if (name) {
