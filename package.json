@@ -39,7 +39,7 @@
     "Ashok Singh <ashok0617@gmail.com>",
     "Amo DelBello <adelbello@meowwolf.com>"
   ],
-  "bugs": "https://github.com/MeowWolf/node-red-contrib-mw-amqp/issues",
+  "bugs": "https://github.com/ashok0617/node-red-contrib-amqp/issues",
   "license": "ISC",
   "devDependencies": {
     "@istanbuljs/nyc-config-typescript": "^0.1.3",
