@@ -1,4 +1,4 @@
-![](https://github.com/MeowWolf/node-red-contrib-amqp/workflows/Lint,%20Build,%20Test/badge.svg?branch=master)
+![](https://https://github.com/ashok0617/node-red-contrib-amqp/workflows/Lint,%20Build,%20Test/badge.svg?branch=master)
 
 # @ashok0617/node-red-contrib-amqp
 

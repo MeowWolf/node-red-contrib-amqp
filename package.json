@@ -1,5 +1,5 @@
 {
-  "name": "@meowwolf/node-red-contrib-amqp",
+  "name": "@ashok0617/node-red-contrib-amqp",
   "version": "2.3.1",
   "description": "Amqp nodes for node-red",
   "main": "index.js",
@@ -33,9 +33,10 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git@github.com:MeowWolf/node-red-contrib-mw-amqp.git"
+    "url": "git@github.com:ashok0617/node-red-contrib-amqp.git"
   },
   "contributors": [
+    "Ashok Singh <ashok0617@gmail.com>",
     "Amo DelBello <adelbello@meowwolf.com>"
   ],
   "bugs": "https://github.com/MeowWolf/node-red-contrib-mw-amqp/issues",
