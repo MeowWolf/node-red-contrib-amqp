@@ -79,7 +79,13 @@ module.exports = function (RED: NodeRedApp): void {
                 break
             }
 
-            amqp.publish(JSON.stringify(payload), properties)
+            //if msg.property.stringify not set or properties not set
+            //at all then don't stringify payload
+            if (properties?.stringify === false) {
+              amqp.publish(payload, properties);
+            } else {
+              amqp.publish(JSON.stringify(payload), properties);
+            }
 
             done && done()
           })
