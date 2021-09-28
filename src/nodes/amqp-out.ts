@@ -2,12 +2,14 @@ import { NodeRedApp, EditorNodeProperties } from 'node-red'
 import { NODE_STATUS } from '../constants'
 import { ErrorType, NodeType } from '../types'
 import Amqp from '../Amqp'
+import { MessageProperties } from 'amqplib'
 
 module.exports = function (RED: NodeRedApp): void {
   function AmqpOut(
     config: EditorNodeProperties & {
       exchangeRoutingKey: string
       exchangeRoutingKeyType: string
+      amqpProperties: string
     },
   ): void {
     let reconnectTimeout: NodeJS.Timeout
@@ -42,8 +44,23 @@ module.exports = function (RED: NodeRedApp): void {
           await amqp.initialize()
 
           self.on('input', async (msg, _, done) => {
-            const { payload, routingKey, properties } = msg
-            const { exchangeRoutingKey, exchangeRoutingKeyType } = config
+            const { payload, routingKey, properties: msgProperties } = msg
+            const {
+              exchangeRoutingKey,
+              exchangeRoutingKeyType,
+              amqpProperties,
+            } = config
+
+            // message properties override config properties
+            let properties: MessageProperties
+            try {
+              properties = {
+                ...JSON.parse(amqpProperties),
+                ...msgProperties,
+              }
+            } catch (e) {
+              properties = msgProperties
+            }
 
             switch (exchangeRoutingKeyType) {
               case 'msg':
@@ -79,12 +96,10 @@ module.exports = function (RED: NodeRedApp): void {
                 break
             }
 
-            //if msg.property.stringify not set or properties not set
-            //at all then don't stringify payload
-            if (properties?.stringify === false) {
-              amqp.publish(payload, properties);
+            if (!!properties?.headers?.doNotStringifyPayload) {
+              amqp.publish(payload, properties)
             } else {
-              amqp.publish(JSON.stringify(payload), properties);
+              amqp.publish(JSON.stringify(payload), properties)
             }
 
             done && done()

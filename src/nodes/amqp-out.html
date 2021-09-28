@@ -75,16 +75,22 @@
 </script>
 
 <style>
-  div.wide-label label {
-    width: 30% !important;
+  div.wide-label-amqp-out label {
+    width: 35% !important;
   }
-  div.wider-label label {
+  div.wide-label-amqp-out input.simple-input {
+    width: 64% !important;
+  }
+  div.wide-label-amqp-out div.red-ui-typedInput-container {
+    width: 64% !important
+  }
+  div.wider-label-amqp-out label {
     width: 50% !important;
   }
-  select.small {
+  select.small-amqp-out {
     width: 75px !important;
   }
-  input.small {
+  input.small-amqp-out {
     width: 120px !important;
   }
   div.form-tips {
@@ -103,7 +109,7 @@
   </div>
   <hr>
   <h4>Exchange Info</h4>
-  <div class="form-row wide-label">
+  <div class="form-row wide-label-amqp-out">
     <label for="node-input-exchangeType"><i class="fa fa-filter"></i>&nbsp;&nbsp;Type</label>
     <select id="node-input-exchangeType">
       <option value="topic">Topic</option>
@@ -116,11 +122,11 @@
     <i class="fa fa-info-circle"></i>
     Add key/value pairs to a `headers` field in the AMQP Properties field below
   </div>
-  <div class="form-row wide-label">
+  <div class="form-row wide-label-amqp-out">
     <label for="node-input-exchangeName"><i class="fa fa-tag"></i>&nbsp;&nbsp;Exchange Name</label>
-    <input type="text" id="node-input-exchangeName" placeholder="Leave blank for the default exchange">
+    <input type="text" class="simple-input" id="node-input-exchangeName" placeholder="Leave blank for the default exchange">
   </div>
-  <div class="form-row wide-label routing-key-form-input">
+  <div class="form-row wide-label-amqp-out routing-key-form-input">
     <label for="node-input-exchangeRoutingKey"><i class="fa fa-filter"></i>&nbsp;&nbsp;Routing Key</label>
     <input type="text" id="node-input-exchangeRoutingKey" placeholder="routing.key" />
     <input type="hidden" id="node-input-exchangeRoutingKeyType" />
@@ -136,7 +142,7 @@
   </div>
   <hr>
   <h4>Message Info</h4>
-  <div class="form-row wide-label">
+  <div class="form-row wide-label-amqp-out">
     <label for="node-input-amqpProperties"><i class="fa fa-filter"></i>&nbsp;&nbsp;AMQP Properties</label>
     <input type="text" id="node-input-amqpProperties">
   </div>
@@ -147,16 +153,16 @@
   <span id="rpc-section">
     <hr>
     <h4>Remote Procedure Call</h4>
-    <div class="form-row wider-label">
+    <div class="form-row wider-label-amqp-out">
       <label for="node-input-outputs"><i class="fa fa-globe"></i>&nbsp;&nbsp;Request RPC response</label>
-      <select id="node-input-outputs" class="small">
+      <select id="node-input-outputs" class="small-amqp-out">
         <option value="0">No</option>
         <option value="1">Yes</option>
       </select>
     </div>
-    <div class="form-row wider-label">
+    <div class="form-row wider-label-amqp-out">
       <label for="node-input-rpcTimeoutMilliseconds"><i class="fa fa-clock-o"></i>&nbsp;&nbsp;RPC Timeout (ms)</label>
-      <input type="text" class="small" id="node-input-rpcTimeoutMilliseconds">
+      <input type="text" class="small-amqp-out" id="node-input-rpcTimeoutMilliseconds">
     </div>
     <div class="form-tips">
       <i class="fa fa-info-circle"></i>
@@ -207,6 +213,14 @@
       </ul>
     </dd>
   </dl>
+
+  <h3>Payload stringification</h3>
+  <p>By default the payload is run through `JSON.stringify()` before being published. To override this behavior include
+    <code>
+      doNotStringifyPayload: true
+    </code>
+    in the message's properties.headers object
+  </p>
 
   <h3>References</h3>
   <ul>
