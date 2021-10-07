@@ -398,7 +398,7 @@ export default class Amqp {
       username: this.RED.settings.MW_CONTRIB_AMQP_USERNAME,
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      password: this.RED.settings.MW_CONTRIB_AMQP_USERNAME,
+      password: this.RED.settings.MW_CONTRIB_AMQP_PASSWORD,
     }
   }
 
