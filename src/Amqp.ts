@@ -88,13 +88,19 @@ export default class Amqp {
 
   public async initialize(): Promise<void> {
     await this.createChannel()
-    await this.assertExchange()
+    // TODO Conditional:
+    //await this.assertExchange()
+    await this.checkExchange()
+    // (end TODO Conditional)
   }
 
   public async consume(): Promise<void> {
     try {
       const { noAck } = this.config
-      await this.assertQueue()
+      // TODO Conditional:
+      //await this.assertQueue()
+      await this.checkQueue()
+      // (end TODO Conditional)
       this.bindQueue()
       await this.channel.consume(
         this.q.queue,
@@ -229,7 +235,12 @@ export default class Amqp {
       /************************************
        * assert queue and set up consumer
        ************************************/
-      const queueName = await this.assertQueue(rpcConfig)
+      // TODO Not tested:
+      // TODO Conditional:
+      //const queueName = await this.assertQueue(rpcConfig)
+      const queueName = await this.checkQueue(rpcConfig)
+      // (end TODO Conditional)
+      // (end TODO Not tested)
 
       await this.channel.consume(
         queueName,
@@ -328,6 +339,15 @@ export default class Amqp {
     }
   }
 
+  private async checkExchange(): Promise<void> {
+    const { name } = this.config.exchange
+
+    /* istanbul ignore else */
+    if (name) {
+      await this.channel.checkExchange(name)
+    }
+  }
+
   private async assertQueue(configParams?: AmqpConfig): Promise<string> {
     const { queue } = configParams || this.config
     const { name, exclusive, durable, autoDelete } = queue
@@ -339,6 +359,14 @@ export default class Amqp {
     })
 
     return name
+  }
+
+  private async checkQueue(configParams?: AmqpConfig): Promise<string> {
+    const { queue } = configParams || this.config;
+    const { name } = queue;
+
+    this.q = await this.channel.checkQueue(name)
+    return name;
   }
 
   private async bindQueue(configParams?: AmqpConfig): Promise<void> {
