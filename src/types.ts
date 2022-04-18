@@ -23,12 +23,14 @@ export interface AmqpConfig {
     type: ExchangeType
     routingKey: string
     durable: boolean
+    checkInsteadOfAssert: boolean
   }
   queue: {
     name: string
     exclusive: boolean
     durable: boolean
     autoDelete: boolean
+    checkInsteadOfAssert: boolean
   }
   amqpProperties: MessageProperties
   headers: GenericJsonObject
