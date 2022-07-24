@@ -43,12 +43,16 @@ export default class Amqp {
         type: config.exchangeType,
         routingKey: config.exchangeRoutingKey,
         durable: config.exchangeDurable,
+        // TODO: Make this configurable from the front end
+        checkInsteadOfAssert: false,
       },
       queue: {
         name: config.queueName,
         exclusive: config.queueExclusive,
         durable: config.queueDurable,
         autoDelete: config.queueAutoDelete,
+        // TODO: Make this configurable from the front end
+        checkInsteadOfAssert: false,
       },
       amqpProperties: this.parseJson(
         config.amqpProperties,
@@ -88,13 +92,26 @@ export default class Amqp {
 
   public async initialize(): Promise<void> {
     await this.createChannel()
-    await this.assertExchange()
+    const { checkInsteadOfAssert } = this.config.exchange
+
+    if (checkInsteadOfAssert) {
+      await this.checkExchange()
+    } else {
+      await this.assertExchange()
+    }
   }
 
   public async consume(): Promise<void> {
     try {
       const { noAck } = this.config
-      await this.assertQueue()
+      const { checkInsteadOfAssert } = this.config.queue
+
+      if (checkInsteadOfAssert) {
+        await this.checkQueue()
+      } else {
+        await this.assertQueue()
+      }
+
       this.bindQueue()
       await this.channel.consume(
         this.q.queue,
@@ -229,7 +246,10 @@ export default class Amqp {
       /************************************
        * assert queue and set up consumer
        ************************************/
-      const queueName = await this.assertQueue(rpcConfig)
+      const { checkInsteadOfAssert } = this.config.queue
+      const queueName = checkInsteadOfAssert
+        ? await this.checkQueue(rpcConfig)
+        : await this.assertQueue(rpcConfig)
 
       await this.channel.consume(
         queueName,
@@ -328,6 +348,15 @@ export default class Amqp {
     }
   }
 
+  private async checkExchange(): Promise<void> {
+    const { name } = this.config.exchange
+
+    /* istanbul ignore else */
+    if (name) {
+      await this.channel.checkExchange(name)
+    }
+  }
+
   private async assertQueue(configParams?: AmqpConfig): Promise<string> {
     const { queue } = configParams || this.config
     const { name, exclusive, durable, autoDelete } = queue
@@ -338,6 +367,14 @@ export default class Amqp {
       autoDelete,
     })
 
+    return name
+  }
+
+  private async checkQueue(configParams?: AmqpConfig): Promise<string> {
+    const { queue } = configParams || this.config
+    const { name } = queue
+
+    this.q = await this.channel.checkQueue(name)
     return name
   }
 
