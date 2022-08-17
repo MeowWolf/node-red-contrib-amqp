@@ -1,7 +1,7 @@
 {
   "name": "@meowwolf/node-red-contrib-amqp",
   "license": "ISC",
-  "version": "2.4.2",
+  "version": "2.4.3",
   "description": "Amqp nodes for node-red",
   "main": "index.js",
   "scripts": {
