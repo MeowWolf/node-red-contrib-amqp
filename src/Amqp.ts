@@ -191,11 +191,20 @@ export default class Amqp {
           options,
         )
       } else {
-        this.channel.sendToQueue(
-          options.replyTo,
-          Buffer.from(msg as string),
-          options,
-        )
+        if (options.replyTo) {
+          this.channel.sendToQueue(
+            options.replyTo,
+            Buffer.from(msg as string),
+            options,
+          )
+        } else {
+          this.channel.publish(
+            "",
+            routingKey,
+            Buffer.from(msg as string),
+            options,
+          )
+        }
       }
     } catch (e) {
       this.node.error(`Could not publish message: ${e}`)
