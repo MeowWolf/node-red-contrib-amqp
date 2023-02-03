@@ -6,6 +6,10 @@ export interface BrokerConfig extends Node {
   port: number
   vhost: string
   tls: boolean
+  ca: string
+  cert: string,
+  key: string,
+  passphrase: string,
   credsFromSettings: boolean
   credentials: {
     username: string

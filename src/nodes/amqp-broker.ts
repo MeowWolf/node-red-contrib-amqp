@@ -10,6 +10,10 @@ module.exports = function (RED: NodeRedApp): void {
     this.host = n.host
     this.port = n.port
     this.tls = n.tls
+    this.ca = n.ca
+    this.cert = n.cert
+    this.key = n.key
+    this.passphrase = n.passphrase
     this.vhost = n.vhost
     this.credsFromSettings = n.credsFromSettings
   }
