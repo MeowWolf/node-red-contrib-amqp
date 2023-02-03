@@ -1,5 +1,6 @@
 import { NodeRedApp, Node } from 'node-red'
 import { v4 as uuidv4 } from 'uuid'
+import * as fs from 'fs'
 import cloneDeep = require('lodash.clonedeep')
 import {
   Connection,
@@ -68,7 +69,29 @@ export default class Amqp {
     this.broker = this.RED.nodes.getNode(broker)
 
     const brokerUrl = this.getBrokerUrl(this.broker)
-    this.connection = await connect(brokerUrl, { heartbeat: 2 })
+
+    const { tls, ca, cert, key, passphrase } = this.broker as unknown as BrokerConfig
+
+    let opts = {
+      heartbeat: 2
+    } as any
+
+    if (tls) {
+      if (ca) {
+        opts.ca = fs.readFileSync(ca);
+      }
+      if (cert) {
+        opts.cert = fs.readFileSync(cert);
+      }
+      if (key) {
+        opts.key = fs.readFileSync(key);
+      }
+      if (passphrase) {
+        opts.passphrase = passphrase
+      }
+    }
+
+    this.connection = await connect(brokerUrl, opts)
 
     /* istanbul ignore next */
     this.connection.on('error', (): void => {

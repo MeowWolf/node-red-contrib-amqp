@@ -7,6 +7,10 @@
       port: { value: 5672, required: true, validate: RED.validators.number() },
       vhost: { value: '' },
       tls: { value: false },
+      ca: { value: '' },
+      cert: { value: '' },
+      key: { value: '' },
+      passphrase: { value: '' },
       credsFromSettings: { value: false },
     },
     credentials: {
@@ -33,6 +37,19 @@
           $('#password-field').show()
         }
       })
+      $('#node-config-input-tls').change(function (e) {
+        if (this.checked) {
+          $('#cert-field').show()
+          $('#key-field').show()
+          $('#passphrase-field').show()
+          $('#ca-field').show()
+        } else {
+          $('#cert-field').hide()
+          $('#key-field').hide()
+          $('#passphrase-field').hide()
+          $('#ca-field').hide()
+        }
+      })
     }
   })
 </script>
@@ -56,6 +73,22 @@
   <div class="form-row">
     <label for="node-config-input-tls" style="width: 250px;"><i class="fa fa-expeditedssl"></i>&nbsp;&nbsp;Use TLS</label>
     <input type="checkbox" id="node-config-input-tls" style="margin: 0px 0px 4px; width: 20px;">
+  </div>
+  <div class="form-row" id="cert-field">
+    <label for="node-config-input-cert"><i class="fa fa-user"></i>&nbsp;&nbsp;cert</label>
+    <input type="text" id="node-config-input-cert">
+  </div>
+  <div class="form-row" id="key-field">
+    <label for="node-config-input-key"><i class="fa fa-lock"></i>&nbsp;&nbsp;key</label>
+    <input type="text" id="node-config-input-key">
+  </div>
+  <div class="form-row" id="passphrase-field">
+    <label for="node-config-input-passphrase"><i class="fa fa-lock"></i>&nbsp;&nbsp;passphrase</label>
+    <input type="password" id="node-config-input-passphrase">
+  </div>
+  <div class="form-row" id="ca-field">
+    <label for="node-config-input-ca"><i class="fa fa-lock"></i>&nbsp;&nbsp;ca</label>
+    <input type="text" id="node-config-input-ca">
   </div>
   <hr />
   <div class="form-row">
