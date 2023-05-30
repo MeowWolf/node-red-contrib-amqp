@@ -1,7 +1,7 @@
 {
-  "name": "@meowwolf/node-red-contrib-amqp",
+  "name": "@moonrockfamily/node-red-contrib-amqp",
   "license": "ISC",
-  "version": "2.4.2",
+  "version": "2.4.3",
   "description": "Amqp nodes for node-red",
   "main": "index.js",
   "scripts": {
@@ -34,12 +34,13 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git@github.com:MeowWolf/node-red-contrib-mw-amqp.git"
+    "url": "https://github.com/moonrockfamily/node-red-contrib-amqp.git"
   },
   "contributors": [
-    "Amo DelBello <adelbello@meowwolf.com>"
+    "Amo DelBello <adelbello@meowwolf.com>",
+    "Todd Hiles <todd.hiles@georgiancollege.ca"
   ],
-  "bugs": "https://github.com/MeowWolf/node-red-contrib-mw-amqp/issues",
+  "bugs": "https://github.com/moonrockfamily/node-red-contrib-amqp/issues",
   "devDependencies": {
     "@istanbuljs/nyc-config-typescript": "^0.1.3",
     "@types/amqplib": "^0.8.1",
@@ -49,7 +50,7 @@
     "@types/node": "^16.4.12",
     "@types/node-red": "^1.1.1",
     "@types/node-red-node-test-helper": "^0.2.2",
-    "@types/sinon": "^10.0.2",
+    "@types/sinon": "^10.0.15",
     "@typescript-eslint/eslint-plugin": "^4.29.0",
     "@typescript-eslint/parser": "^4.29.0",
     "chai": "^4.3.4",
@@ -63,13 +64,13 @@
     "nodemon": "^2.0.12",
     "nyc": "^15.1.0",
     "prettier": "^2.3.2",
-    "sinon": "^11.1.2",
+    "sinon": "^15.1.0",
     "source-map-support": "^0.5.19",
     "ts-node": "^10.1.0",
     "typescript": "^4.3.5"
   },
   "dependencies": {
-    "amqplib": "^0.8.0",
+    "amqplib": "^0.10.3",
     "lodash.clonedeep": "^4.5.0",
     "rimraf": "^3.0.2",
     "uuid": "^8.3.2"
