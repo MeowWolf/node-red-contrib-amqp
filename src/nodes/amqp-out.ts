@@ -42,15 +42,10 @@ module.exports = function (RED: NodeRedApp): void {
         // istanbul ignore else
         if (connection) {
           await amqp.initialize()
-          console.log(
-            'Configured once input with remove all listeners - named -def',
-          )
           if (reconnecting) {
-            console.log('While reconnecting, removed all listeners')
             self.removeAllListeners('input')
           }
           self.on('input', async (msg, _, done) => {
-            console.log('Self input invoked')
             const { payload, routingKey, properties: msgProperties } = msg
             const {
               exchangeRoutingKey,
