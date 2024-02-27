@@ -23,12 +23,12 @@ module.exports = function (RED: NodeRedApp): void {
     this.status(NODE_STATUS.Disconnected)
     const amqp = new Amqp(RED, this, config)
 
-    ;(async function initializeNode(self): Promise<void> {
+    ;(async function initializeNode(self, reconnecting): Promise<void> {
       const reconnect = () =>
         new Promise<void>(resolve => {
           reconnectTimeout = setTimeout(async () => {
             try {
-              await initializeNode(self)
+              await initializeNode(self, true)
               resolve()
             } catch (e) {
               await reconnect()
@@ -42,8 +42,15 @@ module.exports = function (RED: NodeRedApp): void {
         // istanbul ignore else
         if (connection) {
           await amqp.initialize()
-
+          console.log(
+            'Configured once input with remove all listeners - named -def',
+          )
+          if (reconnecting) {
+            console.log('While reconnecting, removed all listeners')
+            self.removeAllListeners('input')
+          }
           self.on('input', async (msg, _, done) => {
+            console.log('Self input invoked')
             const { payload, routingKey, properties: msgProperties } = msg
             const {
               exchangeRoutingKey,
